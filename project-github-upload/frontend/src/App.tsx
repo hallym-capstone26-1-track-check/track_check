@@ -725,10 +725,21 @@ function App() {
   const [showTrackInfoTip, setShowTrackInfoTip] = useState(false);
   const [loading, setLoading] = useState(false);
   const [activeMobileTooltip, setActiveMobileTooltip] = useState<string | null>(null);
+  const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
 
   const showFeedback = (message: string) => {
-    window.alert(message);
+    setFeedbackMessage(message);
   };
+
+  const clearFeedback = () => setFeedbackMessage(null);
+
+  const renderInlineFeedback = () => (
+    feedbackMessage ? (
+      <p className="inline-feedback-message" aria-live="polite">
+        {feedbackMessage}
+      </p>
+    ) : null
+  );
 
   const renderCardLogo = (alt = "로고") => (
     <div className="card-logo-wrap">
@@ -760,12 +771,14 @@ function App() {
       showFeedback("이러면 삶이 너무 힘들지 않나요? 학과는 최대 4개까지만 담아둘게요.");
       return;
     }
+    clearFeedback();
     setSelectedMajors(prev => [...prev, deptName]);
     setMajorDraft("");
     resetAnalysis();
   };
 
   const removeSelectedMajor = (deptName: string) => {
+    clearFeedback();
     setSelectedMajors(prev => prev.filter(item => item !== deptName));
     resetAnalysis();
   };
@@ -851,6 +864,10 @@ function App() {
     setMaxReachedStep(prev => Math.max(prev, step));
   }, [page]);
 
+  useEffect(() => {
+    setFeedbackMessage(null);
+  }, [page]);
+
   const pageStepName: Record<string, string> = {
     info: "start", method: "method", trackExplore: "track-explore", checklist: "checklist", manual: "manual",
     trackList: "tracks", trackResult: "result",
@@ -892,12 +909,19 @@ function App() {
       showFeedback("이러면 삶이 너무 힘들지 않나요? 학과는 최대 4개까지만 선택할 수 있어요.");
       return;
     }
+    clearFeedback();
     setPage("method");
   };
 
-  const addCourseRow = () => setCourses([...courses, { id: Date.now(), name: "", credit: "3", grade: "이수" }]);
+  const addCourseRow = () => {
+    clearFeedback();
+    setCourses([...courses, { id: Date.now(), name: "", credit: "3", grade: "이수" }]);
+  };
   const removeCourseRow = (id: number) => {
-    if (courses.length > 1) setCourses(courses.filter(c => c.id !== id));
+    if (courses.length > 1) {
+      clearFeedback();
+      setCourses(courses.filter(c => c.id !== id));
+    }
   };
 
   const lookupCredit = (name: string): string | null => {
@@ -909,6 +933,7 @@ function App() {
   };
 
   const updateCourse = (id: number, field: "name" | "credit" | "grade", value: string) => {
+    clearFeedback();
     setCourses(courses.map(c => {
       if (c.id === id) {
         const updated = { ...c, [field]: value };
@@ -923,6 +948,7 @@ function App() {
   };
 
   const toggleChecklistCourse = (courseName: string) => {
+    clearFeedback();
     setCheckedCourseNames(prev => {
       const next = new Set(prev);
       if (next.has(courseName)) next.delete(courseName);
@@ -982,6 +1008,7 @@ function App() {
       return false;
     }
 
+    clearFeedback();
     setLoading(true);
     try {
       const gradeMap: Record<string, string> = {
@@ -1305,7 +1332,8 @@ const renderSelectedDepartments = (
             </a>
           </div>
 
-<button className="button" onClick={handleStart}>시작하기</button>
+          {renderInlineFeedback()}
+          <button className="button" onClick={handleStart}>시작하기</button>
         </div>
       )}
 
@@ -1501,6 +1529,7 @@ const renderSelectedDepartments = (
             )}
           </div>
 
+          {renderInlineFeedback()}
           <div className="manual-button-group">
             <button className="sub-button" onClick={() => setPage("method")}>이전 단계</button>
             <button className="button" onClick={() => goToTrackList("checklist")} disabled={loading}>
@@ -1596,6 +1625,7 @@ const renderSelectedDepartments = (
             {moduleCourses.map(c => <option key={c.name} value={c.name} />)}
           </datalist>
 
+          {renderInlineFeedback()}
           <div className="manual-button-group">
             <button className="sub-button" onClick={() => setPage("method")}>이전 단계</button>
             <button className="button" onClick={() => goToTrackList("manual")} disabled={loading}>

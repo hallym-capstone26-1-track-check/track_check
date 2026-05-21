@@ -349,8 +349,27 @@ input[list]::-webkit-calendar-picker-indicator {
   background: #1a2f72;
 }
 
+.inline-feedback-message {
+  width: 100%;
+  margin: 12px 0 0;
+  color: #dc2626;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.45;
+  text-align: center;
+  white-space: pre-line;
+}
+
+.inline-feedback-message + .button {
+  margin-top: 12px;
+}
+
 .info-card > .button {
   margin-top: 34px;
+}
+
+.info-card .inline-feedback-message + .button {
+  margin-top: 12px;
 }
 
 .button.privacy-required {
@@ -8691,8 +8710,12 @@ button.selected-dept-chip:hover {
     width: 100%;
   }
 
-  .info-card > .button {
+  .info-card .inline-feedback-message {
     order: 8;
+  }
+
+  .info-card > .button {
+    order: 9;
   }
 }
 
@@ -9765,6 +9788,16 @@ button.selected-dept-chip:hover {
 
 .guidebook-button:hover {
   background: #eaf2ff;
+}
+
+.manual-page .inline-feedback-message,
+.checklist-page .inline-feedback-message {
+  margin: 18px 0 10px;
+}
+
+.manual-page .inline-feedback-message + .manual-button-group,
+.checklist-page .inline-feedback-message + .manual-button-group {
+  margin-top: 0 !important;
 }
 
 .top-three-grid {
