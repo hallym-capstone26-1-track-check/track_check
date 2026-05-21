@@ -54,10 +54,12 @@ MAX_FILES_COUNT: int = 5                         # 한 번에 최대 5장 (성�
 MAX_TOTAL_UPLOAD_BYTES: int = 30 * 1024 * 1024   # 한 요청 합산 최대 30MB (메모리 보호)
 
 BASE_DIR: str = os.path.dirname(os.path.abspath(__file__))
-TRACK_RULES_JSON_PATH: str = os.path.join(BASE_DIR, "data", "track_rules.json")
-TRACK_DATA_SOURCE: str = os.environ.get("TRACK_DATA_SOURCE", "json").strip().lower() or "json"
-if TRACK_DATA_SOURCE not in {"json", "db", "auto"}:
-    raise RuntimeError("TRACK_DATA_SOURCE는 json, db, auto 중 하나여야 합니다.")
+TRACK_DATA_SOURCE: str = os.environ.get("TRACK_DATA_SOURCE", "db").strip().lower() or "db"
+if TRACK_DATA_SOURCE != "db":
+    raise RuntimeError(
+        "TRACK_DATA_SOURCE는 이제 db만 지원합니다. "
+        "PostgreSQL 기준 데이터를 사용하려면 TRACK_DATA_SOURCE=db로 설정하세요."
+    )
 PROJECT_DIR: str = os.path.abspath(os.path.join(BASE_DIR, ".."))
 
 FRONTEND_ROUTE: str = os.environ.get("FRONTEND_ROUTE", "/frontend").strip() or "/frontend"

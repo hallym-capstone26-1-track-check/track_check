@@ -116,12 +116,27 @@ def check_database_health() -> dict:
             cur.execute("SELECT COUNT(*) AS count FROM modules")
             module_count = int(cur.fetchone()["count"])
 
+            cur.execute("SELECT COUNT(*) AS count FROM source_documents")
+            source_document_count = int(cur.fetchone()["count"])
+
+            if department_count == 0 or track_count == 0 or module_count == 0:
+                return {
+                    "status": "missing_data",
+                    "data_source": "postgresql",
+                    "department_count": department_count,
+                    "track_count": track_count,
+                    "module_count": module_count,
+                    "source_document_count": source_document_count,
+                    "error_type": "MissingReferenceData",
+                }
+
         return {
             "status": "connected",
             "data_source": "postgresql",
             "department_count": department_count,
             "track_count": track_count,
             "module_count": module_count,
+            "source_document_count": source_document_count,
         }
     except Exception as exc:
         logger.warning("DB 상태 확인 실패: %s", type(exc).__name__)

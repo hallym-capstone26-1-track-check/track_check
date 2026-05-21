@@ -1,5 +1,5 @@
-"""
-migrate_json_to_db_lossless.py — track_rules.json → PostgreSQL 손실 없는 마이그레이션 스크립트
+r"""
+migrate_json_to_db.py — track_rules.json → PostgreSQL 손실 없는 마이그레이션 스크립트
 
 목적:
     - track_rules.json의 핵심 데이터를 관계형 테이블로 분해 저장한다.
@@ -7,12 +7,12 @@ migrate_json_to_db_lossless.py — track_rules.json → PostgreSQL 손실 없는
       JSON의 비고/원문조건/수동검토/보조필드가 DB 변환 과정에서 사라지지 않게 한다.
 
 실행 방법 (Capstone_Design/backend 폴더 기준):
-    .\.venv\Scripts\python.exe scripts/migrate_json_to_db_lossless.py
+    .\.venv\Scripts\python.exe scripts\migrate_json_to_db.py
 
 필수 조건:
     1. PostgreSQL 서버 실행 중
     2. .env 파일에 DB_HOST / DB_PORT / DB_NAME / DB_USER / DB_PASSWORD 설정
-    3. schema_lossless.sql을 먼저 실행하여 테이블 생성
+    3. data\schema.sql을 먼저 실행하여 테이블 생성
     4. backend/data/track_rules.json 존재
 
 주의:
@@ -47,20 +47,28 @@ load_dotenv(DOTENV_PATH)
 # DB 연결
 # ─────────────────────────────────────────
 def get_connection():
-    """.env의 DB 접속 정보를 사용해 PostgreSQL에 연결한다."""
+    """.env의 DATABASE_URL 또는 DB_* 접속 정보를 사용해 PostgreSQL에 연결한다."""
+    database_url = os.getenv("DATABASE_URL", "").strip()
+    if database_url:
+        return psycopg2.connect(
+            database_url,
+            cursor_factory=RealDictCursor,
+        )
+
     return psycopg2.connect(
         host=os.getenv("DB_HOST", "localhost"),
         port=os.getenv("DB_PORT", "5432"),
         dbname=os.getenv("DB_NAME", "track_db"),
         user=os.getenv("DB_USER", "postgres"),
         password=os.getenv("DB_PASSWORD"),
+        sslmode=os.getenv("DB_SSLMODE", "prefer"),
         cursor_factory=RealDictCursor,
     )
 
 
 def as_jsonb(value: Any) -> Json:
     """Python dict/list 값을 psycopg2가 JSONB로 넣을 수 있게 감싼다."""
-    return Json(value, ensure_ascii=False)
+    return Json(value, dumps=lambda obj: json.dumps(obj, ensure_ascii=False))
 
 
 # ─────────────────────────────────────────

@@ -17,7 +17,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     SERVER_HOST=0.0.0.0 \
     SERVER_RELOAD=0 \
     DEBUG_MODE=0 \
-    TRACK_DATA_SOURCE=json \
+    TRACK_DATA_SOURCE=db \
     OCR_MODE=mock
 
 RUN apt-get update \

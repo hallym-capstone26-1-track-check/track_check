@@ -5,7 +5,7 @@ from services.track_analyzer import analyze_tracks
 
 
 def test_generated_test_cases_cover_all_departments_and_tracks():
-    """track_rules.json 기준 30개 학과 / 110개 트랙에 대해 2개씩 테스트 케이스가 생성되어야 한다."""
+    """DB 기준 30개 학과 / 110개 트랙에 대해 2개씩 테스트 케이스가 생성되어야 한다."""
     scenarios = get_generated_scenarios()
     assert len(scenarios) == 220
     assert len({s["dept"] for s in scenarios}) == 30

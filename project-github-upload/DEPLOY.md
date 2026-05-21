@@ -31,9 +31,14 @@ Recommended environment variables:
 ```text
 DEBUG_MODE=0
 SERVER_RELOAD=0
-TRACK_DATA_SOURCE=json
+TRACK_DATA_SOURCE=db
 OCR_MODE=mock
+DATABASE_URL=postgresql://user:password@host:5432/dbname
 ```
+
+The app now runs from PostgreSQL only. Before starting the service, apply
+`backend/data/schema.sql` to the database and run
+`backend/scripts/migrate_json_to_db.py` once to import the current track rules.
 
 For real OCR in the deployed container, set:
 

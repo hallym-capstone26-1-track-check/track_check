@@ -2,7 +2,7 @@
 📝 course_note_service.py — 교과목 비고(note) 정리 유틸
 
 이 파일의 역할
-- track_rules.json의 과목 비고를 프론트가 바로 쓰기 좋은 형태로 변환합니다.
+- DB 기준 데이터의 과목 비고를 프론트가 바로 쓰기 좋은 형태로 변환합니다.
 - 예: "2026-1학기 교과목 폐지" → note_type="abolished", warning_level="danger"
 
 초보자 핵심
@@ -94,7 +94,7 @@ def build_note_meta(note: str | None) -> dict[str, Any]:
 
 
 def enrich_course(course: dict[str, Any]) -> dict[str, Any]:
-    """track_rules.json의 과목 dict에 비고 메타데이터를 추가합니다."""
+    """과목 dict에 비고 메타데이터를 추가합니다."""
     result = deepcopy(course)
     raw_note = result.get("note") or result.get("remark") or ""
     result.update(build_note_meta(raw_note))

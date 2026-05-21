@@ -79,6 +79,10 @@ type TrackSummaryModule = DeptTracksResponse["modules"][number];
 const creditOptions = ["1", "2", "3", "4", "5", "6"];
 const gradeOptions = ["이수","미이수(F)","Pass", "Non-pass"];
 const MAX_SELECTED_MAJORS = 4;
+const HALLYM_HOME_URL = "https://www.hallym.ac.kr/hallym/index.do";
+const HALLYM_GUIDEBOOK_URL = "https://www.hallym.ac.kr/hallym/1076/subview.do";
+const medalLabels = ["금메달", "은메달", "동메달"];
+const medalSymbols = ["🥇", "🥈", "🥉"];
 
 const emojiList = ["📚", "🔬", "🎨", "🏛️", "⚗️", "📐", "💡", "🌱", "🔭", "📊", "🧪", "🎓", "🌿", "📝", "🔍"];
 const getEmoji = (name: string) => {
@@ -704,6 +708,7 @@ function App() {
   const [colleges, setColleges] = useState<CollegeGroup[]>([]);
   const [deptAnalyses, setDeptAnalyses] = useState<DeptAnalysisBundle[]>([]);
   const [selectedTrackId, setSelectedTrackId] = useState<string | null>(null);
+  const [resultDeptFilter, setResultDeptFilter] = useState<string | null>(null);
   const [maxReachedStep, setMaxReachedStep] = useState(1);
   const [expandedModules, setExpandedModules] = useState<Set<string>>(new Set());
   const [expandedAdditional, setExpandedAdditional] = useState<Set<number>>(new Set());
@@ -730,7 +735,7 @@ function App() {
       <button
         type="button"
         className="card-logo-button"
-        onClick={() => window.open("https://www.hallym.ac.kr/hallym/index.do", "_blank", "noopener,noreferrer")}
+        onClick={() => window.open(HALLYM_HOME_URL, "_blank", "noopener,noreferrer")}
         aria-label="한림대학교 홈페이지로 이동"
       >
         <img src={logo} alt={alt} className="card-logo" />
@@ -752,7 +757,7 @@ function App() {
     const deptName = value.trim();
     if (!deptName || selectedMajors.includes(deptName)) return;
     if (selectedMajors.length >= MAX_SELECTED_MAJORS) {
-      showFeedback(`학과는 최대 ${MAX_SELECTED_MAJORS}개까지 선택 가능! 감당 가능하시겠어요? 😏`);
+      showFeedback("이러면 삶이 너무 힘들지 않나요? 학과는 최대 4개까지만 담아둘게요.");
       return;
     }
     setSelectedMajors(prev => [...prev, deptName]);
@@ -881,6 +886,10 @@ function App() {
   const handleStart = () => {
     if (selectedMajors.length === 0) {
       showFeedback("학과를 하나 이상 선택해주세요.");
+      return;
+    }
+    if (selectedMajors.length > MAX_SELECTED_MAJORS) {
+      showFeedback("이러면 삶이 너무 힘들지 않나요? 학과는 최대 4개까지만 선택할 수 있어요.");
       return;
     }
     setPage("method");
@@ -1118,8 +1127,6 @@ const renderSelectedDepartments = (
     visibleExploreTrackEntries[0] ||
     null;
   const selectedExploreModules = selectedExploreTrack ? getTrackModules(selectedExploreTrack) : [];
-  const analysisDeptTracks = deptAnalyses.map(bundle => bundle.tracksData);
-
   // Computed data for multi-department results
   const allTracks: CombinedTrackInfo[] = deptAnalyses.flatMap(bundle =>
     bundle.tracksData.tracks.map(track => ({
@@ -1148,6 +1155,16 @@ const renderSelectedDepartments = (
       return (ar?.additional_required_courses ?? 999) - (br?.additional_required_courses ?? 999);
     });
   const hasAnalysis = deptAnalyses.length > 0;
+  const getRankedEntriesForDept = (deptName: string | null) =>
+    deptName ? rankedTrackEntries.filter(entry => entry.track.dept_name === deptName) : rankedTrackEntries;
+  const visibleResultEntries = getRankedEntriesForDept(resultDeptFilter);
+  const topPreviewEntries = rankedTrackEntries.slice(0, 3);
+  const topResultEntries = visibleResultEntries.slice(0, 3);
+  const focusResultDept = (deptName: string | null) => {
+    const nextEntries = getRankedEntriesForDept(deptName);
+    setResultDeptFilter(deptName);
+    if (nextEntries[0]) setSelectedTrackId(nextEntries[0].track.unique_id);
+  };
 
   const getTrackStatus = (result?: CombinedTrackResultInfo) => {
     if (!result || result.completion_rate <= 0) return "unrelated";
@@ -1156,23 +1173,23 @@ const renderSelectedDepartments = (
   };
   const getTrackStatusLabel = (result?: CombinedTrackResultInfo) => {
     const status = getTrackStatus(result);
-    if (status === "eligible") return "이수가능";
-    if (status === "partial") return "진행중";
-    return "관련낮음";
+    if (status === "eligible") return result?.is_completed ? "완료" : "완료권";
+    if (status === "partial") return "추가 필요";
+    return "시작 전";
   };
 
-  const completedGroupEntries = rankedTrackEntries.filter(entry => entry.result?.is_completed);
-  const closeGroupEntries = rankedTrackEntries.filter(entry =>
+  const completedGroupEntries = visibleResultEntries.filter(entry => entry.result?.is_completed);
+  const closeGroupEntries = visibleResultEntries.filter(entry =>
     !entry.result?.is_completed && getTrackStatus(entry.result) === "eligible"
   );
-  const reviewGroupEntries = rankedTrackEntries.filter(entry => getTrackStatus(entry.result) === "partial");
-  const unrelatedGroupEntries = rankedTrackEntries.filter(entry => getTrackStatus(entry.result) === "unrelated");
-  const closestTrackEntry = rankedTrackEntries[0];
+  const reviewGroupEntries = visibleResultEntries.filter(entry => getTrackStatus(entry.result) === "partial");
+  const unrelatedGroupEntries = visibleResultEntries.filter(entry => getTrackStatus(entry.result) === "unrelated");
+  const closestTrackEntry = topResultEntries[0];
   const resultTrackGroups = [
-    { key: "completed", title: "이수 완료", description: "이미 조건을 만족한 전공트랙입니다.", entries: completedGroupEntries },
-    { key: "close", title: "가까운 트랙", description: "입력 과목 기준으로 이수 가능성이 높은 전공트랙입니다.", entries: closeGroupEntries },
-    { key: "review", title: "검토 필요", description: "관련 과목은 있지만 추가 이수가 더 필요한 전공트랙입니다.", entries: reviewGroupEntries },
-    { key: "unrelated", title: "연관 낮음", description: "현재 입력 과목과의 연결이 낮은 전공트랙입니다.", entries: unrelatedGroupEntries },
+    { key: "completed", title: "조건 충족", description: "현재 입력 과목으로 이수 조건을 만족한 전공트랙입니다.", entries: completedGroupEntries },
+    { key: "close", title: "완료권", description: "조금만 보완하면 완료에 가까운 전공트랙입니다.", entries: closeGroupEntries },
+    { key: "review", title: "추가 이수 필요", description: "관련 과목은 있지만 남은 조건이 더 있는 전공트랙입니다.", entries: reviewGroupEntries },
+    { key: "unrelated", title: "새로 시작", description: "현재 과목 기준으로는 기초 과목부터 준비해야 하는 전공트랙입니다.", entries: unrelatedGroupEntries },
   ].filter(group => group.entries.length > 0);
 
   const selectedTrackInfo = allTracks.find(t => t.unique_id === selectedTrackId);
@@ -1183,10 +1200,10 @@ const renderSelectedDepartments = (
   const selectedStatus = getTrackStatus(selectedResult);
   const selectedProgressPercent = Math.round((selectedResult?.completion_rate || 0) * 100);
   const selectedStatusTitle = selectedResult?.is_completed
-    ? "🏆 이수 완료"
+    ? "이수 완료"
     : selectedStatus === "unrelated"
-      ? "🌱 도전 시작"
-      : "🌱 도전 중";
+      ? "새로 시작"
+      : "추가 이수 필요";
   const selectedStatusDescription = selectedResult?.is_completed
     ? "트랙 이수 조건을 모두 만족했습니다."
     : (() => {
@@ -1242,7 +1259,7 @@ const renderSelectedDepartments = (
               </div>
             )}
           </div>
-          <p className="description">관심 학과를 여러 개 선택하고,<br/>현재 이수 현황에 맞는 전공 트랙을 확인합니다.</p>
+          <p className="description">관심 학과를 1개 이상, 최대 4개까지 선택하고<br/>현재 이수 현황에 맞는 전공트랙을 확인합니다.</p>
 
           <div className="form-group">
                         <div className="major-add-row">
@@ -1277,14 +1294,16 @@ const renderSelectedDepartments = (
             )}
           </div>
 
-          <a
-  href="https://www.hallym.ac.kr/hallym/1076/subview.do"
-  target="_blank"
-  rel="noopener noreferrer"
-  className="module-track-link"
->
-  모듈형 트랙제 알아보기 →
-</a>
+          <div className="info-action-links">
+            <a
+              href={HALLYM_GUIDEBOOK_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="guidebook-button"
+            >
+              가이드북 바로가기
+            </a>
+          </div>
 
 <button className="button" onClick={handleStart}>시작하기</button>
         </div>
@@ -1298,8 +1317,8 @@ const renderSelectedDepartments = (
             else if (stepId === 3) setPage(previousTrackPage || "manual");
             else if (stepId === 4 && hasAnalysis) setPage("trackList");
           }} />
-          <h1 className="method-page-title">다음 단계를 선택해주세요</h1>
-          <br></br>
+          <h1 className="method-page-title">전공트랙을 확인할 방법을 선택하세요</h1>
+          <p className="method-page-desc">과목을 바로 체크해 진단하거나, 트랙 조건을 먼저 살펴본 뒤 필요한 과목을 고를 수 있습니다.</p>
           <div className="method-option-stack">
             <button className="method-option method-option-green" onClick={() => setPage("checklist")}>
               <div className="method-icon-wrap green"><ChecklistIcon /></div>
@@ -1594,14 +1613,14 @@ const renderSelectedDepartments = (
             else if (stepId === 3) setPage(previousTrackPage || "manual");
             else if (stepId === 4 && hasAnalysis) setPage("trackList");
           }} />
-          <h1 className="manual-page-title track-list-title">입력 과목 기준 전공트랙</h1>
-          <p className="track-list-subtitle">체크한 과목과 관련 있는 전공트랙을 우선으로 정렬했습니다.</p>
+          <h1 className="manual-page-title track-list-title">추천 전공트랙 TOP 3</h1>
+          <p className="track-list-subtitle">입력한 과목 기준으로 가장 가까운 3개만 먼저 보여드립니다.</p>
 
           {selectedTrackInfo && (
             <div className={`track-list-quick-panel match-${selectedListStatus}`}>
               <div className="quick-panel-top">
                 <div>
-                  <span className="quick-panel-kicker">{formatDeptName(selectedTrackInfo.dept_name)}</span>
+                  <span className="quick-panel-kicker">현재 선택한 트랙 · {formatDeptName(selectedTrackInfo.dept_name)}</span>
                   <h3>{selectedTrackInfo.track_name}</h3>
                 </div>
                 <span className={`track-match-badge match-${selectedListStatus}`}>{getTrackStatusLabel(selectedResult)}</span>
@@ -1615,33 +1634,23 @@ const renderSelectedDepartments = (
                   <span style={{ width: `${selectedListProgress}%` }} />
                 </div>
               </div>
-              <p className="quick-panel-desc">{formatTrackRulesSummary(selectedTrackInfo, getTrackModules(selectedTrackInfo, analysisDeptTracks))}</p>
-              {selectedResult && selectedResult.missing_courses.length > 0 && (
-                <div className="quick-panel-missing">
-                  <span>보완 후보</span>
-                  <div>
-                    {selectedResult.missing_courses.slice(0, 4).map(courseName => {
-                      const note = getCourseNote(courseName);
-                      return (
-                        <span key={courseName} className="quick-missing-chip">
-                          {courseName}
-                          {renderNoteIcon(`quick-${courseName}`, note)}
-                        </span>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
+              <p className="quick-panel-desc">
+                {selectedResult?.is_completed
+                  ? "현재 입력 과목으로 조건을 만족합니다."
+                  : selectedResult
+                    ? `진행률 ${selectedListProgress}%, 추가 과목 ${selectedResult.additional_required_courses || 0}개가 필요합니다.`
+                    : "상세 결과에서 남은 조건을 확인할 수 있습니다."}
+              </p>
             </div>
           )}
           <div className="track-section track-list-section">
             <div className="track-section-header">
-              <h2 className="track-section-title">전체 전공트랙</h2>
-              <span className="track-section-badge">{allTracks.length}개</span>
+              <h2 className="track-section-title">메달 추천</h2>
+              <span className="track-section-badge">{topPreviewEntries.length}개</span>
             </div>
             <div className="track-list-scroll">
-              <div className="all-track-grid track-list-grid">
-                {rankedTrackEntries.map(({ track, result }) => {
+              <div className="all-track-grid track-list-grid top-three-grid">
+                {topPreviewEntries.map(({ track, result }, index) => {
                   const status = getTrackStatus(result);
                   const progressPercent = Math.round((result?.completion_rate || 0) * 100);
                   return (
@@ -1651,17 +1660,22 @@ const renderSelectedDepartments = (
                       onClick={() => setSelectedTrackId(track.unique_id)}
                     >
                       <div className="all-track-card-top">
-                        <div className="track-icon">{getEmoji(track.track_name)}</div>
+                        <div className="track-icon medal-icon" aria-hidden="true">{medalSymbols[index] || getEmoji(track.track_name)}</div>
                         <span className="all-track-name">{track.track_name}</span>
                       </div>
                       <div className="track-card-meta-row">
+                        <span className="medal-label">{medalLabels[index]}</span>
                         <span className="track-dept-chip">{formatDeptName(track.dept_name)}</span>
                         <span className={`track-match-badge match-${status}`}>{getTrackStatusLabel(result)}</span>
                       </div>
                       <div className="track-match-progress">
                         <span style={{ width: `${progressPercent}%` }} />
                       </div>
-                      <p className="all-track-description">{formatTrackRulesSummary(track, getTrackModules(track, analysisDeptTracks))}</p>
+                      <p className="all-track-description">
+                        {result?.is_completed
+                          ? "현재 조건 충족"
+                          : `진행률 ${progressPercent}% · 추가 과목 ${result?.additional_required_courses || 0}개`}
+                      </p>
                     </button>
                   );
                 })}
@@ -1670,7 +1684,7 @@ const renderSelectedDepartments = (
           </div>
           <div className="manual-button-group">
             <button className="sub-button" onClick={() => setPage(previousTrackPage)}>이전 단계</button>
-            <button className="button" onClick={() => setPage("trackResult")}>전체 결과 확인하기</button>
+            <button className="button" onClick={() => setPage("trackResult")}>전체 결과 자세히 보기</button>
           </div>
         </div>
       )}
@@ -1683,49 +1697,64 @@ const renderSelectedDepartments = (
             else if (stepId === 3) setPage(previousTrackPage || "manual");
             else if (stepId === 4 && hasAnalysis) setPage("trackList");
           }} />
-          <h1 className="manual-page-title">전체 결과</h1>
-          <p className="method-page-desc">트랙별 이수 현황을 확인하고,<span className="mobile-text-break"><br/></span><span className="mobile-text-space"> </span>원하는 트랙을 선택해 상세 결과를 볼 수 있습니다.</p>
+          <h1 className="manual-page-title">전체 결과 자세히 보기</h1>
+          <p className="method-page-desc">학과를 누르면 해당 학과 트랙만 모아 보고,<span className="mobile-text-break"><br/></span><span className="mobile-text-space"> </span>트랙을 선택하면 남은 조건을 자세히 확인합니다.</p>
+          <div className="result-dept-filter">
+            <button
+              type="button"
+              className={`selected-dept-chip selected-dept-filter-chip ${resultDeptFilter === null ? "active" : ""}`}
+              onClick={() => focusResultDept(null)}
+            >
+              전체
+            </button>
+            {selectedMajors.map(deptName => (
+              <button
+                type="button"
+                key={`result-filter-${deptName}`}
+                className={`selected-dept-chip selected-dept-filter-chip ${resultDeptFilter === deptName ? "active" : ""}`}
+                onClick={() => focusResultDept(deptName)}
+              >
+                {formatDeptName(deptName)}
+              </button>
+            ))}
+          </div>
 
           <div className="track-result-layout">
             <div className="track-result-main">
               {closestTrackEntry && (
-                <div className={`result-summary-card match-${getTrackStatus(closestTrackEntry.result)}`}>
-                  <div className="result-summary-copy">
-                    <span className="quick-panel-kicker">가장 가까운 트랙</span>
-                    <h2>{closestTrackEntry.track.track_name}</h2>
-                    <p>{formatDeptName(closestTrackEntry.track.dept_name)} · 현재 진행률 {Math.round((closestTrackEntry.result?.completion_rate || 0) * 100)}%</p>
+                <div className="result-podium-card">
+                  <div className="result-podium-head">
+                    <span className="quick-panel-kicker">{resultDeptFilter ? formatDeptName(resultDeptFilter) : "전체 학과"} 기준</span>
+                    <h2>추천 TOP 3</h2>
                   </div>
-                  <div className="result-summary-side">
-                    <span className={`track-match-badge match-${getTrackStatus(closestTrackEntry.result)}`}>
-                      {getTrackStatusLabel(closestTrackEntry.result)}
-                    </span>
+                  <div className="result-podium-list">
+                    {topResultEntries.map(({ track, result }, index) => {
+                      const status = getTrackStatus(result);
+                      const progressPercent = Math.round((result?.completion_rate || 0) * 100);
+                      return (
+                        <button
+                          type="button"
+                          key={`podium-${track.unique_id}`}
+                          className={`result-podium-item match-${status} ${selectedTrackId === track.unique_id ? "active" : ""}`}
+                          onClick={() => setSelectedTrackId(track.unique_id)}
+                        >
+                          <span className="result-podium-medal">{medalSymbols[index]}</span>
+                          <span className="result-podium-copy">
+                            <strong>{track.track_name}</strong>
+                            <small>{formatDeptName(track.dept_name)} · 진행률 {progressPercent}%</small>
+                          </span>
+                          <span className={`track-match-badge match-${status}`}>{getTrackStatusLabel(result)}</span>
+                        </button>
+                      );
+                    })}
                   </div>
-                  <div className="track-match-progress result-summary-progress">
-                    <span style={{ width: `${Math.round((closestTrackEntry.result?.completion_rate || 0) * 100)}%` }} />
-                  </div>
-                  {closestTrackEntry.result && closestTrackEntry.result.missing_courses.length > 0 && (
-                    <div className="result-summary-missing">
-                      <span>보완 후보</span>
-                      <div>
-                        {closestTrackEntry.result.missing_courses.slice(0, 4).map(courseName => {
-                          const note = getCourseNote(courseName);
-                          return (
-                            <span key={`summary-${courseName}`}>
-                              {courseName}
-                              {renderNoteIcon(`summary-${courseName}`, note)}
-                            </span>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  )}
                 </div>
               )}
 
               <div className="track-section result-group-section">
                 <div className="track-section-header all-result-header">
-                  <h2 className="track-section-title">전체 전공트랙 결과</h2>
-                  <span className="track-section-badge">{rankedTrackEntries.length}개</span>
+                  <h2 className="track-section-title">{resultDeptFilter ? "선택 학과 트랙 결과" : "전체 전공트랙 결과"}</h2>
+                  <span className="track-section-badge">{visibleResultEntries.length}개</span>
                 </div>
                 <div className="result-group-stack">
                   {resultTrackGroups.map(group => (

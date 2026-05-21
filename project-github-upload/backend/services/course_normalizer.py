@@ -2,7 +2,7 @@
 🧩 course_normalizer.py — 안전한 과목명 정규화 / 명시적 alias 매핑
 
 이 파일의 역할
-- 프론트엔드 또는 OCR에서 받은 과목명을 track_rules.json의 공식 과목명과 비교할 수 있게 정리합니다.
+- 프론트엔드 또는 OCR에서 받은 과목명을 DB 기준 공식 과목명과 비교할 수 있게 정리합니다.
 
 중요한 설계 원칙
 - 유사도 기반 자동 추측은 하지 않습니다.
@@ -11,16 +11,14 @@
   예: "인공 지능기초" → "인공지능기초"
   예: "무기화학I", "무기화학Ⅰ", "무기화학１" → 같은 비교 key
   예: "VR／AR／게임 제작기초" → "VR/AR/게임제작기초"
-- 의미가 달라질 수 있는 보정은 track_rules.json의 course_aliases에 명시된 경우만 허용합니다.
+- 의미가 달라질 수 있는 보정은 DB의 course_aliases에 명시된 경우만 허용합니다.
 """
 from __future__ import annotations
 
-import json
 import re
 import unicodedata
 from functools import lru_cache
 
-from config import TRACK_RULES_JSON_PATH
 from services.data_loader import load_track_rules
 
 
@@ -144,7 +142,7 @@ def _clean_display_name(text: str) -> str:
 @lru_cache(maxsize=1)
 def _load_normalization_assets() -> tuple[dict[str, str], dict[str, str]]:
     """
-    track_rules.json에서 alias 맵과 공식 과목 카탈로그를 로드합니다.
+    DB 기준 데이터에서 alias 맵과 공식 과목 카탈로그를 로드합니다.
 
     Returns:
         (alias_map, course_catalog)
@@ -154,7 +152,7 @@ def _load_normalization_assets() -> tuple[dict[str, str], dict[str, str]]:
     data = load_track_rules()
 
     # 1. 명시적 alias 맵 로드
-    #    의미가 바뀔 수 있는 매핑은 반드시 track_rules.json에 직접 적혀 있어야 합니다.
+    #    의미가 바뀔 수 있는 매핑은 반드시 DB의 course_aliases에 직접 적혀 있어야 합니다.
     alias_map: dict[str, str] = {}
     for raw_name, canonical_name in data.get("course_aliases", {}).items():
         alias_map[normalize_course_key(raw_name)] = canonical_name

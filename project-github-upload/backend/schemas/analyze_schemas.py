@@ -96,7 +96,7 @@ class CourseInput(BaseModel):
 class AnalyzeRequest(BaseModel):
     dept_name: str = Field(
         ...,
-        description="학과/전공명 (track_rules.json의 dept_name과 일치해야 함)",
+        description="학과/전공명 (DB 기준 데이터의 dept_name과 일치해야 함)",
         examples=["소프트웨어학부"],
     )
     courses: list[CourseInput] = Field(

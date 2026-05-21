@@ -312,21 +312,11 @@ async def health_check():
     프론트엔드는 이 API로 다음을 확인할 수 있습니다.
     - FastAPI 서버가 살아 있는지
     - 현재 OCR 모드가 무엇인지
-    - 기준 데이터를 JSON으로 읽는지, DB로 읽는지
-    - DB 사용 모드일 때 PostgreSQL DB가 연결되는지
+    - PostgreSQL DB가 연결되는지
+    - DB에 기준 데이터가 마이그레이션되어 있는지
 
     ⚠️ 보안상 DB 비밀번호, 접속 문자열, 상세 오류 메시지는 반환하지 않습니다.
     """
-    if config.TRACK_DATA_SOURCE == "json":
-        return {
-            "status": "healthy",
-            "message": "🎓 서버가 정상 동작 중이며 JSON 기준 데이터를 사용합니다.",
-            "version": "1.0.0-mvp",
-            "ocr_mode": config.OCR_MODE,
-            "data_source": config.TRACK_DATA_SOURCE,
-            "db": {"status": "skipped", "reason": "TRACK_DATA_SOURCE=json"},
-        }
-
     db_status = await run_in_threadpool(check_database_health)
     db_connected = db_status.get("status") == "connected"
 

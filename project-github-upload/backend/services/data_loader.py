@@ -1,10 +1,10 @@
 """
 공통 데이터 로더
 
-- 기본값은 track_rules.json을 기준 데이터로 사용하는 것입니다.
-- DB를 붙이는 경우에도 JSON을 수정한 뒤 migrate_json_to_db.py로 DB를 갱신하는 흐름을 권장합니다.
-- TRACK_DATA_SOURCE=db 또는 auto로 설정하면 PostgreSQL에서 데이터를 읽어
-  기존 track_rules.json과 동일한 형태의 dict로 동적 조립하여 반환합니다.
+- 런타임 기준 데이터는 PostgreSQL에서만 읽습니다.
+- JSON 파일은 migrate_json_to_db.py로 DB를 채우는 입력 파일로만 사용합니다.
+- source_documents.full_json이 있으면 DB에 보존된 원본 구조를 우선 반환하고,
+  없으면 관계형 테이블만으로 기존 track_rules 구조와 같은 dict를 조립합니다.
 - 덕분에 기존 분석 로직(track_analyzer 등)을 전혀 수정하지 않아도 됩니다.
 
 실제 DB 스키마 기준 (2026-05-07 확인):
@@ -23,42 +23,48 @@
 """
 from __future__ import annotations
 
-import json
 import logging
 from typing import Any
 from cachetools import cached, TTLCache
 
-from config import TRACK_DATA_SOURCE, TRACK_RULES_JSON_PATH
 from db import get_connection
 
 logger = logging.getLogger(__name__)
 
-
-def _load_track_rules_from_json() -> dict[str, Any]:
-    """DB를 사용할 수 없을 때 로컬 track_rules.json을 읽습니다."""
-    logger.info("로컬 JSON에서 트랙 규칙 데이터를 로드합니다: %s", TRACK_RULES_JSON_PATH)
-    with open(TRACK_RULES_JSON_PATH, "r", encoding="utf-8") as file:
-        return json.load(file)
+SOURCE_DOCUMENT_NAME = "track_rules.json"
 
 
 @cached(cache=TTLCache(maxsize=1, ttl=3600))
 def load_track_rules() -> dict[str, Any]:
     """
-    트랙 기준 데이터를 로드합니다.
+    트랙 기준 데이터를 DB에서 로드합니다.
 
-    TRACK_DATA_SOURCE=json: track_rules.json만 읽습니다. MVP 기본값입니다.
-    TRACK_DATA_SOURCE=db: DB만 읽습니다. 실패하면 오류를 발생시켜 데이터 문제를 드러냅니다.
-    TRACK_DATA_SOURCE=auto: DB를 먼저 읽고, 실패하면 JSON으로 대체합니다.
+    실패하면 JSON으로 대체하지 않고 오류를 발생시켜 DB 연결/마이그레이션
+    문제를 바로 드러냅니다.
     """
-    if TRACK_DATA_SOURCE == "json":
-        return _load_track_rules_from_json()
-
-    logger.info("DB에서 트랙 규칙 데이터를 로드하고 JSON 구조로 조립 중...")
+    logger.info("DB에서 트랙 규칙 데이터를 로드합니다.")
 
     conn = None
     try:
         conn = get_connection()
         with conn.cursor() as cur:
+            cur.execute(
+                "SELECT full_json FROM source_documents WHERE document_name = %s",
+                (SOURCE_DOCUMENT_NAME,),
+            )
+            source_document = cur.fetchone()
+            if source_document and source_document.get("full_json"):
+                full_json = source_document["full_json"]
+                if not isinstance(full_json, dict):
+                    raise RuntimeError("source_documents.full_json 값이 객체 형태가 아닙니다.")
+                logger.info("source_documents.full_json에서 기준 데이터를 로드했습니다.")
+                return full_json
+
+            logger.warning(
+                "source_documents에 %s 원본이 없어 관계형 테이블에서 기준 데이터를 조립합니다.",
+                SOURCE_DOCUMENT_NAME,
+            )
+
             # 1. 과목 별칭 로드
             cur.execute("SELECT alias_name, canonical_name FROM course_aliases")
             aliases_rows = cur.fetchall()
@@ -247,21 +253,14 @@ def load_track_rules() -> dict[str, Any]:
                     ]
                 }
             }
-            logger.info("DB 기반 데이터 조립 완료!")
+            logger.info("관계형 테이블 기반 데이터 조립 완료!")
             return final_data
 
     except Exception as e:
-        if TRACK_DATA_SOURCE == "db":
-            logger.exception("TRACK_DATA_SOURCE=db 상태에서 DB 데이터 로드에 실패했습니다.")
-            raise RuntimeError(
-                "DB 기준 데이터 로드에 실패했습니다. DB 연결과 마이그레이션 상태를 확인하세요."
-            ) from e
-
-        logger.warning(
-            "DB 데이터 로드 실패(%s). 로컬 track_rules.json으로 대체합니다.",
-            type(e).__name__,
-        )
-        return _load_track_rules_from_json()
+        logger.exception("DB 기준 데이터 로드에 실패했습니다.")
+        raise RuntimeError(
+            "DB 기준 데이터 로드에 실패했습니다. DB 연결과 마이그레이션 상태를 확인하세요."
+        ) from e
     finally:
         if conn is not None:
             conn.close()

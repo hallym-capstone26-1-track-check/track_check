@@ -37,7 +37,6 @@ from config import (
     OCR_MAX_ATTEMPTS,
     OCR_MODE,
     OCR_TESSERACT_LANGS,
-    TRACK_DATA_SOURCE,
     TESSERACT_CMD,
 )
 from services.course_normalizer import normalize_course_name
@@ -278,7 +277,7 @@ def get_available_scenarios() -> list[dict]:
     프론트에서 사용 가능한 Mock 시나리오 목록을 반환합니다.
 
     기본으로 직접 작성한 시나리오(MOCK_SCENARIOS)를 먼저 보여주고,
-    그 아래에 track_rules.json 기반으로 자동 생성한 전체 학과/트랙 테스트 케이스를 붙입니다.
+    그 아래에 DB 기준 데이터로 자동 생성한 전체 학과/트랙 테스트 케이스를 붙입니다.
 
     Returns:
         list[dict]: [{key, label, dept, ...}, ...]
@@ -359,7 +358,7 @@ def _run_mock_ocr(image_bytes: bytes, scenario: str | None = None) -> str:
         logger.info("Mock OCR 실행 — 수동 시나리오: %s", chosen)
         return scenario_data["text"]
 
-    # 2) track_rules.json 기반 자동 생성 시나리오 확인
+    # 2) DB 기준 데이터 기반 자동 생성 시나리오 확인
     generated_case = get_generated_case(chosen)
     if generated_case is not None:
         logger.info("Mock OCR 실행 — 자동 생성 테스트 케이스: %s", chosen)
@@ -608,20 +607,17 @@ COURSE_SUFFIX_TOKENS = {"완료"}
 @cached(cache=TTLCache(maxsize=1, ttl=3600))
 def _get_cached_course_catalog():
     """DB에서 전체 과목과 별칭을 한 번만 가져와서 캐싱합니다."""
-    if TRACK_DATA_SOURCE == "json":
-        return _get_course_catalog_from_track_rules()
-
     logger.info("과목 카탈로그 메모리 캐싱 중 (gil_track 방식)...")
     conn = None
     try:
         conn = get_connection()
-        cur = conn.cursor()
-        # 과목명과 학점 가져오기 (동일 과목 중복 시 학점이 가장 큰 것 우선)
-        cur.execute("SELECT course_name, MAX(credits) as credit FROM v_all_courses GROUP BY course_name")
-        course_rows = [{"course_name": r["course_name"], "credit": r["credit"] or 3} for r in cur.fetchall()]
+        with conn.cursor() as cur:
+            # 과목명과 학점 가져오기 (동일 과목 중복 시 학점이 가장 큰 것 우선)
+            cur.execute("SELECT course_name, MAX(credits) as credit FROM v_all_courses GROUP BY course_name")
+            course_rows = [{"course_name": r["course_name"], "credit": r["credit"] or 3} for r in cur.fetchall()]
 
-        cur.execute("SELECT alias_name, canonical_name FROM course_aliases")
-        aliases = cur.fetchall()
+            cur.execute("SELECT alias_name, canonical_name FROM course_aliases")
+            aliases = cur.fetchall()
 
         alias_map = {}
         for a in aliases:
@@ -632,56 +628,13 @@ def _get_cached_course_catalog():
 
         return course_rows, alias_map
     except Exception as e:
-        if TRACK_DATA_SOURCE == "db":
-            logger.exception("TRACK_DATA_SOURCE=db 상태에서 과목 카탈로그 로드에 실패했습니다.")
-            raise
-
-        logger.warning(
-            "DB 과목 카탈로그 로드 실패(%s). 로컬 track_rules.json으로 대체합니다.",
-            type(e).__name__,
-        )
-        return _get_course_catalog_from_track_rules()
+        logger.exception("DB 과목 카탈로그 로드에 실패했습니다.")
+        raise RuntimeError(
+            "DB 과목 카탈로그 로드에 실패했습니다. DB 연결과 마이그레이션 상태를 확인하세요."
+        ) from e
     finally:
         if conn is not None:
             conn.close()
-
-
-def _get_course_catalog_from_track_rules():
-    """PostgreSQL 없이도 OCR Mock/이미지 매칭이 가능하도록 JSON 과목 목록을 사용합니다."""
-    from services.data_loader import load_track_rules
-
-    rules_data = load_track_rules()
-    credit_by_course: dict[str, int] = {}
-
-    for college in rules_data.get("colleges", []):
-        for dept in college.get("departments", []):
-            for module in dept.get("modules", []):
-                for course in module.get("courses", []):
-                    course_name = normalize_course_name(course.get("course_name", ""))
-                    if not course_name:
-                        continue
-                    try:
-                        credits = int(course.get("credits", 3) or 3)
-                    except (TypeError, ValueError):
-                        credits = 3
-                    credit_by_course[course_name] = max(
-                        credit_by_course.get(course_name, 0),
-                        credits,
-                    )
-
-    alias_map: dict[str, list[str]] = {}
-    for alias_name, canonical_name in rules_data.get("course_aliases", {}).items():
-        canonical = normalize_course_name(canonical_name)
-        if not canonical:
-            continue
-        alias_map.setdefault(canonical, []).append(alias_name)
-
-    course_rows = [
-        {"course_name": course_name, "credit": credits}
-        for course_name, credits in credit_by_course.items()
-    ]
-    logger.info("JSON 기반 과목 카탈로그 로드 완료: %s개 과목", len(course_rows))
-    return course_rows, alias_map
 
 def clean_text_for_matching(text: str) -> str:
     if not text: return ""
@@ -759,7 +712,7 @@ def extract_course_candidates(raw_text: str):
 
 def _extract_structured_course_rows(raw_text: str, include_score: bool = False) -> list[dict]:
     """
-    DB/JSON 카탈로그에 없는 교양·공통 과목도 표 형태 OCR에서 보존합니다.
+    DB 카탈로그에 없는 교양·공통 과목도 표 형태 OCR에서 보존합니다.
 
     예:
       공동전선 머신러닝프로그래밍 01 3 최종환 완료 A+
@@ -884,7 +837,7 @@ def _find_catalog_match_for_text(
     course_rows: list[dict],
     alias_map: dict,
 ) -> tuple[dict | None, float]:
-    """OCR이 한두 글자 틀린 구조화 행도 DB/JSON 과목명으로 보정합니다."""
+    """OCR이 한두 글자 틀린 구조화 행도 DB 과목명으로 보정합니다."""
     normalized_text = clean_text_for_matching(text)
     compact_text = compact_text_for_matching(text)
     if not normalized_text:
@@ -937,7 +890,7 @@ def _canonicalize_structured_rows(
     alias_map: dict,
     include_score: bool = False,
 ) -> list[dict]:
-    """구조화 추출 결과의 과목명을 DB/JSON의 canonical 과목명으로 맞춥니다."""
+    """구조화 추출 결과의 과목명을 DB의 canonical 과목명으로 맞춥니다."""
     canonicalized: list[dict] = []
 
     for item in structured_rows:
