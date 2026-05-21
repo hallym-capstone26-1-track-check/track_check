@@ -9698,3 +9698,45 @@ button.selected-dept-chip:hover {
 .track-result-page .track-result-detail > .result-progress-card > .result-progress-header {
   margin: 0 0 8px !important;
 }
+
+
+.info-links a {
+  color: #6b7280;
+  text-decoration: none;
+  transition: 0.2s;
+}
+
+.info-links a:hover {
+  color: #1e3a8a;
+}
+
+.divider {
+  color: #9ca3af;
+}
+
+.module-track-link {
+  display: inline-block;
+  margin-top: 6px;
+  margin-bottom: 20px;
+  color: #6b7db3;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: 0.2s ease;
+}
+
+.module-track-link:hover {
+  color: #27408b;
+  text-decoration: underline;
+}
+
+.logo-home-link {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+  text-decoration: none;
+  cursor: pointer;
+}

@@ -78,6 +78,7 @@ type TrackSummaryModule = DeptTracksResponse["modules"][number];
 
 const creditOptions = ["1", "2", "3", "4", "5", "6"];
 const gradeOptions = ["이수","미이수(F)","Pass", "Non-pass"];
+const MAX_SELECTED_MAJORS = 4;
 
 const emojiList = ["📚", "🔬", "🎨", "🏛️", "⚗️", "📐", "💡", "🌱", "🔭", "📊", "🧪", "🎓", "🌿", "📝", "🔍"];
 const getEmoji = (name: string) => {
@@ -729,8 +730,8 @@ function App() {
       <button
         type="button"
         className="card-logo-button"
-        onClick={() => setPage("info")}
-        aria-label="홈으로 이동"
+        onClick={() => window.open("https://www.hallym.ac.kr/hallym/index.do", "_blank", "noopener,noreferrer")}
+        aria-label="한림대학교 홈페이지로 이동"
       >
         <img src={logo} alt={alt} className="card-logo" />
       </button>
@@ -750,6 +751,10 @@ function App() {
   const addSelectedMajor = (value = majorDraft) => {
     const deptName = value.trim();
     if (!deptName || selectedMajors.includes(deptName)) return;
+    if (selectedMajors.length >= MAX_SELECTED_MAJORS) {
+      showFeedback(`학과는 최대 ${MAX_SELECTED_MAJORS}개까지 선택 가능! 감당 가능하시겠어요? 😏`);
+      return;
+    }
     setSelectedMajors(prev => [...prev, deptName]);
     setMajorDraft("");
     resetAnalysis();
@@ -1240,13 +1245,12 @@ const renderSelectedDepartments = (
           <p className="description">관심 학과를 여러 개 선택하고,<br/>현재 이수 현황에 맞는 전공 트랙을 확인합니다.</p>
 
           <div className="form-group">
-            <label className="label">학과</label>
-            <div className="major-add-row">
+                        <div className="major-add-row">
               <SearchableSelect
                 value={majorDraft}
                 onChange={setMajorDraft}
                 options={departmentOptions.filter(opt => !selectedMajors.includes(opt.value || ""))}
-                placeholder="학과를 검색하세요"
+                placeholder="학과를 검색하세요."
                 className="input"
               />
               <button
@@ -1273,7 +1277,16 @@ const renderSelectedDepartments = (
             )}
           </div>
 
-          <button className="button" onClick={handleStart}>시작하기</button>
+          <a
+  href="https://www.hallym.ac.kr/hallym/1076/subview.do"
+  target="_blank"
+  rel="noopener noreferrer"
+  className="module-track-link"
+>
+  모듈형 트랙제 알아보기 →
+</a>
+
+<button className="button" onClick={handleStart}>시작하기</button>
         </div>
       )}
 
@@ -1285,13 +1298,13 @@ const renderSelectedDepartments = (
             else if (stepId === 3) setPage(previousTrackPage || "manual");
             else if (stepId === 4 && hasAnalysis) setPage("trackList");
           }} />
-          <h1 className="method-page-title">입력 방식을 선택해주세요</h1>
-          <p className="method-page-desc">이수 과목을 체크하거나,<br/>전공트랙 종류를 먼저 둘러볼 수 있습니다.</p>
+          <h1 className="method-page-title">다음 단계를 선택해주세요</h1>
+          <br></br>
           <div className="method-option-stack">
             <button className="method-option method-option-green" onClick={() => setPage("checklist")}>
               <div className="method-icon-wrap green"><ChecklistIcon /></div>
-              <div className="method-option-title">과목 목록에서 선택</div>
-              <div className="method-option-desc">선택한 학과의 과목을 체크해서 빠르게 입력합니다.</div>
+              <div className="method-option-title">이수 과목 체크하기</div>
+              <div className="method-option-desc">이수한 과목을 체크해 전공트랙 이수 가능성을 빠르게 확인합니다.</div>
             </button>
             <button className="method-option method-option-blue" onClick={() => setPage("trackExplore")}>
               <div className="method-icon-wrap blue"><TrackExploreIcon /></div>
@@ -1403,7 +1416,7 @@ const renderSelectedDepartments = (
             else if (stepId === 3) setPage(previousTrackPage || "checklist");
             else if (stepId === 4 && hasAnalysis) setPage("trackList");
           }} />
-          <h1 className="manual-page-title">과목 목록에서 선택</h1>
+          <h1 className="manual-page-title">이수 과목 체크하기</h1>
           <p className="method-page-desc">
             선택한 학과의 과목 중 이수한 과목을 체크하면
             <span className="mobile-text-break"><br /></span>
