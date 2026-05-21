@@ -10077,3 +10077,46 @@ button.selected-dept-chip:hover {
     gap: 8px !important;
   }
 }
+
+/* Logo-free inner pages: keep the progress stepper away from the card edge. */
+.method-page .stepper-container,
+.manual-page .stepper-container,
+.checklist-page .stepper-container,
+.track-explore-page .stepper-container,
+.track-match-page .stepper-container,
+.track-result-page .stepper-container {
+  margin-top: 52px !important;
+}
+
+.method-page .method-page-title {
+  margin-bottom: 28px !important;
+}
+
+.method-page .method-option-stack {
+  margin-top: 0 !important;
+}
+
+.method-page .method-option {
+  min-height: 108px !important;
+  grid-template-rows: auto !important;
+  grid-template-areas: "icon title" !important;
+}
+
+.method-page .method-option-title {
+  align-self: center !important;
+}
+
+.method-page .method-option-desc {
+  display: none !important;
+}
+
+@media (max-width: 820px) {
+  .method-page .stepper-container,
+  .manual-page .stepper-container,
+  .checklist-page .stepper-container,
+  .track-explore-page .stepper-container,
+  .track-match-page .stepper-container,
+  .track-result-page .stepper-container {
+    margin-top: 44px !important;
+  }
+}

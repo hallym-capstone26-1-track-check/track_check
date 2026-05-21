@@ -1339,24 +1339,20 @@ const renderSelectedDepartments = (
 
       {page === "method" && (
         <div className="card method-page">
-          {renderCardLogo()}
           <StepIndicator currentPage={page} maxReachedStep={maxReachedStep} onNavigate={(stepId) => {
             if (stepId === 2) setPage("method");
             else if (stepId === 3) setPage(previousTrackPage || "manual");
             else if (stepId === 4 && hasAnalysis) setPage("trackList");
           }} />
           <h1 className="method-page-title">전공트랙을 확인할 방법을 선택하세요</h1>
-          <p className="method-page-desc">과목을 바로 체크해 진단하거나, 트랙 조건을 먼저 살펴본 뒤 필요한 과목을 고를 수 있습니다.</p>
           <div className="method-option-stack">
             <button className="method-option method-option-green" onClick={() => setPage("checklist")}>
               <div className="method-icon-wrap green"><ChecklistIcon /></div>
               <div className="method-option-title">이수 과목 체크하기</div>
-              <div className="method-option-desc">이수한 과목을 체크해 전공트랙 이수 가능성을 빠르게 확인합니다.</div>
             </button>
             <button className="method-option method-option-blue" onClick={() => setPage("trackExplore")}>
               <div className="method-icon-wrap blue"><TrackExploreIcon /></div>
               <div className="method-option-title">전공트랙 둘러보기</div>
-              <div className="method-option-desc">선택한 학과의 전공트랙 조건과<br />관련 과목을 먼저 확인합니다.</div>
             </button>
           </div>
           <button className="sub-button method-back-button" onClick={() => setPage("info")}>이전 단계</button>
@@ -1365,7 +1361,6 @@ const renderSelectedDepartments = (
 
       {page === "trackExplore" && (
         <div className="card track-explore-page">
-          {renderCardLogo()}
           <StepIndicator currentPage={page} maxReachedStep={maxReachedStep} onNavigate={(stepId) => {
             if (stepId === 2) setPage("method");
             else if (stepId === 3) setPage(previousTrackPage || "checklist");
@@ -1457,7 +1452,6 @@ const renderSelectedDepartments = (
 
       {page === "checklist" && (
         <div className="card checklist-page">
-          {renderCardLogo()}
           <StepIndicator currentPage={page} maxReachedStep={maxReachedStep} onNavigate={(stepId) => {
             if (stepId === 2) setPage("method");
             else if (stepId === 3) setPage(previousTrackPage || "checklist");
@@ -1541,7 +1535,6 @@ const renderSelectedDepartments = (
 
       {page === "manual" && (
         <div className="card manual-page">
-          {renderCardLogo()}
           <StepIndicator currentPage={page} maxReachedStep={maxReachedStep} onNavigate={(stepId) => {
             if (stepId === 2) setPage("method");
             else if (stepId === 3) setPage(previousTrackPage || "manual");
@@ -1637,7 +1630,6 @@ const renderSelectedDepartments = (
 
       {page === "trackList" && (
         <div className="card track-overview-page track-match-page">
-          {renderCardLogo()}
           <StepIndicator currentPage={page} maxReachedStep={maxReachedStep} onNavigate={(stepId) => {
             if (stepId === 2) setPage("method");
             else if (stepId === 3) setPage(previousTrackPage || "manual");
@@ -1721,7 +1713,6 @@ const renderSelectedDepartments = (
 
       {page === "trackResult" && (
         <div className="card track-overview-page track-result-page">
-          {renderCardLogo()}
           <StepIndicator currentPage={page} maxReachedStep={maxReachedStep} onNavigate={(stepId) => {
             if (stepId === 2) setPage("method");
             else if (stepId === 3) setPage(previousTrackPage || "manual");
