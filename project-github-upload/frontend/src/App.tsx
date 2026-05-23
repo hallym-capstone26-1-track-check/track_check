@@ -152,10 +152,10 @@ const normalizeRuleSummaryText = (text: string, moduleNames: string[] = []) => {
     .replace(/\s*\/\s*/g, " 및 ")
     .replace(/\s+그리고\s+/g, " 및 ")
     .replace(/당/g, "에서")
-    .replace(/각\s+각각/g, "각각")
-    .replace(/각각\s+각/g, "각각")
-    .replace(/각\s+각/g, "각각")
-    .replace(/각각\s+각각/g, "각각");
+    .replace(/각\s+각/g, "각")
+    .replace(/각\s+각/g, "각")
+    .replace(/각\s+각/g, "각")
+    .replace(/각\s+각/g, "각");
 
   moduleNames.forEach(moduleName => {
     normalized = normalized.replace(
@@ -208,8 +208,8 @@ const formatTrackRulesSummary = (
   if (!rawSummary) return buildModuleFallbackSummary(modules, allModuleNameText);
 
   const formatted = rawSummary
-    .replace(/모듈별/g, "각각")
-    .replace(/각 모듈/g, "각각")
+    .replace(/모듈별/g, "각")
+    .replace(/각 모듈/g, "각")
     .replace(/(^|[^A-Za-z가-힣0-9_])([a-z0-9]+(?:\s*[,+/]\s*[a-z0-9]+)*)\s*모듈/gi, (_match, prefix, codes) => {
       const moduleNameText = toModuleNames(codes);
       return `${prefix}${moduleNameText}에서`;
@@ -224,7 +224,7 @@ const formatTrackRulesSummary = (
 
   return normalizeRuleSummaryText(
     (formatted || buildModuleFallbackSummary(modules, allModuleNameText))
-      .replace(new RegExp(`(${modulePairs.map(module => escapeRegExp(module.name)).join("|")})(\\s+및\\s+)(${modulePairs.map(module => escapeRegExp(module.name)).join("|")})(?=\\s+(?:각|각각|\\d|택|전체|관련|이수))`), "$1 및 $3에서"),
+      .replace(new RegExp(`(${modulePairs.map(module => escapeRegExp(module.name)).join("|")})(\\s+및\\s+)(${modulePairs.map(module => escapeRegExp(module.name)).join("|")})(?=\\s+(?:각|각|\\d|택|전체|관련|이수))`), "$1 및 $3에서"),
     modulePairs.map(module => module.name)
   );
 };
