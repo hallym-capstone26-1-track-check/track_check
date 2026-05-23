@@ -79,10 +79,25 @@ type TrackSummaryModule = DeptTracksResponse["modules"][number];
 const creditOptions = ["1", "2", "3", "4", "5", "6"];
 const gradeOptions = ["이수","미이수(F)","Pass", "Non-pass"];
 const MAX_SELECTED_MAJORS = 4;
-const HALLYM_HOME_URL = "https://www.hallym.ac.kr/hallym/index.do";
-const HALLYM_GUIDEBOOK_URL = "https://www.hallym.ac.kr/hallym/1076/subview.do";
-const medalLabels = ["금메달", "은메달", "동메달"];
-const medalSymbols = ["🥇", "🥈", "🥉"];
+
+const majorColorPalette = [
+  { bg: "#E8F1FF", text: "#3566C8", border: "#B8CEF6" },
+  { bg: "#EAF6F8", text: "#327C8D", border: "#BBDDE4" },
+  { bg: "#F3EEFF", text: "#7A5AC8", border: "#D7CBF5" },
+  { bg: "#EEF7F0", text: "#4F8A63", border: "#C8E3CF" },
+  { bg: "#EAF4FF", text: "#3F78AD", border: "#BED8F0" },
+  { bg: "#F2F0FB", text: "#6B63A8", border: "#D2CEEE" },
+];
+
+const getMajorColorStyle = (index: number): React.CSSProperties => {
+  const color = majorColorPalette[Math.max(index, 0) % majorColorPalette.length];
+  return {
+    "--major-bg": color.bg,
+    "--major-text": color.text,
+    "--major-border": color.border,
+  } as React.CSSProperties;
+};
+
 
 const emojiList = ["📚", "🔬", "🎨", "🏛️", "⚗️", "📐", "💡", "🌱", "🔭", "📊", "🧪", "🎓", "🌿", "📝", "🔍"];
 const getEmoji = (name: string) => {
@@ -110,6 +125,13 @@ const buildModuleFallbackSummary = (modules: TrackSummaryModule[], moduleNameTex
 const formatDeptName = (deptName: string) =>
   deptName.replace("언론방송융합미디어전공 / 디지털미디어콘텐츠전공", "언론방송융합미디어전공\n디지털미디어콘텐츠전공");
 
+const formatTrackName = (trackName: string) => {
+  const trimmed = trackName.trim();
+  if (!trimmed.endsWith("트랙")) return trimmed;
+  const baseName = trimmed.replace(/\s*트랙$/, "").replace(/\s+/g, "");
+  return `${baseName} 트랙`;
+};
+
 const escapeRegExp = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 const normalizeRuleSummaryText = (text: string, moduleNames: string[] = []) => {
@@ -131,7 +153,9 @@ const normalizeRuleSummaryText = (text: string, moduleNames: string[] = []) => {
     .replace(/\s+그리고\s+/g, " 및 ")
     .replace(/당/g, "에서")
     .replace(/각\s+각각/g, "각각")
-    .replace(/각각\s+각/g, "각각");
+    .replace(/각각\s+각/g, "각각")
+    .replace(/각\s+각/g, "각각")
+    .replace(/각각\s+각각/g, "각각");
 
   moduleNames.forEach(moduleName => {
     normalized = normalized.replace(
@@ -174,10 +198,10 @@ const formatTrackRulesSummary = (
   const allModuleNameText = modulePairs.map(module => module.name).join(", ");
   const toModuleNames = (codeText: string) => {
     const names = codeText
-      .split(",")
+      .split(/\s*[,+/]\s*/)
       .map(code => moduleNameByKey.get(code.trim().toLowerCase()))
       .filter((name): name is string => Boolean(name));
-    return names.length > 0 ? names.join(", ") : codeText;
+    return names.length > 0 ? names.join(" 및 ") : codeText;
   };
 
   const rawSummary = track.rules_summary?.trim();
@@ -186,11 +210,11 @@ const formatTrackRulesSummary = (
   const formatted = rawSummary
     .replace(/모듈별/g, "각각")
     .replace(/각 모듈/g, "각각")
-    .replace(/(^|[^A-Za-z가-힣0-9_])([a-z0-9]+(?:\s*,\s*[a-z0-9]+)*)\s*모듈/gi, (_match, prefix, codes) => {
+    .replace(/(^|[^A-Za-z가-힣0-9_])([a-z0-9]+(?:\s*[,+/]\s*[a-z0-9]+)*)\s*모듈/gi, (_match, prefix, codes) => {
       const moduleNameText = toModuleNames(codes);
       return `${prefix}${moduleNameText}에서`;
     })
-    .replace(/(^|[^A-Za-z가-힣0-9_])([a-z0-9]+(?:\s*,\s*[a-z0-9]+)*)\s*(?=(중|에서|수강|이수))/gi, (_match, prefix, codes, nextWord) => {
+    .replace(/(^|[^A-Za-z가-힣0-9_])([a-z0-9]+(?:\s*[,+/]\s*[a-z0-9]+)*)\s*(?=(중|에서|수강|이수))/gi, (_match, prefix, codes, nextWord) => {
       const moduleNameText = toModuleNames(codes);
       const wasMapped = moduleNameText !== codes;
       return `${prefix}${moduleNameText}${wasMapped && ["수강", "이수"].includes(nextWord) ? "에서 " : ""}`;
@@ -198,7 +222,11 @@ const formatTrackRulesSummary = (
     .replace(/모듈/g, allModuleNameText)
     .replace(new RegExp(`^(${modulePairs.map(module => escapeRegExp(module.name)).join("|")})(?=\\s+(?:각|\\d|택|전체|관련))`), "$1에서");
 
-  return normalizeRuleSummaryText(formatted || buildModuleFallbackSummary(modules, allModuleNameText), modulePairs.map(module => module.name));
+  return normalizeRuleSummaryText(
+    (formatted || buildModuleFallbackSummary(modules, allModuleNameText))
+      .replace(new RegExp(`(${modulePairs.map(module => escapeRegExp(module.name)).join("|")})(\\s+및\\s+)(${modulePairs.map(module => escapeRegExp(module.name)).join("|")})(?=\\s+(?:각|각각|\\d|택|전체|관련|이수))`), "$1 및 $3에서"),
+    modulePairs.map(module => module.name)
+  );
 };
 
 class ErrorBoundary extends React.Component<{children: React.ReactNode}, {hasError: boolean; error: Error | null}> {
@@ -651,7 +679,7 @@ function SimpleSelect({ value, onChange, options, placeholder, className }: Simp
   );
 }
 
-function StepIndicator({ currentPage, onNavigate, maxReachedStep }: { currentPage: string; onNavigate?: (stepId: number) => void; maxReachedStep?: number }) {
+function StepIndicator({ currentPage }: { currentPage: string; onNavigate?: (stepId: number) => void; maxReachedStep?: number }) {
   const steps = [
     { id: 1, label: "기본 정보", pages: ["info"] },
     { id: 2, label: "입력 방식", pages: ["method", "trackExplore"] },
@@ -659,45 +687,67 @@ function StepIndicator({ currentPage, onNavigate, maxReachedStep }: { currentPag
     { id: 4, label: "결과", pages: ["trackList", "trackResult"] },
   ];
 
-  if (steps.find(s => s.pages.includes(currentPage))?.id === 1) return null;
-
   const currentStep = steps.find(s => s.pages.includes(currentPage))?.id || 1;
-  const reachable = maxReachedStep ?? currentStep;
+  if (currentStep === 1) return null;
 
-  const filtered = steps.filter(s => s.id > 1);
   return (
-    <>
-      <div className="stepper-container">
-        {filtered.map((step, idx) => {
-          const isClickable = onNavigate && step.id !== currentStep && step.id <= reachable;
-          const isCompleted = step.id < currentStep;
-          return (
-            <React.Fragment key={step.id}>
-              <div
-                className="stepper-item"
-                onClick={() => isClickable && onNavigate(step.id)}
-                style={{ cursor: isClickable ? 'pointer' : 'default' }}
-              >
-                <div className={`step-dot ${step.id === currentStep ? 'active' : ''} ${isCompleted ? 'completed' : ''}`}>
-                  {step.id - 1}
-                </div>
-                <div className={`step-label ${step.id === currentStep ? 'active' : ''} ${isCompleted ? 'completed' : ''}`}>{step.label}</div>
-              </div>
-              {idx < filtered.length - 1 && (
-                <div className={`stepper-connector${isCompleted ? ' completed' : ''}`} />
-              )}
-            </React.Fragment>
-          );
-        })}
-      </div>
-      <div className="header-divider" />
-    </>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginBottom: "20px",
+        paddingBottom: "14px",
+        borderBottom: "1px solid #e5eaf3",
+      }}
+    >
+      <span
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          gap: "12px",
+          color: "#26334d",
+          fontSize: "16px",
+          fontWeight: 800,
+          letterSpacing: "-0.02em",
+          lineHeight: 1,
+        }}
+      >
+        <img
+          src={logo}
+          alt="한림대학교 로고"
+          style={{
+            width: "auto",
+            height: "30px",
+            maxWidth: "98px",
+            objectFit: "contain",
+            flexShrink: 0,
+            display: "block",
+          }}
+        />
+        <span>전공트랙 진단</span>
+      </span>
+      <span
+        style={{
+          padding: "6px 13px",
+          borderRadius: "999px",
+          background: "#eef3ff",
+          color: "#4a6ec0",
+          fontSize: "14px",
+          fontWeight: 800,
+          lineHeight: 1,
+        }}
+      >
+        {currentStep - 1} / 3
+      </span>
+    </div>
   );
 }
 
 function App() {
   const [selectedMajors, setSelectedMajors] = useState<string[]>([]);
   const [majorDraft, setMajorDraft] = useState("");
+  const [currentSemester, setCurrentSemester] = useState<"1학기" | "2학기">("1학기");
 
   const [page, setPage] = useState<"info" | "method" | "trackExplore" | "checklist" | "manual" | "trackList" | "trackResult">("info");
   const [previousTrackPage, setPreviousTrackPage] = useState<"checklist" | "manual">("checklist");
@@ -708,7 +758,11 @@ function App() {
   const [colleges, setColleges] = useState<CollegeGroup[]>([]);
   const [deptAnalyses, setDeptAnalyses] = useState<DeptAnalysisBundle[]>([]);
   const [selectedTrackId, setSelectedTrackId] = useState<string | null>(null);
-  const [resultDeptFilter, setResultDeptFilter] = useState<string | null>(null);
+  const [expandedResultGroups, setExpandedResultGroups] = useState<Record<string, boolean>>({
+    close: false,
+    review: false,
+    unrelated: false,
+  });
   const [maxReachedStep, setMaxReachedStep] = useState(1);
   const [expandedModules, setExpandedModules] = useState<Set<string>>(new Set());
   const [expandedAdditional, setExpandedAdditional] = useState<Set<number>>(new Set());
@@ -725,32 +779,18 @@ function App() {
   const [showTrackInfoTip, setShowTrackInfoTip] = useState(false);
   const [loading, setLoading] = useState(false);
   const [activeMobileTooltip, setActiveMobileTooltip] = useState<string | null>(null);
-  const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
+  const [isMissingCoursesExpanded, setIsMissingCoursesExpanded] = useState(false);
+  const [majorLimitMessage, setMajorLimitMessage] = useState("");
 
   const showFeedback = (message: string) => {
-    setFeedbackMessage(message);
+    window.alert(message);
   };
-
-  const clearFeedback = () => setFeedbackMessage(null);
-
-  const renderInlineFeedback = () => (
-    feedbackMessage ? (
-      <p className="inline-feedback-message" aria-live="polite">
-        {feedbackMessage}
-      </p>
-    ) : null
-  );
 
   const renderCardLogo = (alt = "로고") => (
     <div className="card-logo-wrap">
-      <button
-        type="button"
-        className="card-logo-button"
-        onClick={() => window.open(HALLYM_HOME_URL, "_blank", "noopener,noreferrer")}
-        aria-label="한림대학교 홈페이지로 이동"
-      >
+      <div className="card-logo-button">
         <img src={logo} alt={alt} className="card-logo" />
-      </button>
+      </div>
     </div>
   );
 
@@ -768,17 +808,18 @@ function App() {
     const deptName = value.trim();
     if (!deptName || selectedMajors.includes(deptName)) return;
     if (selectedMajors.length >= MAX_SELECTED_MAJORS) {
-      showFeedback("이러면 삶이 너무 힘들지 않나요? 학과는 최대 4개까지만 담아둘게요.");
+      setMajorLimitMessage("학과 욕심은 잠시 내려두고, 최대 4개까지만 골라주세요.");
       return;
     }
-    clearFeedback();
+    setMajorLimitMessage("");
     setSelectedMajors(prev => [...prev, deptName]);
     setMajorDraft("");
+                setCurrentSemester("1학기");
     resetAnalysis();
   };
 
   const removeSelectedMajor = (deptName: string) => {
-    clearFeedback();
+    setMajorLimitMessage("");
     setSelectedMajors(prev => prev.filter(item => item !== deptName));
     resetAnalysis();
   };
@@ -787,6 +828,10 @@ function App() {
     event.stopPropagation();
     setActiveMobileTooltip(prev => prev === tooltipId ? null : tooltipId);
   };
+
+  useEffect(() => {
+    setIsMissingCoursesExpanded(false);
+  }, [selectedTrackId]);
 
   const isTouchLikePointer = () =>
     typeof window !== "undefined" && window.matchMedia("(hover: none), (pointer: coarse)").matches;
@@ -864,10 +909,6 @@ function App() {
     setMaxReachedStep(prev => Math.max(prev, step));
   }, [page]);
 
-  useEffect(() => {
-    setFeedbackMessage(null);
-  }, [page]);
-
   const pageStepName: Record<string, string> = {
     info: "start", method: "method", trackExplore: "track-explore", checklist: "checklist", manual: "manual",
     trackList: "tracks", trackResult: "result",
@@ -905,23 +946,12 @@ function App() {
       showFeedback("학과를 하나 이상 선택해주세요.");
       return;
     }
-    if (selectedMajors.length > MAX_SELECTED_MAJORS) {
-      showFeedback("이러면 삶이 너무 힘들지 않나요? 학과는 최대 4개까지만 선택할 수 있어요.");
-      return;
-    }
-    clearFeedback();
     setPage("method");
   };
 
-  const addCourseRow = () => {
-    clearFeedback();
-    setCourses([...courses, { id: Date.now(), name: "", credit: "3", grade: "이수" }]);
-  };
+  const addCourseRow = () => setCourses([...courses, { id: Date.now(), name: "", credit: "3", grade: "이수" }]);
   const removeCourseRow = (id: number) => {
-    if (courses.length > 1) {
-      clearFeedback();
-      setCourses(courses.filter(c => c.id !== id));
-    }
+    if (courses.length > 1) setCourses(courses.filter(c => c.id !== id));
   };
 
   const lookupCredit = (name: string): string | null => {
@@ -933,7 +963,6 @@ function App() {
   };
 
   const updateCourse = (id: number, field: "name" | "credit" | "grade", value: string) => {
-    clearFeedback();
     setCourses(courses.map(c => {
       if (c.id === id) {
         const updated = { ...c, [field]: value };
@@ -948,7 +977,6 @@ function App() {
   };
 
   const toggleChecklistCourse = (courseName: string) => {
-    clearFeedback();
     setCheckedCourseNames(prev => {
       const next = new Set(prev);
       if (next.has(courseName)) next.delete(courseName);
@@ -1008,7 +1036,6 @@ function App() {
       return false;
     }
 
-    clearFeedback();
     setLoading(true);
     try {
       const gradeMap: Record<string, string> = {
@@ -1101,24 +1128,27 @@ const renderSelectedDepartments = (
         {filterable && selectedMajors.length > 1 && (
           <button
             type="button"
-            className={`selected-dept-chip selected-dept-filter-chip ${currentDept === null ? "active" : ""}`}
+            className={`selected-dept-chip selected-dept-filter-chip selected-dept-all-chip ${currentDept === null ? "active" : ""}`}
             onClick={() => handleSelectDept?.(null)}
           >
             전체
           </button>
         )}
-        {selectedMajors.map(deptName => (
+        {selectedMajors.map((deptName, index) => (
           filterable ? (
             <button
               type="button"
               key={deptName}
               className={`selected-dept-chip selected-dept-filter-chip ${currentDept === deptName ? "active" : ""}`}
+              style={getMajorColorStyle(index + 1)}
               onClick={() => handleSelectDept?.(deptName)}
             >
               {formatDeptName(deptName)}
             </button>
           ) : (
-            <span key={deptName} className="selected-dept-chip">{formatDeptName(deptName)}</span>
+            <span key={deptName} className="selected-dept-chip">
+              {formatDeptName(deptName)}
+            </span>
           )
         ))}
       </div>
@@ -1154,6 +1184,8 @@ const renderSelectedDepartments = (
     visibleExploreTrackEntries[0] ||
     null;
   const selectedExploreModules = selectedExploreTrack ? getTrackModules(selectedExploreTrack) : [];
+  const analysisDeptTracks = deptAnalyses.map(bundle => bundle.tracksData);
+
   // Computed data for multi-department results
   const allTracks: CombinedTrackInfo[] = deptAnalyses.flatMap(bundle =>
     bundle.tracksData.tracks.map(track => ({
@@ -1182,15 +1214,10 @@ const renderSelectedDepartments = (
       return (ar?.additional_required_courses ?? 999) - (br?.additional_required_courses ?? 999);
     });
   const hasAnalysis = deptAnalyses.length > 0;
-  const getRankedEntriesForDept = (deptName: string | null) =>
-    deptName ? rankedTrackEntries.filter(entry => entry.track.dept_name === deptName) : rankedTrackEntries;
-  const visibleResultEntries = getRankedEntriesForDept(resultDeptFilter);
-  const topPreviewEntries = rankedTrackEntries.slice(0, 3);
-  const topResultEntries = visibleResultEntries.slice(0, 3);
-  const focusResultDept = (deptName: string | null) => {
-    const nextEntries = getRankedEntriesForDept(deptName);
-    setResultDeptFilter(deptName);
-    if (nextEntries[0]) setSelectedTrackId(nextEntries[0].track.unique_id);
+
+  const getDeptColorStyle = (deptName: string): React.CSSProperties => {
+    const deptIndex = selectedMajors.indexOf(deptName);
+    return getMajorColorStyle(deptIndex + 1);
   };
 
   const getTrackStatus = (result?: CombinedTrackResultInfo) => {
@@ -1200,23 +1227,23 @@ const renderSelectedDepartments = (
   };
   const getTrackStatusLabel = (result?: CombinedTrackResultInfo) => {
     const status = getTrackStatus(result);
-    if (status === "eligible") return result?.is_completed ? "완료" : "완료권";
-    if (status === "partial") return "추가 필요";
-    return "시작 전";
+    if (status === "eligible") return "이수가능";
+    if (status === "partial") return "연관 높음";
+    return "연관 낮음";
   };
 
-  const completedGroupEntries = visibleResultEntries.filter(entry => entry.result?.is_completed);
-  const closeGroupEntries = visibleResultEntries.filter(entry =>
+  const completedGroupEntries = rankedTrackEntries.filter(entry => entry.result?.is_completed);
+  const closeGroupEntries = rankedTrackEntries.filter(entry =>
     !entry.result?.is_completed && getTrackStatus(entry.result) === "eligible"
   );
-  const reviewGroupEntries = visibleResultEntries.filter(entry => getTrackStatus(entry.result) === "partial");
-  const unrelatedGroupEntries = visibleResultEntries.filter(entry => getTrackStatus(entry.result) === "unrelated");
-  const closestTrackEntry = topResultEntries[0];
+  const reviewGroupEntries = rankedTrackEntries.filter(entry => getTrackStatus(entry.result) === "partial");
+  const unrelatedGroupEntries = rankedTrackEntries.filter(entry => getTrackStatus(entry.result) === "unrelated");
+  const closestTrackEntry = rankedTrackEntries[0];
   const resultTrackGroups = [
-    { key: "completed", title: "조건 충족", description: "현재 입력 과목으로 이수 조건을 만족한 전공트랙입니다.", entries: completedGroupEntries },
-    { key: "close", title: "완료권", description: "조금만 보완하면 완료에 가까운 전공트랙입니다.", entries: closeGroupEntries },
-    { key: "review", title: "추가 이수 필요", description: "관련 과목은 있지만 남은 조건이 더 있는 전공트랙입니다.", entries: reviewGroupEntries },
-    { key: "unrelated", title: "새로 시작", description: "현재 과목 기준으로는 기초 과목부터 준비해야 하는 전공트랙입니다.", entries: unrelatedGroupEntries },
+    { key: "completed", title: "이수 완료", description: "이미 조건을 만족한 전공트랙입니다.", entries: completedGroupEntries },
+    { key: "close", title: "가까운 트랙", description: "입력 과목 기준으로 이수 가능성이 높은 전공트랙입니다.", entries: closeGroupEntries },
+    { key: "review", title: "검토 필요", description: "관련 과목은 있지만 추가 이수가 더 필요한 전공트랙입니다.", entries: reviewGroupEntries },
+    { key: "unrelated", title: "연관 낮음", description: "현재 입력 과목과의 연결이 낮은 전공트랙입니다.", entries: unrelatedGroupEntries },
   ].filter(group => group.entries.length > 0);
 
   const selectedTrackInfo = allTracks.find(t => t.unique_id === selectedTrackId);
@@ -1227,10 +1254,10 @@ const renderSelectedDepartments = (
   const selectedStatus = getTrackStatus(selectedResult);
   const selectedProgressPercent = Math.round((selectedResult?.completion_rate || 0) * 100);
   const selectedStatusTitle = selectedResult?.is_completed
-    ? "이수 완료"
+    ? "🏆 이수 완료"
     : selectedStatus === "unrelated"
-      ? "새로 시작"
-      : "추가 이수 필요";
+      ? "🌱 도전 시작"
+      : "🌱 도전 중";
   const selectedStatusDescription = selectedResult?.is_completed
     ? "트랙 이수 조건을 모두 만족했습니다."
     : (() => {
@@ -1256,7 +1283,7 @@ const renderSelectedDepartments = (
           >
             <h2 className="subtitle main-subtitle">
               <span className="home-title-prefix">학생 맞춤형 </span>
-              전공 트랙
+              전공트랙
               <span className="home-title-mobile-break"><br /></span>
               <span className="home-title-desktop-space"> </span>
               진단 시스템
@@ -1286,7 +1313,26 @@ const renderSelectedDepartments = (
               </div>
             )}
           </div>
-          <p className="description">관심 학과를 1개 이상, 최대 4개까지 선택하고<br/>현재 이수 현황에 맞는 전공트랙을 확인합니다.</p>
+          <p className="description">관심 학과를 1개 이상, 최대 4개까지 선택하고<br/>현재 이수 현황에 맞는 전공 트랙을 확인합니다.</p>
+
+          <div className="semester-choice">
+            <div className="semester-choice-buttons">
+              <button
+                type="button"
+                className={currentSemester === "1학기" ? "active" : ""}
+                onClick={() => setCurrentSemester("1학기")}
+              >
+                1학기
+              </button>
+              <button
+                type="button"
+                className={currentSemester === "2학기" ? "active" : ""}
+                onClick={() => setCurrentSemester("2학기")}
+              >
+                2학기
+              </button>
+            </div>
+          </div>
 
           <div className="form-group">
                         <div className="major-add-row">
@@ -1303,7 +1349,7 @@ const renderSelectedDepartments = (
                 onClick={() => addSelectedMajor()}
                 disabled={!majorDraft}
               >
-                학과 추가
+                추가
               </button>
             </div>
           </div>
@@ -1312,28 +1358,45 @@ const renderSelectedDepartments = (
             {selectedMajors.length === 0 ? (
               <span className="selected-major-empty">분석할 학과를 하나 이상 추가하세요.</span>
             ) : (
-              selectedMajors.map(deptName => (
-                <span key={deptName} className="selected-major-chip" onClick={() => removeSelectedMajor(deptName)} style={{ cursor: 'pointer' }}>
+              selectedMajors.map((deptName, index) => (
+                <span
+                  key={deptName}
+                  className="selected-major-chip"
+                  onClick={() => removeSelectedMajor(deptName)}
+                  style={{ cursor: 'pointer' }}
+                >
                   {formatDeptName(deptName)}
                   <button type="button" onClick={e => { e.stopPropagation(); removeSelectedMajor(deptName); }} aria-label={`${deptName} 삭제`}>×</button>
                 </span>
               ))
             )}
           </div>
+          
+          {majorLimitMessage && (
+            <p className="major-limit-message">{majorLimitMessage}</p>
+          )}
 
-          <div className="info-action-links">
+          <div className="main-support-links">
             <a
-              href={HALLYM_GUIDEBOOK_URL}
+              href="https://www.hallym.ac.kr/hallym/index.do"
               target="_blank"
               rel="noopener noreferrer"
-              className="guidebook-button"
+              className="module-track-link"
             >
-              가이드북 바로가기
+              한림대학교 홈페이지 →
+            </a>
+            <span className="main-support-divider"></span>
+            <a
+              href="https://www.hallym.ac.kr/hallym/1076/subview.do"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="module-track-link"
+            >
+              모듈형 트랙제 알아보기 →
             </a>
           </div>
 
-          {renderInlineFeedback()}
-          <button className="button" onClick={handleStart}>시작하기</button>
+<button className="button" onClick={handleStart}>시작하기</button>
         </div>
       )}
 
@@ -1345,14 +1408,17 @@ const renderSelectedDepartments = (
             else if (stepId === 4 && hasAnalysis) setPage("trackList");
           }} />
           <h1 className="method-page-title">전공트랙을 확인할 방법을 선택하세요</h1>
+          <br></br>
           <div className="method-option-stack">
             <button className="method-option method-option-green" onClick={() => setPage("checklist")}>
               <div className="method-icon-wrap green"><ChecklistIcon /></div>
               <div className="method-option-title">이수 과목 체크하기</div>
+              <div className="method-option-desc">이수한 과목을 체크해 전공트랙 이수 가능성을 빠르게 확인합니다.</div>
             </button>
             <button className="method-option method-option-blue" onClick={() => setPage("trackExplore")}>
               <div className="method-icon-wrap blue"><TrackExploreIcon /></div>
               <div className="method-option-title">전공트랙 둘러보기</div>
+              <div className="method-option-desc">선택한 학과의 전공트랙 조건과<br />관련 과목을 먼저 확인합니다.</div>
             </button>
           </div>
           <button className="sub-button method-back-button" onClick={() => setPage("info")}>이전 단계</button>
@@ -1368,10 +1434,9 @@ const renderSelectedDepartments = (
           }} />
           <h1 className="manual-page-title">전공트랙 둘러보기</h1>
           <p className="method-page-desc">
-            선택한 학과의 전공트랙 조건과 관련 모듈을 먼저 확인한 뒤,
+            선택한 학과의 전공트랙 조건과 관련 모듈을 확인할 수 있습니다.
             <span className="mobile-text-break"><br /></span>
             <span className="mobile-text-space"> </span>
-            과목을 체크할 수 있습니다.
           </p>
           {renderSelectedDepartments(true, trackExploreDeptFilter, setTrackExploreDeptFilter)}
 
@@ -1389,10 +1454,8 @@ const renderSelectedDepartments = (
                   >
                     <div className="track-explore-card-top">
                       <span className="track-icon">{getEmoji(track.track_name)}</span>
-                      <strong>{track.track_name}</strong>
+                      <strong>{formatTrackName(track.track_name)}</strong>
                     </div>
-                    <span className="track-dept-chip">{formatDeptName(track.dept_name)}</span>
-                    <p>{formatTrackRulesSummary(track, getTrackModules(track))}</p>
                   </button>
                 ))
               )}
@@ -1402,8 +1465,8 @@ const renderSelectedDepartments = (
               {selectedExploreTrack ? (
                 <>
                   <div className="track-explore-detail-head">
-                    <span className="quick-panel-kicker">{formatDeptName(selectedExploreTrack.dept_name)}</span>
-                    <h2>{selectedExploreTrack.track_name}</h2>
+                    <span className="quick-panel-kicker dept-color-chip" style={getDeptColorStyle(selectedExploreTrack.dept_name)}>{formatDeptName(selectedExploreTrack.dept_name)}</span>
+                    <h2>{formatTrackName(selectedExploreTrack.track_name)}</h2>
                     <p>{formatTrackRulesSummary(selectedExploreTrack, selectedExploreModules)}</p>
                   </div>
                   <div className="track-explore-module-list">
@@ -1418,9 +1481,9 @@ const renderSelectedDepartments = (
                             const note = getCourseNote(course.course_name, course.note);
                             const tooltipId = `explore-${module.module_key}-${course.course_name}`;
                             return (
-                              <span key={`${module.module_key}-${course.course_name}`}>
-                                {course.course_name}
-                                {renderNoteIcon(tooltipId, note)}
+                              <span className="track-explore-course-chip" key={`${module.module_key}-${course.course_name}`}>
+                                <strong className="track-explore-course-name">{course.course_name}</strong>
+                                <small className="track-explore-course-credit">{course.credits || 3}학점</small>
                               </span>
                             );
                           })}
@@ -1485,45 +1548,54 @@ const renderSelectedDepartments = (
             {selectedDeptTracks.length === 0 ? (
               <div className="checklist-empty">선택한 학과의 과목 정보를 불러오는 중입니다.</div>
             ) : (
-              visibleChecklistDeptTracks.map(dept => (
-                <section className="checklist-dept-group" key={dept.dept_name}>
-                  <div className="checklist-dept-title">{dept.dept_name}</div>
-                  {dept.modules.map(module => {
-                    const selectedCount = module.courses.filter(course => checkedCourseNames.has(course.course_name)).length;
-                    return (
-                      <div className="checklist-module-card" key={`${dept.dept_name}-${module.module_name}`}>
-                        <div className="checklist-module-head">
-                          <h3>{module.module_name}</h3>
-                          <span>{selectedCount}/{module.courses.length}</span>
-                        </div>
-                        <div className="checklist-course-grid">
-                          {module.courses.map(course => {
-                            const checked = checkedCourseNames.has(course.course_name);
-                            return (
-                              <label
-                                key={`${dept.dept_name}-${module.module_name}-${course.course_name}`}
-                                className={`checklist-course ${checked ? "checked" : ""}`}
-                              >
-                                <input
-                                  type="checkbox"
-                                  checked={checked}
-                                  onChange={() => toggleChecklistCourse(course.course_name)}
-                                />
-                                <span className="checklist-course-name">{course.course_name}</span>
-                                <span className="checklist-course-credit">{course.credits || 3}학점</span>
-                              </label>
-                            );
-                          })}
-                        </div>
+              visibleChecklistDeptTracks.map(dept => {
+                const deptIndex = selectedMajors.indexOf(dept.dept_name);
+                const deptColorStyle = getMajorColorStyle(deptIndex + 1);
+                const deptCourses = Array.from(
+                  new Map(
+                    dept.modules.flatMap(module =>
+                      module.courses.map(course => [course.course_name, course])
+                    )
+                  ).values()
+                ).sort((a, b) => a.course_name.localeCompare(b.course_name, "ko-KR"));
+                const selectedCount = deptCourses.filter(course => checkedCourseNames.has(course.course_name)).length;
+
+                return (
+                  <section className="checklist-dept-group" key={dept.dept_name}>
+                    <div className="checklist-dept-title" style={deptColorStyle}>
+                      <span className="checklist-dept-title-chip">{formatDeptName(dept.dept_name)}</span>
+                    </div>
+                    <div className="checklist-module-card checklist-dept-course-card" style={deptColorStyle}>
+                      <div className="checklist-module-head checklist-dept-course-head">
+                        <h3>전체 과목</h3>
+                        <span>{selectedCount}/{deptCourses.length}</span>
                       </div>
-                    );
-                  })}
-                </section>
-              ))
+                      <div className="checklist-course-grid">
+                        {deptCourses.map(course => {
+                          const checked = checkedCourseNames.has(course.course_name);
+                          return (
+                            <label
+                              key={`${dept.dept_name}-${course.course_name}`}
+                              className={`checklist-course ${checked ? "checked" : ""}`}
+                            >
+                              <input
+                                type="checkbox"
+                                checked={checked}
+                                onChange={() => toggleChecklistCourse(course.course_name)}
+                              />
+                              <span className="checklist-course-name">{course.course_name}</span>
+                              <span className="checklist-course-credit">{course.credits || 3}학점</span>
+                            </label>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </section>
+                );
+              })
             )}
           </div>
 
-          {renderInlineFeedback()}
           <div className="manual-button-group">
             <button className="sub-button" onClick={() => setPage("method")}>이전 단계</button>
             <button className="button" onClick={() => goToTrackList("checklist")} disabled={loading}>
@@ -1618,7 +1690,6 @@ const renderSelectedDepartments = (
             {moduleCourses.map(c => <option key={c.name} value={c.name} />)}
           </datalist>
 
-          {renderInlineFeedback()}
           <div className="manual-button-group">
             <button className="sub-button" onClick={() => setPage("method")}>이전 단계</button>
             <button className="button" onClick={() => goToTrackList("manual")} disabled={loading}>
@@ -1635,15 +1706,15 @@ const renderSelectedDepartments = (
             else if (stepId === 3) setPage(previousTrackPage || "manual");
             else if (stepId === 4 && hasAnalysis) setPage("trackList");
           }} />
-          <h1 className="manual-page-title track-list-title">추천 전공트랙 TOP 3</h1>
-          <p className="track-list-subtitle">입력한 과목 기준으로 가장 가까운 3개만 먼저 보여드립니다.</p>
+          <h1 className="manual-page-title track-list-title">입력 과목 기준 전공트랙</h1>
+          <p className="track-list-subtitle">체크한 과목과 관련 있는 전공트랙을 우선으로 정렬했습니다.</p>
 
           {selectedTrackInfo && (
             <div className={`track-list-quick-panel match-${selectedListStatus}`}>
               <div className="quick-panel-top">
                 <div>
-                  <span className="quick-panel-kicker">현재 선택한 트랙 · {formatDeptName(selectedTrackInfo.dept_name)}</span>
-                  <h3>{selectedTrackInfo.track_name}</h3>
+                  <span className="quick-panel-kicker dept-color-chip" style={getDeptColorStyle(selectedTrackInfo.dept_name)}>{formatDeptName(selectedTrackInfo.dept_name)}</span>
+                  <h3>{formatTrackName(selectedTrackInfo.track_name)}</h3>
                 </div>
                 <span className={`track-match-badge match-${selectedListStatus}`}>{getTrackStatusLabel(selectedResult)}</span>
               </div>
@@ -1656,23 +1727,32 @@ const renderSelectedDepartments = (
                   <span style={{ width: `${selectedListProgress}%` }} />
                 </div>
               </div>
-              <p className="quick-panel-desc">
-                {selectedResult?.is_completed
-                  ? "현재 입력 과목으로 조건을 만족합니다."
-                  : selectedResult
-                    ? `진행률 ${selectedListProgress}%, 추가 과목 ${selectedResult.additional_required_courses || 0}개가 필요합니다.`
-                    : "상세 결과에서 남은 조건을 확인할 수 있습니다."}
-              </p>
+              {selectedResult && selectedResult.missing_courses.length > 0 && (
+                <div className="quick-panel-missing">
+                  <span>보완 과목</span>
+                  <div>
+                    {selectedResult.missing_courses.slice(0, 4).map(courseName => {
+                      const note = getCourseNote(courseName);
+                      return (
+                        <span key={courseName} className="quick-missing-chip">
+                          {courseName}
+                          {renderNoteIcon(`quick-${courseName}`, note)}
+                        </span>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
           )}
           <div className="track-section track-list-section">
             <div className="track-section-header">
-              <h2 className="track-section-title">메달 추천</h2>
-              <span className="track-section-badge">{topPreviewEntries.length}개</span>
+              <h2 className="track-section-title">전체 전공트랙</h2>
+              <span className="track-section-badge">{allTracks.length}개</span>
             </div>
             <div className="track-list-scroll">
-              <div className="all-track-grid track-list-grid top-three-grid">
-                {topPreviewEntries.map(({ track, result }, index) => {
+              <div className="all-track-grid track-list-grid">
+                {rankedTrackEntries.map(({ track, result }) => {
                   const status = getTrackStatus(result);
                   const progressPercent = Math.round((result?.completion_rate || 0) * 100);
                   return (
@@ -1682,22 +1762,15 @@ const renderSelectedDepartments = (
                       onClick={() => setSelectedTrackId(track.unique_id)}
                     >
                       <div className="all-track-card-top">
-                        <div className="track-icon medal-icon" aria-hidden="true">{medalSymbols[index] || getEmoji(track.track_name)}</div>
-                        <span className="all-track-name">{track.track_name}</span>
+                        <div className="track-icon">{getEmoji(track.track_name)}</div>
+                        <span className="all-track-name">{formatTrackName(track.track_name)}</span>
                       </div>
                       <div className="track-card-meta-row">
-                        <span className="medal-label">{medalLabels[index]}</span>
-                        <span className="track-dept-chip">{formatDeptName(track.dept_name)}</span>
                         <span className={`track-match-badge match-${status}`}>{getTrackStatusLabel(result)}</span>
                       </div>
                       <div className="track-match-progress">
                         <span style={{ width: `${progressPercent}%` }} />
                       </div>
-                      <p className="all-track-description">
-                        {result?.is_completed
-                          ? "현재 조건 충족"
-                          : `진행률 ${progressPercent}% · 추가 과목 ${result?.additional_required_courses || 0}개`}
-                      </p>
                     </button>
                   );
                 })}
@@ -1706,7 +1779,7 @@ const renderSelectedDepartments = (
           </div>
           <div className="manual-button-group">
             <button className="sub-button" onClick={() => setPage(previousTrackPage)}>이전 단계</button>
-            <button className="button" onClick={() => setPage("trackResult")}>전체 결과 자세히 보기</button>
+            <button className="button" onClick={() => setPage("trackResult")}>전체 결과 확인하기</button>
           </div>
         </div>
       )}
@@ -1718,53 +1791,47 @@ const renderSelectedDepartments = (
             else if (stepId === 3) setPage(previousTrackPage || "manual");
             else if (stepId === 4 && hasAnalysis) setPage("trackList");
           }} />
-          <h1 className="manual-page-title">전체 결과 자세히 보기</h1>
-          <p className="method-page-desc">학과를 누르면 해당 학과 트랙만 모아 보고,<span className="mobile-text-break"><br/></span><span className="mobile-text-space"> </span>트랙을 선택하면 남은 조건을 자세히 확인합니다.</p>
-          <div className="result-dept-filter">
-            <button
-              type="button"
-              className={`selected-dept-chip selected-dept-filter-chip ${resultDeptFilter === null ? "active" : ""}`}
-              onClick={() => focusResultDept(null)}
-            >
-              전체
-            </button>
-            {selectedMajors.map(deptName => (
-              <button
-                type="button"
-                key={`result-filter-${deptName}`}
-                className={`selected-dept-chip selected-dept-filter-chip ${resultDeptFilter === deptName ? "active" : ""}`}
-                onClick={() => focusResultDept(deptName)}
-              >
-                {formatDeptName(deptName)}
-              </button>
-            ))}
-          </div>
+          <h1 className="manual-page-title">전체 결과</h1>
+          <p className="method-page-desc">트랙별 이수 현황을 확인하고,<span className="mobile-text-break"><br/></span><span className="mobile-text-space"> </span>원하는 트랙을 선택해 상세 결과를 볼 수 있습니다.</p>
 
           <div className="track-result-layout">
             <div className="track-result-main">
-              {closestTrackEntry && (
-                <div className="result-podium-card">
-                  <div className="result-podium-head">
-                    <span className="quick-panel-kicker">{resultDeptFilter ? formatDeptName(resultDeptFilter) : "전체 학과"} 기준</span>
+              {rankedTrackEntries.length > 0 && (
+                <div className="result-summary-card result-top3-card">
+                  <div className="result-top3-heading">
+                    <span>전체 학과 기준</span>
                     <h2>추천 TOP 3</h2>
                   </div>
-                  <div className="result-podium-list">
-                    {topResultEntries.map(({ track, result }, index) => {
+                  <div className="result-top3-list">
+                    {rankedTrackEntries
+                      .filter(({ result }) => (result?.completion_rate || 0) > 0)
+                      .slice(0, 3)
+                      .map(({ track, result }, index) => {
                       const status = getTrackStatus(result);
                       const progressPercent = Math.round((result?.completion_rate || 0) * 100);
+                      const topEntries = rankedTrackEntries
+                        .filter(({ result }) => (result?.completion_rate || 0) > 0)
+                        .slice(0, 3);
+
+                      const currentRate = Math.round((result?.completion_rate || 0) * 100);
+                      const rankNumber = topEntries.filter(entry =>
+                        Math.round((entry.result?.completion_rate || 0) * 100) > currentRate
+                      ).length + 1;
+                      const medalIcon = rankNumber === 1 ? "🥇" : rankNumber === 2 ? "🥈" : "🥉";
                       return (
                         <button
-                          type="button"
-                          key={`podium-${track.unique_id}`}
-                          className={`result-podium-item match-${status} ${selectedTrackId === track.unique_id ? "active" : ""}`}
+                          key={track.unique_id}
+                          className={`result-top3-item rank-${index + 1} medal-${medalIcon === "🥇" ? "gold" : medalIcon === "🥈" ? "silver" : "bronze"} match-${status}`}
                           onClick={() => setSelectedTrackId(track.unique_id)}
                         >
-                          <span className="result-podium-medal">{medalSymbols[index]}</span>
-                          <span className="result-podium-copy">
-                            <strong>{track.track_name}</strong>
+                          <span className="result-top3-medal">{medalIcon}</span>
+                          <span className="result-top3-info">
+                            <strong>{formatTrackName(track.track_name)}</strong>
                             <small>{formatDeptName(track.dept_name)} · 진행률 {progressPercent}%</small>
                           </span>
-                          <span className={`track-match-badge match-${status}`}>{getTrackStatusLabel(result)}</span>
+                          <span className={`result-top3-status match-${status}`}>
+                            {getTrackStatusLabel(result)}
+                          </span>
                         </button>
                       );
                     })}
@@ -1774,45 +1841,67 @@ const renderSelectedDepartments = (
 
               <div className="track-section result-group-section">
                 <div className="track-section-header all-result-header">
-                  <h2 className="track-section-title">{resultDeptFilter ? "선택 학과 트랙 결과" : "전체 전공트랙 결과"}</h2>
-                  <span className="track-section-badge">{visibleResultEntries.length}개</span>
+                  <h2 className="track-section-title">전체 전공트랙 결과</h2>
+                  <span className="track-section-badge">{rankedTrackEntries.length}개</span>
                 </div>
                 <div className="result-group-stack">
-                  {resultTrackGroups.map(group => (
-                    <section className={`result-track-group group-${group.key}`} key={group.key}>
-                      <div className="result-track-group-head">
-                        <div>
-                          <h3>
-                            {group.title}
-                            <span>{group.entries.length}개</span>
-                          </h3>
-                          <p>{group.description}</p>
-                        </div>
-                      </div>
-                      <div className="result-track-list">
-                        {group.entries.map(({ track, result }) => {
-                          const status = getTrackStatus(result);
-                          const progressPercent = Math.round((result?.completion_rate || 0) * 100);
-                          return (
-                            <button
-                              key={track.unique_id}
-                              className={`result-track-row match-${status} ${selectedTrackId === track.unique_id ? "active" : ""}`}
-                              onClick={() => setSelectedTrackId(track.unique_id)}
-                            >
-                              <span className="result-track-row-main">
-                                <strong>{track.track_name}</strong>
-                                <small>{formatDeptName(track.dept_name)} · {result ? `${result.satisfied_rules}/${result.total_rules}모듈` : `0/${track.module_keys.length}모듈`}</small>
-                              </span>
-                              <span className="result-track-row-side">
-                                <em>{getTrackStatusLabel(result)}</em>
-                                <b>{progressPercent}%</b>
-                              </span>
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </section>
-                  ))}
+                  {resultTrackGroups.map(group => {
+                    const isCollapsibleGroup = ["close", "review", "unrelated"].includes(group.key);
+                    const isGroupExpanded = !isCollapsibleGroup || expandedResultGroups[group.key] !== false;
+
+                    return (
+                      <section className={`result-track-group group-${group.key}`} key={group.key}>
+                        <button
+                          type="button"
+                          className={`result-track-group-head ${isCollapsibleGroup ? "collapsible" : ""}`}
+                          onClick={() => {
+                            if (!isCollapsibleGroup) return;
+                            setExpandedResultGroups(prev => ({
+                              ...prev,
+                              [group.key]: prev[group.key] === false,
+                            }));
+                          }}
+                        >
+                          <div>
+                            <h3>
+                              {group.title}
+                              <span>{group.entries.length}개</span>
+                            </h3>
+                            <p>{group.description}</p>
+                          </div>
+                          {isCollapsibleGroup && (
+                            <span className={`result-track-toggle-icon ${isGroupExpanded ? "open" : ""}`}>
+                              ▾
+                            </span>
+                          )}
+                        </button>
+                        {isGroupExpanded && (
+                          <div className="result-track-list">
+                            {group.entries.map(({ track, result }) => {
+                              const status = getTrackStatus(result);
+                              const progressPercent = Math.round((result?.completion_rate || 0) * 100);
+                              return (
+                                <button
+                                  key={track.unique_id}
+                                  className={`result-track-row match-${status} ${selectedTrackId === track.unique_id ? "active" : ""}`}
+                                  onClick={() => setSelectedTrackId(track.unique_id)}
+                                >
+                                  <span className="result-track-row-main">
+                                    <strong>{formatTrackName(track.track_name)}</strong>
+                                    <small>{formatDeptName(track.dept_name)} · {result ? `${result.satisfied_rules}/${result.total_rules}모듈` : `0/${track.module_keys.length}모듈`}</small>
+                                  </span>
+                                  <span className="result-track-row-side">
+                                    <em>{getTrackStatusLabel(result)}</em>
+                                    <b>{progressPercent}%</b>
+                                  </span>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </section>
+                    );
+                  })}
                 </div>
               </div>
             </div>
@@ -1825,7 +1914,7 @@ const renderSelectedDepartments = (
                   </div>
                   <div className="result-status-text-wrap">
                     <div className="challenge-status-pill">{selectedStatusTitle}</div>
-                    <h2 className="result-status-title">{selectedResult.track_name}</h2>
+                    <h2 className="result-status-title">{formatTrackName(selectedResult.track_name)}</h2>
                     <p className="result-status-desc">{selectedStatusDescription}</p>
                   </div>
                 </div>
@@ -1842,9 +1931,21 @@ const renderSelectedDepartments = (
 
                 {selectedResult.missing_courses.length > 0 && (
                   <div className="challenge-message-box mission-card">
-                    <div className="mission-card-title">📌 보완 필요 과목</div>
-                    <ul className="mission-list">
-                      {selectedResult.missing_courses.slice(0, 5).map(mc => {
+                    <div className="mission-card-title-row">
+                      <div className="mission-card-title">📌 보완 필요 과목 <span className="mission-count-inline">{selectedResult.missing_courses.length}개</span></div>
+                      {selectedResult.missing_courses.length > 0 && (
+                        <button
+                          type="button"
+                          className="mission-toggle-button"
+                          onClick={() => setIsMissingCoursesExpanded(prev => !prev)}
+                          aria-expanded={isMissingCoursesExpanded}
+                        >
+                          {isMissingCoursesExpanded ? "▲" : "▼"}
+                        </button>
+                      )}
+                    </div>
+                    <ul className={`mission-list ${!isMissingCoursesExpanded ? "collapsed" : ""}`}>
+                      {(isMissingCoursesExpanded ? selectedResult.missing_courses : []).map(mc => {
                         const note = moduleCourses.find(c => c.name === mc)?.note;
                         const tooltipId = `missing-${mc}`;
                         return (
@@ -1990,7 +2091,40 @@ const renderSelectedDepartments = (
 
           <div className="manual-button-group">
             <button className="sub-button" onClick={() => setPage("trackList")}>이전 단계</button>
-            <button className="button" onClick={() => setPage("info")}>처음으로</button>
+            <button
+              className="button"
+              onClick={() => {
+                setSelectedMajors([]);
+                setMajorDraft("");
+                setCourses([{ id: 1, name: "", credit: "3", grade: "이수" }]);
+                setDeptAnalyses([]);
+                setSelectedTrackId(null);
+                setExpandedResultGroups({
+                  close: false,
+                  review: false,
+                  unrelated: false,
+                });
+                setExpandedModules(new Set());
+                setExpandedAdditional(new Set());
+                setModuleCourses([]);
+                setSelectedDeptTracks([]);
+                setCheckedCourseNames(new Set());
+                setChecklistDeptFilter(null);
+                setTrackExploreDeptFilter(null);
+                setSelectedExploreTrackId(null);
+                setAllDeptCourses([]);
+                allCourseCreditsRef.current.clear();
+                setShowCourseInfoTip(false);
+                setShowTrackInfoTip(false);
+                setActiveMobileTooltip(null);
+                setMajorLimitMessage("");
+                setPreviousTrackPage("checklist");
+                setMaxReachedStep(1);
+                setPage("info");
+              }}
+            >
+              처음으로
+            </button>
           </div>
         </div>
       )}
