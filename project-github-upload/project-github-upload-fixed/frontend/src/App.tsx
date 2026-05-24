@@ -1226,8 +1226,8 @@ const renderSelectedDepartments = (
   };
   const getTrackStatusLabel = (result?: CombinedTrackResultInfo) => {
     const status = getTrackStatus(result);
-    if (status === "eligible") return "조건 충족";
-    if (status === "partial") return "우선 추천";
+    if (status === "eligible") return "충족 완료";
+    if (status === "partial") return "추천 후보";
     return "후순위";
   };
   const getTrackRankTone = (index: number) => {
@@ -1248,8 +1248,8 @@ const renderSelectedDepartments = (
   const unrelatedGroupEntries = rankedTrackEntries.filter(entry => getTrackStatus(entry.result) === "unrelated");
   const resultTrackGroups = [
     { key: "completed", title: "이수 완료", description: "이미 조건을 만족한 전공트랙입니다.", entries: completedGroupEntries },
-    { key: "close", title: "조건 충족", description: "입력 과목 기준으로 조건을 충족한 전공트랙입니다.", entries: closeGroupEntries },
-    { key: "review", title: "보완 추천", description: "현재 이수 과목과 맞닿아 있고 추가 이수로 이어갈 수 있는 전공트랙입니다.", entries: reviewGroupEntries },
+    { key: "close", title: "충족 완료", description: "입력 과목 기준으로 조건을 충족한 전공트랙입니다.", entries: closeGroupEntries },
+    { key: "review", title: "보완 필요", description: "현재 이수 과목과 맞닿아 있고 추가 이수로 이어갈 수 있는 전공트랙입니다.", entries: reviewGroupEntries },
     { key: "unrelated", title: "후순위", description: "현재 입력 과목과의 접점이 적어 우선순위가 낮은 전공트랙입니다.", entries: unrelatedGroupEntries },
   ].filter(group => group.entries.length > 0);
 
@@ -1847,8 +1847,11 @@ const renderSelectedDepartments = (
                             <strong>{formatTrackName(track.track_name)}</strong>
                             <small>{formatDeptName(track.dept_name)} · 진행률 {progressPercent}%</small>
                           </span>
-                          <span className={`result-top3-status match-${status}`}>
-                            {getTrackStatusLabel(result)}
+                          <span className="result-top3-side">
+                            <span className={`track-rank-chip rank-tone-${rankTone}`}>{getTrackRankLabel(index)}</span>
+                            <span className={`result-top3-status match-${status}`}>
+                              {getTrackStatusLabel(result)}
+                            </span>
                           </span>
                         </button>
                       );
