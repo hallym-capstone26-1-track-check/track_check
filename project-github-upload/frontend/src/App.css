@@ -11750,3 +11750,92 @@ button.selected-dept-all-chip:hover {
   background: var(--rank-bg) !important;
   box-shadow: inset 6px 0 0 var(--rank-accent) !important;
 }
+
+
+/* Final result-page behavior: one-line badges, right fixed, left scrolls */
+.track-result-page .result-top3-side {
+  display: inline-flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 8px !important;
+  justify-self: end !important;
+  white-space: nowrap !important;
+}
+
+.track-result-page .result-top3-side .track-rank-chip,
+.track-result-page .result-top3-side .result-top3-status {
+  flex: 0 0 auto !important;
+}
+
+@media (min-width: 981px) {
+  .container:has(.track-result-page) {
+    height: 100vh !important;
+    min-height: 100vh !important;
+    overflow: hidden !important;
+    align-items: center !important;
+  }
+
+  .track-result-page {
+    height: min(900px, calc(100vh - 32px)) !important;
+    max-height: calc(100vh - 32px) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+  }
+
+  .track-result-page .track-result-layout {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    height: auto !important;
+    overflow: hidden !important;
+    align-items: stretch !important;
+  }
+
+  .track-result-page .track-result-main {
+    min-height: 0 !important;
+    max-height: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 20px !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    padding-right: 10px !important;
+    scrollbar-gutter: stable !important;
+  }
+
+  .track-result-page .track-result-main::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .track-result-page .track-result-main::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .track-result-page .track-result-main::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: #b9c8e4;
+  }
+
+  .track-result-page .result-top3-card,
+  .track-result-page .result-group-section {
+    flex: 0 0 auto !important;
+  }
+
+  .track-result-page .track-result-detail {
+    position: sticky !important;
+    top: 0 !important;
+    align-self: start !important;
+    width: 100% !important;
+    max-height: 100% !important;
+    overflow: hidden !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .track-result-page .result-top3-side {
+    grid-column: 2 !important;
+    justify-self: start !important;
+    flex-wrap: wrap !important;
+  }
+}
