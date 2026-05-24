@@ -691,53 +691,12 @@ function StepIndicator({ currentPage }: { currentPage: string; onNavigate?: (ste
   if (currentStep === 1) return null;
 
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        marginBottom: "20px",
-        paddingBottom: "14px",
-        borderBottom: "1px solid #e5eaf3",
-      }}
-    >
-      <span
-        style={{
-          display: "inline-flex",
-          alignItems: "center",
-          gap: "12px",
-          color: "#26334d",
-          fontSize: "16px",
-          fontWeight: 800,
-          letterSpacing: "-0.02em",
-          lineHeight: 1,
-        }}
-      >
-        <img
-          src={logo}
-          alt="한림대학교 로고"
-          style={{
-            width: "auto",
-            height: "30px",
-            maxWidth: "98px",
-            objectFit: "contain",
-            flexShrink: 0,
-            display: "block",
-          }}
-        />
+    <div className="bottom-step-indicator" aria-label="진행 단계">
+      <span className="bottom-step-brand">
+        <img src={logo} alt="한림대학교 로고" />
         <span>전공트랙 진단</span>
       </span>
-      <span
-        style={{
-          padding: "6px 13px",
-          borderRadius: "999px",
-          background: "#eef3ff",
-          color: "#4a6ec0",
-          fontSize: "14px",
-          fontWeight: 800,
-          lineHeight: 1,
-        }}
-      >
+      <span className="bottom-step-count">
         {currentStep - 1} / 3
       </span>
     </div>

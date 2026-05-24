@@ -11839,3 +11839,259 @@ button.selected-dept-all-chip:hover {
     flex-wrap: wrap !important;
   }
 }
+
+
+/* Bottom progress bar and mobile comfort pass */
+.bottom-step-indicator {
+  order: 95;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  margin-top: 22px;
+  padding-top: 14px;
+  border-top: 1px solid #e5eaf3;
+}
+
+.bottom-step-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  color: #26334d;
+  font-size: 15px;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+.bottom-step-brand img {
+  width: auto;
+  height: 28px;
+  max-width: 96px;
+  object-fit: contain;
+  flex-shrink: 0;
+  display: block;
+}
+
+.bottom-step-brand span {
+  white-space: nowrap;
+}
+
+.bottom-step-count {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 52px;
+  height: 28px;
+  padding: 0 13px;
+  border-radius: 999px;
+  background: #eef3ff;
+  color: #4a6ec0;
+  font-size: 14px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.method-page > .bottom-step-indicator,
+.track-explore-page > .bottom-step-indicator,
+.checklist-page > .bottom-step-indicator,
+.manual-page > .bottom-step-indicator,
+.track-match-page > .bottom-step-indicator,
+.track-result-page > .bottom-step-indicator {
+  margin-bottom: 0;
+}
+
+@media (max-width: 600px) {
+  .container {
+    align-items: flex-start !important;
+    min-height: 100svh !important;
+    padding: 8px !important;
+  }
+
+  .card,
+  .method-page,
+  .manual-page,
+  .checklist-page,
+  .track-explore-page,
+  .track-overview-page,
+  .track-match-page,
+  .track-result-page {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: calc(100svh - 16px) !important;
+    max-height: none !important;
+    padding: 24px 18px 18px !important;
+    border-radius: 18px !important;
+    overflow-x: hidden !important;
+  }
+
+  .method-page-title,
+  .manual-page-title,
+  .track-list-title,
+  .track-result-page .manual-page-title {
+    margin: 8px 0 8px !important;
+    font-size: 23px !important;
+    line-height: 1.28 !important;
+    word-break: keep-all;
+  }
+
+  .method-page-desc,
+  .track-list-subtitle,
+  .description {
+    margin-bottom: 16px !important;
+    font-size: 13px !important;
+    line-height: 1.45 !important;
+    word-break: keep-all;
+  }
+
+  .method-option-stack {
+    gap: 12px !important;
+  }
+
+  .method-option {
+    min-height: 118px !important;
+    padding: 18px 16px !important;
+    border-radius: 14px !important;
+    display: grid !important;
+    grid-template-columns: 54px minmax(0, 1fr) !important;
+    grid-template-areas:
+      "icon title"
+      "icon desc" !important;
+    column-gap: 14px !important;
+    text-align: left !important;
+  }
+
+  .method-icon-wrap {
+    grid-area: icon;
+    width: 54px !important;
+    height: 54px !important;
+    margin: 0 !important;
+    border-radius: 14px !important;
+  }
+
+  .method-option-title {
+    grid-area: title;
+    font-size: 17px !important;
+    line-height: 1.3 !important;
+    text-align: left !important;
+  }
+
+  .method-option-desc {
+    grid-area: desc;
+    margin-top: 4px !important;
+    font-size: 13px !important;
+    line-height: 1.45 !important;
+    text-align: left !important;
+  }
+
+  .selected-dept-summary,
+  .checklist-summary-bar,
+  .track-section,
+  .track-list-quick-panel,
+  .result-summary-card {
+    border-radius: 14px !important;
+  }
+
+  .selected-dept-chip-list {
+    gap: 7px !important;
+    overflow-x: auto !important;
+    flex-wrap: nowrap !important;
+    padding-bottom: 2px !important;
+  }
+
+  .selected-dept-chip {
+    flex: 0 0 auto !important;
+    min-height: 32px !important;
+  }
+
+  .checklist-course-section {
+    min-height: 0 !important;
+    max-height: 58svh !important;
+    padding-right: 6px !important;
+  }
+
+  .checklist-course-grid {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+  }
+
+  .checklist-course {
+    min-height: 46px !important;
+    padding: 10px 12px !important;
+  }
+
+  .checklist-course-name {
+    font-size: 13px !important;
+    line-height: 1.35 !important;
+  }
+
+  .track-match-page .track-list-scroll {
+    max-height: 55svh !important;
+    padding-right: 6px !important;
+  }
+
+  .track-list-top3-grid,
+  .track-list-rest-list,
+  .result-top3-list,
+  .result-track-list {
+    gap: 8px !important;
+  }
+
+  .track-result-page .track-result-layout {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  .track-result-page .track-result-main {
+    display: contents !important;
+  }
+
+  .track-result-page .track-result-detail {
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  .track-result-detail-scroll {
+    max-height: none !important;
+    overflow: visible !important;
+    padding-right: 0 !important;
+  }
+
+  .manual-button-group {
+    grid-template-columns: minmax(104px, 0.36fr) minmax(0, 1fr) !important;
+    gap: 8px !important;
+    margin-top: 16px !important;
+  }
+
+  .manual-button-group .sub-button,
+  .manual-button-group .button {
+    height: 48px !important;
+    font-size: 14px !important;
+  }
+
+  .bottom-step-indicator {
+    margin-top: auto !important;
+    padding-top: 12px;
+    gap: 10px;
+  }
+
+  .bottom-step-brand {
+    gap: 8px;
+    font-size: 13px;
+  }
+
+  .bottom-step-brand img {
+    height: 22px;
+    max-width: 78px;
+  }
+
+  .bottom-step-count {
+    min-width: 46px;
+    height: 26px;
+    padding: 0 11px;
+    font-size: 13px;
+  }
+}
