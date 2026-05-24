@@ -12514,3 +12514,53 @@ button.selected-dept-all-chip:hover {
     grid-template-columns: 22px minmax(0, 1fr) auto 12px !important;
   }
 }
+
+/* Result screen final mobile ordering and condition grouping */
+.track-result-page .module-rule-group-label {
+  margin: 8px 0 2px !important;
+  padding: 0 2px !important;
+  color: #475569;
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1.35;
+}
+
+.track-result-page .module-rule-group-label.satisfied {
+  color: #059669;
+}
+
+.track-result-page .module-rule-group-label.missing {
+  color: #c2410c;
+}
+
+.track-result-page .module-rule-group-label.additional {
+  color: #475569;
+}
+
+.track-result-page .module-rule-group-label + .module-detail-item .module-detail-header {
+  border-top: 0 !important;
+}
+
+@media (max-width: 600px) {
+  .track-result-page .track-result-layout {
+    gap: 12px !important;
+  }
+
+  .track-result-page .track-result-detail {
+    order: 1 !important;
+  }
+
+  .track-result-page .result-top3-card {
+    order: 2 !important;
+    margin-bottom: 0 !important;
+  }
+
+  .track-result-page .result-group-section {
+    order: 3 !important;
+  }
+
+  .track-result-page .module-rule-group-label {
+    margin-top: 7px !important;
+    font-size: 11px;
+  }
+}

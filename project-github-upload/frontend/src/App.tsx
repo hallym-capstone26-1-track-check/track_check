@@ -1228,7 +1228,7 @@ const renderSelectedDepartments = (
   const resultTrackGroups = [
     { key: "completed", title: "이수 완료", description: "이미 조건을 만족한 전공트랙입니다.", entries: completedGroupEntries },
     { key: "close", title: "충족 완료", description: "입력 과목 기준으로 조건을 충족한 전공트랙입니다.", entries: closeGroupEntries },
-    { key: "review", title: "보완 필요", description: "현재 이수 과목과 맞닿아 있고 추가 이수로 이어갈 수 있는 전공트랙입니다.", entries: reviewGroupEntries },
+    { key: "review", title: "추천 후보", description: "현재 이수 과목과 맞닿아 있고 추가 이수로 이어갈 수 있는 전공트랙입니다.", entries: reviewGroupEntries },
     { key: "unrelated", title: "후순위", description: "현재 입력 과목과의 접점이 적어 우선순위가 낮은 전공트랙입니다.", entries: unrelatedGroupEntries },
   ].filter(group => group.entries.length > 0);
 
@@ -1255,6 +1255,19 @@ const renderSelectedDepartments = (
     : selectedRequiredCourses > 0
       ? `후보 과목 ${selectedCandidateCourseCount}개 중 최소 ${selectedRequiredCourses}과목 추가 이수가 필요합니다.`
       : "관련 조건을 확인하고 다음 이수 계획을 세울 수 있습니다.";
+  const selectedDisplayRules = selectedResult
+    ? [
+      ...selectedResult.rule_results.filter(r => !isAdditionalCheckRule(r))
+        .slice()
+        .sort((a, b) => {
+          if (a.satisfied !== b.satisfied) return a.satisfied ? -1 : 1;
+          const aRate = a.required_value ? Math.min(a.current_value / a.required_value, 1) : 0;
+          const bRate = b.required_value ? Math.min(b.current_value / b.required_value, 1) : 0;
+          return bRate - aRate;
+        }),
+      ...selectedResult.rule_results.filter(r => isAdditionalCheckRule(r)),
+    ]
+    : [];
 
   return (
     <div className="container">
@@ -2025,18 +2038,16 @@ const renderSelectedDepartments = (
                   )}
 
                   <div className="module-detail-list">
-                    {[
-                    ...selectedResult.rule_results.filter(r => !isAdditionalCheckRule(r))
-                      .slice()
-                      .sort((a, b) => {
-                        if (a.satisfied !== b.satisfied) return a.satisfied ? -1 : 1;
-                        const aRate = a.required_value ? Math.min(a.current_value / a.required_value, 1) : 0;
-                        const bRate = b.required_value ? Math.min(b.current_value / b.required_value, 1) : 0;
-                        return bRate - aRate;
-                      }),
-                    ...selectedResult.rule_results.filter(r => isAdditionalCheckRule(r)),
-                    ].map((r, i) => {
+                    {selectedDisplayRules.map((r, i) => {
                     const isAdditional = isAdditionalCheckRule(r);
+                    const previousRule = selectedDisplayRules[i - 1];
+                    const previousIsAdditional = previousRule ? isAdditionalCheckRule(previousRule) : false;
+                    const showRuleGroupLabel =
+                      i === 0 ||
+                      previousIsAdditional !== isAdditional ||
+                      (!isAdditional && previousRule?.satisfied !== r.satisfied);
+                    const ruleGroupLabel = isAdditional ? "추가 확인" : r.satisfied ? "충족한 조건" : "추가 이수 필요";
+                    const ruleGroupTone = isAdditional ? "additional" : r.satisfied ? "satisfied" : "missing";
                     const moduleKey = `${r.rule_type}-${r.description}-${r.required_value}-${i}`;
                     const isExpanded = isAdditional ? expandedAdditional.has(i) : expandedModules.has(moduleKey);
                     const isCreditRule = ['module_min_credits', 'track_min_credits'].includes(r.rule_type);
@@ -2059,7 +2070,13 @@ const renderSelectedDepartments = (
                       }
                     };
                     return (
-                      <div key={moduleKey} className={`module-detail-item ${r.satisfied ? 'satisfied' : 'unsatisfied'}${isAdditional ? ' additional-check-row' : ''}`}>
+                      <React.Fragment key={moduleKey}>
+                        {showRuleGroupLabel && (
+                          <div className={`module-rule-group-label ${ruleGroupTone}`}>
+                            {ruleGroupLabel}
+                          </div>
+                        )}
+                      <div className={`module-detail-item ${r.satisfied ? 'satisfied' : 'unsatisfied'}${isAdditional ? ' additional-check-row' : ''}`}>
                         <div
                           className="module-detail-header"
                           onClick={toggleExpand}
@@ -2134,6 +2151,7 @@ const renderSelectedDepartments = (
                           </div>
                         )}
                       </div>
+                      </React.Fragment>
                     );
                     })}
                   </div>
