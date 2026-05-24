@@ -1237,8 +1237,10 @@ const renderSelectedDepartments = (
     if (index <= 4) return "upper";
     return "default";
   };
-  const getTrackRankLabel = (index: number) => `${index + 1}순위`;
+  const getTrackRankLabel = (index: number) => `${index + 1}위`;
   const trackRankIndexMap = new Map(rankedTrackEntries.map((entry, index) => [entry.track.unique_id, index]));
+  const topRankedTrackEntries = rankedTrackEntries.slice(0, 3);
+  const remainingRankedTrackEntries = rankedTrackEntries.slice(3);
 
   const completedGroupEntries = rankedTrackEntries.filter(entry => entry.result?.is_completed);
   const closeGroupEntries = rankedTrackEntries.filter(entry =>
@@ -1766,20 +1768,23 @@ const renderSelectedDepartments = (
               <span className="track-section-badge">{allTracks.length}개</span>
             </div>
             <div className="track-list-scroll">
-              <div className="all-track-grid track-list-grid">
-                {rankedTrackEntries.map(({ track, result }, index) => {
+              <div className="track-list-top3-grid">
+                {topRankedTrackEntries.map(({ track, result }, index) => {
                   const status = getTrackStatus(result);
                   const progressPercent = Math.round((result?.completion_rate || 0) * 100);
                   const rankTone = getTrackRankTone(index);
                   return (
                     <button
                       key={track.unique_id}
-                      className={`all-track-card track-match-card match-${status} rank-tone-${rankTone} ${selectedTrackId === track.unique_id ? "active" : ""}`}
+                      className={`all-track-card track-match-card track-rank-large-card match-${status} rank-tone-${rankTone} ${selectedTrackId === track.unique_id ? "active" : ""}`}
                       onClick={() => setSelectedTrackId(track.unique_id)}
                     >
-                      <div className="all-track-card-top">
+                      <div className="track-rank-large-main">
                         <div className="track-icon">{getEmoji(track.track_name)}</div>
-                        <span className="all-track-name">{formatTrackName(track.track_name)}</span>
+                        <div>
+                          <span className="all-track-name">{formatTrackName(track.track_name)}</span>
+                          <small>{formatDeptName(track.dept_name)} · 진행률 {progressPercent}%</small>
+                        </div>
                       </div>
                       <div className="track-card-meta-row">
                         <span className={`track-rank-chip rank-tone-${rankTone}`}>{getTrackRankLabel(index)}</span>
@@ -1792,6 +1797,37 @@ const renderSelectedDepartments = (
                   );
                 })}
               </div>
+              {remainingRankedTrackEntries.length > 0 && (
+                <div className="track-list-rest-panel">
+                  <div className="track-list-rest-head">
+                    <span>나머지 전공트랙</span>
+                    <strong>{remainingRankedTrackEntries.length}개</strong>
+                  </div>
+                  <div className="track-list-rest-list">
+                    {remainingRankedTrackEntries.map(({ track, result }, restIndex) => {
+                      const index = restIndex + 3;
+                      const status = getTrackStatus(result);
+                      const progressPercent = Math.round((result?.completion_rate || 0) * 100);
+                      const rankTone = getTrackRankTone(index);
+                      return (
+                        <button
+                          key={track.unique_id}
+                          className={`track-rest-row match-${status} rank-tone-${rankTone} ${selectedTrackId === track.unique_id ? "active" : ""}`}
+                          onClick={() => setSelectedTrackId(track.unique_id)}
+                        >
+                          <span className={`track-rank-chip rank-tone-${rankTone}`}>{getTrackRankLabel(index)}</span>
+                          <span className="track-rest-main">
+                            <strong>{formatTrackName(track.track_name)}</strong>
+                            <small>{formatDeptName(track.dept_name)}</small>
+                          </span>
+                          <span className={`track-match-badge match-${status}`}>{getTrackStatusLabel(result)}</span>
+                          <b>{progressPercent}%</b>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
           <div className="manual-button-group">
@@ -1943,61 +1979,62 @@ const renderSelectedDepartments = (
                   </div>
                 </div>
 
-                <div className="result-progress-card">
-                  <div className="result-progress-header">
-                    <span className="result-progress-label">현재 진행률</span>
-                    <span className="result-progress-value">{selectedProgressPercent}%</span>
-                  </div>
-                  <div className="result-progress-bar progress-runner-bar">
-                    <div className="result-progress-fill" style={{ width: `${selectedProgressPercent}%` }} />
-                  </div>
-                </div>
-
-                {selectedResult.missing_courses.length > 0 && (
-                  <div className="challenge-message-box mission-card">
-                    <div className="mission-card-title-row">
-                      <div className="mission-card-title">📌 보완 필요 과목 <span className="mission-count-inline">{selectedResult.missing_courses.length}개</span></div>
-                      {selectedResult.missing_courses.length > 0 && (
-                        <button
-                          type="button"
-                          className="mission-toggle-button"
-                          onClick={() => setIsMissingCoursesExpanded(prev => !prev)}
-                          aria-expanded={isMissingCoursesExpanded}
-                        >
-                          {isMissingCoursesExpanded ? "▲" : "▼"}
-                        </button>
-                      )}
+                <div className="track-result-detail-scroll">
+                  <div className="result-progress-card">
+                    <div className="result-progress-header">
+                      <span className="result-progress-label">현재 진행률</span>
+                      <span className="result-progress-value">{selectedProgressPercent}%</span>
                     </div>
-                    <ul className={`mission-list ${!isMissingCoursesExpanded ? "collapsed" : ""}`}>
-                      {(isMissingCoursesExpanded ? selectedResult.missing_courses : []).map(mc => {
-                        const note = moduleCourses.find(c => c.name === mc)?.note;
-                        const tooltipId = `missing-${mc}`;
-                        return (
-                          <li key={mc} className="mission-item">
-                            {mc}
-                            {note && (
-                              <span
-                                className={`course-note-wrap ${activeMobileTooltip === tooltipId ? "tooltip-open" : ""}`}
-                                role="button"
-                                tabIndex={0}
-                                onClick={(event) => toggleMobileTooltip(tooltipId, event)}
-                                onKeyDown={(event) => {
-                                  if (event.key === "Enter" || event.key === " ") toggleMobileTooltip(tooltipId, event);
-                                }}
-                              >
-                                <span className="course-note-icon">⚠️</span>
-                                <span className="course-note-tooltip">{note}</span>
-                              </span>
-                            )}
-                          </li>
-                        );
-                      })}
-                    </ul>
+                    <div className="result-progress-bar progress-runner-bar">
+                      <div className="result-progress-fill" style={{ width: `${selectedProgressPercent}%` }} />
+                    </div>
                   </div>
-                )}
 
-                <div className="module-detail-list">
-                  {[
+                  {selectedResult.missing_courses.length > 0 && (
+                    <div className="challenge-message-box mission-card">
+                      <div className="mission-card-title-row">
+                        <div className="mission-card-title">📌 보완 필요 과목 <span className="mission-count-inline">{selectedResult.missing_courses.length}개</span></div>
+                        {selectedResult.missing_courses.length > 0 && (
+                          <button
+                            type="button"
+                            className="mission-toggle-button"
+                            onClick={() => setIsMissingCoursesExpanded(prev => !prev)}
+                            aria-expanded={isMissingCoursesExpanded}
+                          >
+                            {isMissingCoursesExpanded ? "▲" : "▼"}
+                          </button>
+                        )}
+                      </div>
+                      <ul className={`mission-list ${!isMissingCoursesExpanded ? "collapsed" : ""}`}>
+                        {(isMissingCoursesExpanded ? selectedResult.missing_courses : []).map(mc => {
+                          const note = moduleCourses.find(c => c.name === mc)?.note;
+                          const tooltipId = `missing-${mc}`;
+                          return (
+                            <li key={mc} className="mission-item">
+                              {mc}
+                              {note && (
+                                <span
+                                  className={`course-note-wrap ${activeMobileTooltip === tooltipId ? "tooltip-open" : ""}`}
+                                  role="button"
+                                  tabIndex={0}
+                                  onClick={(event) => toggleMobileTooltip(tooltipId, event)}
+                                  onKeyDown={(event) => {
+                                    if (event.key === "Enter" || event.key === " ") toggleMobileTooltip(tooltipId, event);
+                                  }}
+                                >
+                                  <span className="course-note-icon">⚠️</span>
+                                  <span className="course-note-tooltip">{note}</span>
+                                </span>
+                              )}
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </div>
+                  )}
+
+                  <div className="module-detail-list">
+                    {[
                     ...selectedResult.rule_results.filter(r => !isAdditionalCheckRule(r))
                       .slice()
                       .sort((a, b) => {
@@ -2007,7 +2044,7 @@ const renderSelectedDepartments = (
                         return bRate - aRate;
                       }),
                     ...selectedResult.rule_results.filter(r => isAdditionalCheckRule(r)),
-                  ].map((r, i) => {
+                    ].map((r, i) => {
                     const isAdditional = isAdditionalCheckRule(r);
                     const moduleKey = `${r.rule_type}-${r.description}-${r.required_value}-${i}`;
                     const isExpanded = isAdditional ? expandedAdditional.has(i) : expandedModules.has(moduleKey);
@@ -2107,7 +2144,8 @@ const renderSelectedDepartments = (
                         )}
                       </div>
                     );
-                  })}
+                    })}
+                  </div>
                 </div>
               </div>
             )}
