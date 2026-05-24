@@ -1184,7 +1184,6 @@ const renderSelectedDepartments = (
     visibleExploreTrackEntries[0] ||
     null;
   const selectedExploreModules = selectedExploreTrack ? getTrackModules(selectedExploreTrack) : [];
-  const analysisDeptTracks = deptAnalyses.map(bundle => bundle.tracksData);
 
   // Computed data for multi-department results
   const allTracks: CombinedTrackInfo[] = deptAnalyses.flatMap(bundle =>
@@ -1238,7 +1237,6 @@ const renderSelectedDepartments = (
   );
   const reviewGroupEntries = rankedTrackEntries.filter(entry => getTrackStatus(entry.result) === "partial");
   const unrelatedGroupEntries = rankedTrackEntries.filter(entry => getTrackStatus(entry.result) === "unrelated");
-  const closestTrackEntry = rankedTrackEntries[0];
   const resultTrackGroups = [
     { key: "completed", title: "이수 완료", description: "이미 조건을 만족한 전공트랙입니다.", entries: completedGroupEntries },
     { key: "close", title: "가까운 트랙", description: "입력 과목 기준으로 이수 가능성이 높은 전공트랙입니다.", entries: closeGroupEntries },
@@ -1358,7 +1356,7 @@ const renderSelectedDepartments = (
             {selectedMajors.length === 0 ? (
               <span className="selected-major-empty">분석할 학과를 하나 이상 추가하세요.</span>
             ) : (
-              selectedMajors.map((deptName, index) => (
+              selectedMajors.map((deptName) => (
                 <span
                   key={deptName}
                   className="selected-major-chip"
@@ -1484,6 +1482,7 @@ const renderSelectedDepartments = (
                               <span className="track-explore-course-chip" key={`${module.module_key}-${course.course_name}`}>
                                 <strong className="track-explore-course-name">{course.course_name}</strong>
                                 <small className="track-explore-course-credit">{course.credits || 3}학점</small>
+                                {renderNoteIcon(tooltipId, note)}
                               </span>
                             );
                           })}
