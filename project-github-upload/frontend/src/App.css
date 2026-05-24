@@ -12095,3 +12095,422 @@ button.selected-dept-all-chip:hover {
     font-size: 13px;
   }
 }
+
+
+/* Result screen mobile-first polish: subdued cards, clear hierarchy */
+.track-result-page .result-top3-card {
+  border: 1px solid #dbe7f6 !important;
+  background: #ffffff !important;
+  box-shadow: 0 6px 16px rgba(74, 110, 192, 0.06) !important;
+}
+
+.track-result-page .result-top3-heading {
+  margin-bottom: 10px !important;
+}
+
+.track-result-page .result-top3-heading span {
+  color: #64748b !important;
+  font-size: 12px !important;
+}
+
+.track-result-page .result-top3-heading h2 {
+  color: #123b8d !important;
+  font-size: 21px !important;
+  line-height: 1.2 !important;
+}
+
+.track-result-page .result-top3-list {
+  gap: 8px !important;
+}
+
+.track-result-page .result-top3-item {
+  position: relative !important;
+  overflow: hidden !important;
+  min-height: 62px !important;
+  grid-template-columns: 34px minmax(0, 1fr) auto !important;
+  gap: 10px !important;
+  padding: 11px 12px 11px 16px !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 14px !important;
+  background: #ffffff !important;
+  box-shadow: 0 1px 5px rgba(15, 23, 42, 0.05) !important;
+  outline: none !important;
+}
+
+.track-result-page .result-top3-item::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 5px;
+  background: var(--rank-accent, #94a3b8);
+}
+
+.track-result-page .result-top3-item.active,
+.track-result-page .result-top3-item[aria-selected="true"] {
+  border: 2px solid #2563eb !important;
+  background: #ffffff !important;
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.12) !important;
+}
+
+.track-result-page .result-rank-marker {
+  position: relative;
+  z-index: 1;
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--rank-border, #cbd5e1);
+  border-radius: 999px;
+  background: #ffffff;
+  color: var(--rank-text, #475569);
+  font-size: 13px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.track-result-page .result-top3-info strong {
+  color: #0f2f78 !important;
+  font-size: 15px !important;
+  line-height: 1.3 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.track-result-page .result-top3-info small {
+  margin-top: 3px !important;
+  color: #64748b !important;
+  font-size: 12px !important;
+  line-height: 1.3 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.track-result-page .result-top3-side {
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+.result-status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  min-height: 26px;
+  padding: 5px 9px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.result-status-badge.compact {
+  min-height: 22px;
+  padding: 4px 7px;
+  font-size: 11px;
+}
+
+.result-status-badge.status-complete {
+  border-color: #bbf7d0;
+  background: #ecfdf5;
+  color: #059669;
+}
+
+.result-status-badge.status-candidate {
+  border-color: #fde68a;
+  background: #fffbeb;
+  color: #b45309;
+}
+
+.result-status-badge.status-progress {
+  border-color: #bfdbfe;
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.result-status-badge.status-need {
+  border-color: #fed7aa;
+  background: #fff7ed;
+  color: #c2410c;
+}
+
+.result-status-badge.status-low {
+  border-color: #e2e8f0;
+  background: #f8fafc;
+  color: #64748b;
+}
+
+.track-result-page .result-status-card {
+  min-height: 0 !important;
+  align-items: center !important;
+  gap: 13px !important;
+  padding: 15px 16px !important;
+  border: 1px solid #dbe4f4 !important;
+  border-radius: 14px !important;
+  background: #f8fbff !important;
+  box-shadow: none !important;
+}
+
+.track-result-page .result-status-icon {
+  width: 44px !important;
+  height: 44px !important;
+  background: #426bb8 !important;
+}
+
+.track-result-page .target-status-svg {
+  width: 30px !important;
+  height: 30px !important;
+}
+
+.track-result-page .challenge-status-pill.result-status-badge {
+  margin: 0 0 5px !important;
+}
+
+.track-result-page .result-status-title {
+  color: #1e3a88 !important;
+  font-size: 21px !important;
+  line-height: 1.25 !important;
+}
+
+.selected-detail-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 7px;
+}
+
+.selected-detail-stats span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #ffffff;
+  border: 1px solid #dbe7f6;
+  color: #334155;
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.track-result-page .result-status-desc {
+  margin-top: 7px !important;
+  color: #526178 !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  line-height: 1.45 !important;
+}
+
+.track-result-page .result-progress-card {
+  padding: 0 0 13px !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+
+.track-result-page .result-progress-card .result-progress-header {
+  align-items: flex-end !important;
+  margin-bottom: 9px !important;
+}
+
+.track-result-page .result-progress-label {
+  color: #334155 !important;
+  font-size: 14px !important;
+  font-weight: 900 !important;
+}
+
+.result-progress-summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.track-result-page .result-progress-value {
+  color: #1e3a88 !important;
+  font-size: 24px !important;
+  font-weight: 900 !important;
+  line-height: 1;
+}
+
+.track-result-page .result-progress-card .result-progress-bar {
+  height: 10px !important;
+  border-radius: 999px !important;
+  background: #e2e8f0 !important;
+}
+
+.track-result-page .result-progress-card .result-progress-fill {
+  border-radius: inherit !important;
+  background: #2563eb !important;
+}
+
+.track-result-page .mission-card {
+  padding: 10px 0 12px !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+
+.mission-title-wrap {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.track-result-page .mission-card-title {
+  color: #334155 !important;
+  font-size: 14px !important;
+  line-height: 1.35 !important;
+}
+
+.mission-needed-inline {
+  display: inline-flex;
+  width: fit-content;
+  min-height: 22px;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  color: #c2410c;
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.track-result-page .module-detail-list {
+  border-top: 0 !important;
+  gap: 4px !important;
+  padding-top: 8px !important;
+}
+
+.track-result-page .module-detail-header {
+  min-height: 44px;
+  display: grid !important;
+  grid-template-columns: 22px minmax(0, 1fr) auto 14px !important;
+  gap: 8px !important;
+  padding: 8px 0 !important;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.track-result-page .module-status-icon {
+  width: 20px !important;
+  height: 20px !important;
+  font-size: 11px !important;
+}
+
+.track-result-page .module-detail-item.satisfied .module-status-icon {
+  background: #10b981 !important;
+}
+
+.track-result-page .module-detail-item.unsatisfied .module-status-icon {
+  background: #f97316 !important;
+}
+
+.track-result-page .module-desc {
+  color: #334155 !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  line-height: 1.38 !important;
+  word-break: keep-all !important;
+}
+
+.track-result-page .module-credit-badge {
+  font-size: 12px !important;
+  font-weight: 900 !important;
+}
+
+.track-result-page .module-expand-icon {
+  color: #b8c6d8 !important;
+}
+
+.track-result-page .result-track-row {
+  border-left-color: transparent !important;
+}
+
+.track-result-page .result-track-row.active,
+.track-result-page .result-track-row[aria-selected="true"] {
+  border: 2px solid #2563eb !important;
+  background: #ffffff !important;
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.1) !important;
+}
+
+@media (max-width: 600px) {
+  .track-result-page .result-top3-card {
+    padding: 13px !important;
+  }
+
+  .track-result-page .result-top3-heading h2 {
+    font-size: 19px !important;
+  }
+
+  .track-result-page .result-top3-item {
+    grid-template-columns: 30px minmax(0, 1fr) !important;
+    gap: 8px !important;
+    min-height: 58px !important;
+    padding: 10px 10px 10px 14px !important;
+  }
+
+  .track-result-page .result-rank-marker {
+    width: 26px;
+    height: 26px;
+    font-size: 12px;
+  }
+
+  .track-result-page .result-top3-side {
+    grid-column: 2 !important;
+    justify-self: start !important;
+    margin-top: 2px;
+  }
+
+  .track-result-page .result-top3-info strong {
+    font-size: 14px !important;
+  }
+
+  .track-result-page .result-top3-info small {
+    font-size: 11px !important;
+  }
+
+  .track-result-page .result-status-card {
+    grid-template-columns: 40px minmax(0, 1fr) !important;
+    padding: 13px !important;
+  }
+
+  .track-result-page .result-status-icon {
+    width: 40px !important;
+    height: 40px !important;
+  }
+
+  .track-result-page .result-status-title {
+    font-size: 18px !important;
+  }
+
+  .selected-detail-stats {
+    gap: 5px;
+  }
+
+  .selected-detail-stats span {
+    font-size: 11px;
+  }
+
+  .track-result-page .result-progress-card .result-progress-header {
+    align-items: flex-start !important;
+  }
+
+  .result-progress-summary {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+  }
+
+  .track-result-page .result-progress-value {
+    font-size: 22px !important;
+  }
+
+  .track-result-page .module-detail-header {
+    grid-template-columns: 22px minmax(0, 1fr) auto 12px !important;
+  }
+}

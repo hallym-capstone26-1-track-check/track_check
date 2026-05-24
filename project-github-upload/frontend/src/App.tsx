@@ -1184,10 +1184,28 @@ const renderSelectedDepartments = (
     return "partial";
   };
   const getTrackStatusLabel = (result?: CombinedTrackResultInfo) => {
+    if (result?.is_completed) return "이수 완료";
     const status = getTrackStatus(result);
     if (status === "eligible") return "충족 완료";
     if (status === "partial") return "추천 후보";
     return "후순위";
+  };
+  const getTrackBadgeLabel = (result?: CombinedTrackResultInfo) => {
+    if (result?.is_completed || (result?.completion_rate ?? 0) >= 1) return "이수 완료";
+    if (!result || result.completion_rate <= 0) return "후순위";
+    if (result.completion_rate >= 0.5 || result.additional_required_courses <= 2) return "추가 이수 필요";
+    return "추천 후보";
+  };
+  const getTrackBadgeTone = (result?: CombinedTrackResultInfo) => {
+    if (result?.is_completed || (result?.completion_rate ?? 0) >= 1) return "complete";
+    if (!result || result.completion_rate <= 0) return "low";
+    if (result.completion_rate >= 0.5 || result.additional_required_courses <= 2) return "need";
+    return "candidate";
+  };
+  const getProgressBadgeLabel = (result?: CombinedTrackResultInfo) => {
+    if (result?.is_completed || (result?.completion_rate ?? 0) >= 1) return "이수 완료";
+    if (!result || result.completion_rate <= 0) return "도전 시작";
+    return "도전 중";
   };
   const getTrackRankTone = (index: number) => {
     if (index === 0) return "first";
@@ -1223,19 +1241,20 @@ const renderSelectedDepartments = (
 
   const selectedStatus = getTrackStatus(selectedResult);
   const selectedProgressPercent = Math.round((selectedResult?.completion_rate || 0) * 100);
-  const selectedStatusTitle = selectedResult?.is_completed
-    ? "🏆 이수 완료"
-    : selectedStatus === "unrelated"
-      ? "🌱 도전 시작"
-      : "🌱 도전 중";
+  const selectedAutoRules = selectedResult?.rule_results.filter(r => !isAdditionalCheckRule(r)) || [];
+  const selectedSatisfiedRules = selectedAutoRules.filter(r => r.satisfied).length;
+  const selectedTotalRuleCount = selectedResult?.total_rules || selectedAutoRules.length;
+  const selectedSatisfiedRuleCount = selectedResult?.satisfied_rules ?? selectedSatisfiedRules;
+  const selectedRequiredCourses = selectedResult?.additional_required_courses || 0;
+  const selectedCandidateCourseCount = selectedResult?.missing_courses.length || 0;
+  const selectedRuleSummary = selectedTotalRuleCount > 0
+    ? `${selectedSatisfiedRuleCount}/${selectedTotalRuleCount}조건 충족`
+    : "조건 확인 중";
   const selectedStatusDescription = selectedResult?.is_completed
     ? "트랙 이수 조건을 모두 만족했습니다."
-    : (() => {
-        const autoRules = selectedResult?.rule_results.filter(r => !isAdditionalCheckRule(r)) || [];
-        const satisfied = autoRules.filter(r => r.satisfied).length;
-        const need = selectedResult?.additional_required_courses || 0;
-        return `전체 ${autoRules.length}개 모듈 중 ${satisfied}개를 충족했으며, 최소 ${need}개 과목을 추가로 이수해야 합니다.`;
-      })();
+    : selectedRequiredCourses > 0
+      ? `후보 과목 ${selectedCandidateCourseCount}개 중 최소 ${selectedRequiredCourses}과목 추가 이수가 필요합니다.`
+      : "관련 조건을 확인하고 다음 이수 계획을 세울 수 있습니다.";
 
   return (
     <div className="container">
@@ -1821,31 +1840,23 @@ const renderSelectedDepartments = (
                       .map(({ track, result }, index) => {
                       const status = getTrackStatus(result);
                       const progressPercent = Math.round((result?.completion_rate || 0) * 100);
-                      const topEntries = rankedTrackEntries
-                        .filter(({ result }) => (result?.completion_rate || 0) > 0)
-                        .slice(0, 3);
-
-                      const currentRate = Math.round((result?.completion_rate || 0) * 100);
-                      const rankNumber = topEntries.filter(entry =>
-                        Math.round((entry.result?.completion_rate || 0) * 100) > currentRate
-                      ).length + 1;
-                      const medalIcon = rankNumber === 1 ? "🥇" : rankNumber === 2 ? "🥈" : "🥉";
                       const rankTone = getTrackRankTone(index);
+                      const isSelected = selectedTrackId === track.unique_id;
                       return (
                         <button
                           key={track.unique_id}
-                          className={`result-top3-item rank-${index + 1} rank-tone-${rankTone} medal-${medalIcon === "🥇" ? "gold" : medalIcon === "🥈" ? "silver" : "bronze"} match-${status} ${selectedTrackId === track.unique_id ? "active" : ""}`}
+                          className={`result-top3-item rank-${index + 1} rank-tone-${rankTone} match-${status} ${isSelected ? "active" : ""}`}
                           onClick={() => setSelectedTrackId(track.unique_id)}
+                          aria-selected={isSelected}
                         >
-                          <span className="result-top3-medal">{medalIcon}</span>
+                          <span className={`result-rank-marker rank-tone-${rankTone}`}>{index + 1}</span>
                           <span className="result-top3-info">
                             <strong>{formatTrackName(track.track_name)}</strong>
                             <small>{formatDeptName(track.dept_name)} · 진행률 {progressPercent}%</small>
                           </span>
                           <span className="result-top3-side">
-                            <span className={`track-rank-chip rank-tone-${rankTone}`}>{getTrackRankLabel(index)}</span>
-                            <span className={`result-top3-status match-${status}`}>
-                              {getTrackStatusLabel(result)}
+                            <span className={`result-status-badge status-${getTrackBadgeTone(result)}`}>
+                              {getTrackBadgeLabel(result)}
                             </span>
                           </span>
                         </button>
@@ -1898,11 +1909,13 @@ const renderSelectedDepartments = (
                               const progressPercent = Math.round((result?.completion_rate || 0) * 100);
                               const rankIndex = trackRankIndexMap.get(track.unique_id) ?? 0;
                               const rankTone = getTrackRankTone(rankIndex);
+                              const isSelected = selectedTrackId === track.unique_id;
                               return (
                                 <button
                                   key={track.unique_id}
-                                  className={`result-track-row match-${status} rank-tone-${rankTone} ${selectedTrackId === track.unique_id ? "active" : ""}`}
+                                  className={`result-track-row match-${status} rank-tone-${rankTone} ${isSelected ? "active" : ""}`}
                                   onClick={() => setSelectedTrackId(track.unique_id)}
+                                  aria-selected={isSelected}
                                 >
                                   <span className="result-track-row-main">
                                     <strong>{formatTrackName(track.track_name)}</strong>
@@ -1910,7 +1923,7 @@ const renderSelectedDepartments = (
                                   </span>
                                   <span className="result-track-row-side">
                                     <span className={`result-track-rank rank-tone-${rankTone}`}>{getTrackRankLabel(rankIndex)}</span>
-                                    <em>{getTrackStatusLabel(result)}</em>
+                                    <em className={`result-status-badge compact status-${getTrackBadgeTone(result)}`}>{getTrackBadgeLabel(result)}</em>
                                     <b>{progressPercent}%</b>
                                   </span>
                                 </button>
@@ -1932,8 +1945,15 @@ const renderSelectedDepartments = (
                     {selectedResult.is_completed ? <span className="result-status-symbol">🏆</span> : <TargetStatusIcon />}
                   </div>
                   <div className="result-status-text-wrap">
-                    <div className="challenge-status-pill">{selectedStatusTitle}</div>
+                    <div className={`challenge-status-pill result-status-badge status-${getTrackBadgeTone(selectedResult)}`}>
+                      {getTrackBadgeLabel(selectedResult)}
+                    </div>
                     <h2 className="result-status-title">{formatTrackName(selectedResult.track_name)}</h2>
+                    <div className="selected-detail-stats" aria-label="선택 트랙 요약">
+                      <span>{selectedProgressPercent}% 진행</span>
+                      <span>{selectedRuleSummary}</span>
+                      <span>{selectedResult.is_completed ? "추가 이수 없음" : `최소 ${selectedRequiredCourses}과목 필요`}</span>
+                    </div>
                     <p className="result-status-desc">{selectedStatusDescription}</p>
                   </div>
                 </div>
@@ -1942,7 +1962,12 @@ const renderSelectedDepartments = (
                   <div className="result-progress-card">
                     <div className="result-progress-header">
                       <span className="result-progress-label">현재 진행률</span>
-                      <span className="result-progress-value">{selectedProgressPercent}%</span>
+                      <span className="result-progress-summary">
+                        <strong className="result-progress-value">{selectedProgressPercent}%</strong>
+                        <span className={`result-status-badge compact status-${selectedStatus === "unrelated" ? "low" : selectedResult.is_completed ? "complete" : "progress"}`}>
+                          {getProgressBadgeLabel(selectedResult)}
+                        </span>
+                      </span>
                     </div>
                     <div className="result-progress-bar progress-runner-bar">
                       <div className="result-progress-fill" style={{ width: `${selectedProgressPercent}%` }} />
@@ -1952,7 +1977,14 @@ const renderSelectedDepartments = (
                   {selectedResult.missing_courses.length > 0 && (
                     <div className="challenge-message-box mission-card">
                       <div className="mission-card-title-row">
-                        <div className="mission-card-title">📌 보완 필요 과목 <span className="mission-count-inline">{selectedResult.missing_courses.length}개</span></div>
+                        <div className="mission-title-wrap">
+                          <div className="mission-card-title">
+                            📌 선택 가능한 보완 과목 <span className="mission-count-inline">{selectedCandidateCourseCount}개</span>
+                          </div>
+                          {!selectedResult.is_completed && selectedRequiredCourses > 0 && (
+                            <span className="mission-needed-inline">필요: 최소 {selectedRequiredCourses}과목</span>
+                          )}
+                        </div>
                         {selectedResult.missing_courses.length > 0 && (
                           <button
                             type="button"
