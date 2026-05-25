@@ -1,4 +1,4 @@
-﻿@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css");
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css");
 
 /* ==========================================================================
    App.css maintenance map
@@ -600,6 +600,73 @@ input[list]::-webkit-calendar-picker-indicator {
   color: #123b8d;
   font-size: 24px;
   font-weight: 800;
+}
+
+.reset-confirm-modal {
+  max-width: 380px;
+  text-align: center;
+  padding: 36px 28px 28px;
+}
+
+.reset-confirm-icon {
+  font-size: 36px;
+  margin-bottom: 12px;
+  line-height: 1;
+}
+
+.reset-confirm-title {
+  margin: 0 0 10px;
+  font-size: 20px;
+  font-weight: 800;
+  color: #123b8d;
+}
+
+.reset-confirm-desc {
+  margin: 0 0 24px;
+  font-size: 14px;
+  color: #4b5563;
+  line-height: 1.65;
+}
+
+.reset-confirm-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.reset-cancel-btn {
+  flex: 1;
+  padding: 12px 0;
+  border-radius: 12px;
+  border: 1.5px solid #d1d5db;
+  background: #fff;
+  color: #374151;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+  font-family: "Pretendard", sans-serif;
+}
+
+.reset-cancel-btn:hover {
+  background: #f3f4f6;
+}
+
+.reset-ok-btn {
+  flex: 1;
+  padding: 12px 0;
+  border-radius: 12px;
+  border: none;
+  background: #213b8a;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+  font-family: "Pretendard", sans-serif;
+}
+
+.reset-ok-btn:hover {
+  background: #1a2f70;
 }
 
 .modal-content {
@@ -2074,7 +2141,7 @@ select.manual-input {
 
 .recommended-track-card:hover,
 .all-track-card:hover {
-  transform: translateY(-1px);
+  transform: none;
 }
 
 .recommended-track-card.active,
@@ -3761,12 +3828,39 @@ select.manual-input {
   border-top-color: rgba(30, 41, 59, 0.95);
 }
 
-.chip-note-wrap:hover .chip-note-tooltip {
-  opacity: 1;
+@media (hover: hover) {
+  .chip-note-wrap:hover .chip-note-tooltip {
+    opacity: 0; /* 데스크톱은 floating-note-tooltip 사용 */
+  }
+}
+
+@media (hover: none) {
+  .chip-note-wrap:hover .chip-note-tooltip {
+    opacity: 1;
+  }
 }
 
 .chip-note-wrap.tooltip-open .chip-note-tooltip {
   opacity: 1;
+}
+
+.floating-note-tooltip {
+  position: fixed;
+  transform: translate(-50%, calc(-100% - 8px));
+  z-index: 9999;
+  background: rgba(30, 41, 59, 0.95);
+  color: #ffffff;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.5;
+  pointer-events: none;
+  max-width: 220px;
+  white-space: pre-line;
+  word-break: keep-all;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 /* 추가 필수 확인 펼침 내용 */
@@ -5311,7 +5405,7 @@ select.manual-input {
   }
 
   .card-logo-wrap {
-    margin-bottom: 8px;
+    margin: 0;
   }
 
   .stepper-container {
@@ -5912,6 +6006,8 @@ select.manual-input {
 
   .mobile-course-info-popup {
     display: block !important;
+    position: relative;
+    z-index: 50;
     font-size: 13px;
     color: #374151;
     background: #f1f5f9;
@@ -7593,10 +7689,6 @@ button.selected-dept-all-chip:hover {
     padding: 10px 12px !important;
   }
 
-  .major-add-row {
-    grid-template-columns: 1fr;
-  }
-
   .major-add-button {
     height: 48px;
   }
@@ -7708,6 +7800,13 @@ button.selected-dept-all-chip:hover {
 }
 .mobile-course-info-popup {
   display: none;
+}
+
+.mobile-tip-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 49;
+  background: transparent;
 }
 
 /* ── 과목 드롭다운 headerExtra & 툴팁 ──────────────────────── */
@@ -8182,31 +8281,12 @@ button.selected-dept-all-chip:hover {
 }
 
 .checklist-course-section {
-  min-height: 300px;
-  max-height: clamp(380px, 52vh, 620px);
-  overflow-x: hidden;
   overflow-y: auto;
-  padding: 0 12px 0 0;
+  overflow-x: hidden;
+  padding: 0;
   margin: 0 0 12px;
-  scrollbar-gutter: stable;
-  overscroll-behavior: contain;
   flex: 1 1 auto;
-}
-
-.checklist-course-section::-webkit-scrollbar {
-  width: 16px;
-}
-
-.checklist-course-section::-webkit-scrollbar-track {
-  background: #eef4fb;
-  border-radius: 999px;
-}
-
-.checklist-course-section::-webkit-scrollbar-thumb {
-  background: #8fb4e8;
-  border: 3px solid #eef4fb;
-  border-radius: 999px;
-  background-clip: content-box;
+  min-height: 0;
 }
 
 .checklist-empty {
@@ -8221,7 +8301,7 @@ button.selected-dept-all-chip:hover {
 }
 
 .checklist-dept-group {
-  margin: 0 0 14px;
+  margin: 0;
 }
 
 .checklist-dept-group:last-child {
@@ -8262,6 +8342,31 @@ button.selected-dept-all-chip:hover {
   background: linear-gradient(180deg, #ffffff 0%, var(--major-bg, #fbfdff) 170%);
 }
 
+.checklist-dept-course-card .checklist-course-grid {
+  max-height: clamp(200px, calc(100vh - 580px), 460px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  padding-right: 4px;
+}
+
+.checklist-dept-course-card .checklist-course-grid::-webkit-scrollbar {
+  width: 14px;
+}
+
+.checklist-dept-course-card .checklist-course-grid::-webkit-scrollbar-track {
+  background: #eef4fb;
+  border-radius: 999px;
+}
+
+.checklist-dept-course-card .checklist-course-grid::-webkit-scrollbar-thumb {
+  background: #8fb4e8;
+  border: 3px solid #eef4fb;
+  border-radius: 999px;
+  background-clip: content-box;
+}
+
 .checklist-dept-course-head h3 {
   color: var(--major-text, #10287f);
 }
@@ -8272,7 +8377,7 @@ button.selected-dept-all-chip:hover {
 }
 
 .checklist-module-card {
-  margin: 0 0 9px;
+  margin: 0;
   padding: 12px;
   border: 1px solid #dbe7f6;
   border-radius: 14px;
@@ -8459,9 +8564,9 @@ button.selected-dept-all-chip:hover {
 
 .track-explore-card-top strong {
   min-width: 0;
-  color: #0f2f78;
+  color: #334155;
   font-size: 16px;
-  font-weight: 900;
+  font-weight: 600;
   line-height: 1.35;
 }
 
@@ -8503,6 +8608,7 @@ button.selected-dept-all-chip:hover {
   border: 1px solid #dbe7f6;
   border-radius: 12px;
   background: #f8fbff;
+  overflow: visible;
 }
 
 .track-explore-module-head {
@@ -8515,8 +8621,8 @@ button.selected-dept-all-chip:hover {
 .track-explore-module-head h3 {
   margin: 0;
   color: #10287f;
-  font-size: 15px;
-  font-weight: 900;
+  font-size: 14px;
+  font-weight: 600;
 }
 
 .track-explore-module-head span {
@@ -8551,10 +8657,14 @@ button.selected-dept-all-chip:hover {
   border: 0;
   border-radius: 0;
   background: transparent;
+}
+
+.track-explore-course-chips .chip-note-wrap {
   color: inherit;
   font-size: 11px;
   line-height: 1;
 }
+
 
 .track-explore-empty {
   min-height: 160px;
@@ -8701,7 +8811,9 @@ button.selected-dept-all-chip:hover {
   }
 
   .track-explore-detail {
-    overflow: visible;
+    overflow-y: auto !important;
+    max-height: 55svh;
+    -webkit-overflow-scrolling: touch;
   }
 
   .checklist-course-section {
@@ -8720,32 +8832,34 @@ button.selected-dept-all-chip:hover {
 }
 
 @media (max-width: 600px) {
-  .info-card .form-group,
   .info-card .major-add-row {
-    display: contents !important;
+    grid-template-columns: minmax(0, 1fr) 112px;
+    align-items: stretch;
   }
 
-  .info-card .label {
-    order: 4;
+  .info-card .major-add-row .select-wrap,
+  .info-card .major-add-row .input,
+  .info-card .major-add-row .major-add-button {
+    height: 56px !important;
+    min-height: 56px !important;
+    box-sizing: border-box;
   }
 
-  .info-card .major-add-row > :not(.major-add-button) {
-    order: 5;
-  }
-
-  .info-card .selected-major-panel {
-    order: 6;
-    width: 100%;
-    margin: 12px 0 12px;
-  }
-
-  .info-card .major-add-button {
-    order: 7;
+  .info-card .major-add-row .input,
+  .info-card .major-add-row .major-add-button {
     width: 100%;
   }
+}
 
-  .info-card > .button {
-    order: 8;
+/* Mobile: ensure track cards and explore cards are always left-aligned */
+@media (max-width: 820px) {
+  .track-explore-card,
+  .track-rank-large-card,
+  .track-rest-row,
+  .track-explore-list,
+  .track-list-top3-grid,
+  .track-list-rest-list {
+    text-align: left !important;
   }
 }
 
@@ -8762,7 +8876,7 @@ button.selected-dept-all-chip:hover {
 }
 
 .track-match-page .manual-button-group {
-  margin-bottom: 16px !important;
+  margin-bottom: 0 !important;
 }
 
 @media (max-width: 820px) {
@@ -8898,13 +9012,176 @@ button.selected-dept-all-chip:hover {
   font-weight: 800;
 }
 
+
+/* Mobile: ensure track cards and explore cards are always left-aligned */
+@media (max-width: 820px) {
+  .track-explore-card,
+  .track-rank-large-card,
+  .track-rest-row,
+  .track-explore-list,
+  .track-list-top3-grid,
+  .track-list-rest-list {
+    text-align: left !important;
+  }
+}
+
+/* Result match screen: keep the bottom action buttons reachable. */
+.container:has(.track-match-page) {
+  align-items: flex-start;
+  padding-top: 18px;
+  padding-bottom: 72px;
+}
+
+.track-match-page {
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+.track-match-page .manual-button-group {
+  margin-bottom: 0 !important;
+}
+
+@media (max-width: 820px) {
+  .container:has(.track-match-page) {
+    height: 100svh !important;
+    min-height: 100svh !important;
+    overflow-x: hidden !important;
+    overflow-y: hidden !important;
+    padding: 0 !important;
+  }
+
+  .track-match-page {
+    height: 100svh !important;
+    min-height: 100svh !important;
+    max-height: 100svh !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    padding-bottom: 96px !important;
+    scroll-padding-bottom: 96px;
+  }
+
+  .track-match-page .manual-button-group {
+    margin-bottom: 28px !important;
+  }
+}
+
+/* Full result page: summary-first layout */
+.track-result-page .track-result-layout {
+  display: grid !important;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  gap: 14px;
+  align-items: stretch;
+}
+
+.track-result-main {
+  min-width: 0;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: 12px;
+}
+
+.result-summary-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  padding: 16px 18px;
+  border: 1px solid #79c7ee;
+  border-radius: 16px;
+  background: #edf9ff;
+  box-shadow: 0 10px 24px rgba(74, 110, 192, 0.08);
+}
+
+.result-summary-card.match-eligible {
+  border-color: #3f6fd4;
+  background: #eef4ff;
+}
+
+.result-summary-card.match-unrelated {
+  border-color: #d8e1ee;
+  background: #ffffff;
+}
+
+.result-summary-copy {
+  min-width: 0;
+}
+
+.result-summary-copy h2 {
+  margin: 2px 0 5px;
+  color: #0f2f78;
+  font-size: 21px;
+  font-weight: 900;
+  line-height: 1.28;
+}
+
+.result-summary-copy p {
+  margin: 0;
+  color: #526178;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.result-summary-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.summary-select-button {
+  height: 30px;
+  padding: 0 11px;
+  border: 1px solid #b9c8e4;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #1e40af;
+  font-size: 12px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.result-summary-progress {
+  grid-column: 1 / -1;
+}
+
+.result-summary-missing {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 70px minmax(0, 1fr);
+  gap: 8px;
+  align-items: start;
+}
+
+.result-summary-missing > span {
+  padding-top: 5px;
+  color: #526178;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.result-summary-missing > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.result-summary-missing > div > span {
+  padding: 5px 8px;
+  border: 1px solid #aebcce;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #526178;
+  font-size: 12px;
+  font-weight: 400;
+}
+
 .result-group-section {
   padding: 14px !important;
   height: 100%;
 }
 
 .result-group-stack {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 10px;
 }
 
@@ -9322,6 +9599,10 @@ button.selected-dept-all-chip:hover {
   background: transparent !important;
 }
 
+.track-result-page .result-track-group-head.collapsible:not(.open) {
+  padding: 0 !important;
+}
+
 .track-result-page .result-track-group-head h3 {
   color: #1f3361 !important;
   font-size: 14px !important;
@@ -9330,6 +9611,7 @@ button.selected-dept-all-chip:hover {
 .track-result-page .result-track-group-head h3 span {
   background: #eef4ff !important;
   color: #2f5fca !important;
+  border: 1px solid #dbe7ff !important;
 }
 
 .track-result-page .result-track-group-head p {
@@ -9623,12 +9905,12 @@ button.selected-dept-all-chip:hover {
 }
 
 .checklist-course-section {
-  padding: 0 12px 0 0 !important;
-  margin: 0 0 18px !important;
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
 .checklist-dept-group {
-  margin: 0 0 28px !important;
+  margin: 0 !important;
 }
 
 .checklist-dept-title {
@@ -9711,6 +9993,10 @@ button.selected-dept-all-chip:hover {
 
 .manual-button-group {
   margin-top: 40px !important;
+}
+
+.checklist-page .manual-button-group {
+  margin-top: 12px !important;
 }
 
 @media (max-width: 820px) {
@@ -9810,7 +10096,7 @@ button.selected-dept-all-chip:hover {
   align-items: center;
   gap: 8px;
   margin-top: 6px;
-  margin-bottom: 20px;
+  margin-bottom: 6px;
   font-size: 14px;
 }
 
@@ -10190,16 +10476,6 @@ button.selected-dept-all-chip:hover {
 
 /* mobile home order fix: keep support links below selected majors like desktop */
 @media (max-width: 600px) {
-  .info-card .major-add-row > :not(.major-add-button) {
-    order: 5 !important;
-  }
-
-  .info-card .major-add-button {
-    order: 6 !important;
-    width: 100%;
-    margin-top: 10px;
-  }
-
   .method-option-blue {
     min-height: 130px !important;
   }
@@ -10207,7 +10483,7 @@ button.selected-dept-all-chip:hover {
   .info-card .selected-major-panel {
     order: 7 !important;
     width: 100%;
-    margin: 12px 0 12px;
+    margin: 0;
   }
 
   .info-card .major-limit-message {
@@ -10217,8 +10493,7 @@ button.selected-dept-all-chip:hover {
   .info-card .main-support-links {
     order: 9 !important;
     width: 100%;
-    margin-top: 4px;
-    margin-bottom: 20px;
+    margin: 12px 0 24px;
     justify-content: center;
   }
 
@@ -10508,7 +10783,7 @@ button.selected-dept-all-chip:hover {
 /* Mobile only: reduce gap between 전체 전공트랙 box and previous/next buttons */
 @media (max-width: 820px) {
   .track-match-page .track-list-section {
-    margin-bottom: 15px !important;
+    margin: 4px 0 0 !important;
   }
 
   .track-match-page .manual-button-group {
@@ -10537,9 +10812,9 @@ button.selected-dept-all-chip:hover {
   flex-shrink: 0;
   border: 0;
   border-radius: 999px;
-  background: #eef4ff;
-  color: #1e40af;
-  font-size: 12px;
+  background: transparent;
+  color: #b8c6d8;
+  font-size: 10px;
   font-weight: 800;
   line-height: 1;
   padding: 7px 10px;
@@ -10547,7 +10822,14 @@ button.selected-dept-all-chip:hover {
 }
 
 .mission-toggle-button:hover {
-  background: #e1ebff;
+  background: transparent;
+}
+
+.mission-card-right {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
 }
 
 @media (max-width: 600px) {
@@ -10683,9 +10965,9 @@ button.selected-dept-all-chip:hover {
   display: inline-flex;
   align-items: center;
   margin-left: 6px;
-  padding: 2px 8px;
-  border-radius: 999px;
-  background: #eef4ff;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
   color: #1e40af;
   font-size: 12px;
   font-weight: 900;
@@ -10695,7 +10977,7 @@ button.selected-dept-all-chip:hover {
 
 /* Track match page: show missing courses as plain text, not pills */
 .track-match-page .quick-panel-missing > span {
-  padding-top: 2px !important;
+  padding-top: 0 !important;
 }
 
 .track-match-page .quick-panel-missing > div {
@@ -10991,6 +11273,11 @@ button.selected-dept-all-chip:hover {
   font-size: 11px;
 }
 
+.challenge-status-pill.result-status-badge.status-candidate,
+.track-result-page .selected-detail-stats span {
+  font-weight: 900 !important;
+}
+
 .quick-panel-actions {
   display: flex;
   flex-wrap: wrap;
@@ -11205,6 +11492,7 @@ button.selected-dept-all-chip:hover {
     font-size: 19px !important;
     line-height: 1.3 !important;
     word-break: keep-all !important;
+    margin: 0 !important;
   }
 
   .track-result-page .result-status-desc {
@@ -11239,8 +11527,8 @@ button.selected-dept-all-chip:hover {
   }
 
   .track-result-page .mission-count-inline {
-    padding: 2px 7px !important;
-    font-size: 11px !important;
+    padding: 0 !important;
+    font-size: 12px !important;
   }
 
   .track-result-page .module-detail-list {
@@ -11552,14 +11840,14 @@ button.selected-dept-all-chip:hover {
   align-items: center;
   gap: 10px;
   margin-bottom: 8px;
-  color: #64748b;
-  font-size: 12px;
+  color: #374151;
+  font-size: 14px;
   font-weight: 900;
 }
 
 .track-list-rest-head strong {
   color: #1e40af;
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .track-list-rest-list {
@@ -11623,6 +11911,13 @@ button.selected-dept-all-chip:hover {
   font-size: 13px;
   font-weight: 900;
   white-space: nowrap;
+}
+
+/* 1st rank percent text color */
+.result-track-row.rank-tone-first b,
+.track-rest-row.rank-tone-first b,
+.track-rank-large-card.rank-tone-first b {
+  color: #b47900 !important;
 }
 
 .track-result-page .track-result-detail {
@@ -11844,6 +12139,7 @@ button.selected-dept-all-chip:hover {
 /* Bottom progress bar and mobile comfort pass */
 .bottom-step-indicator {
   order: 95;
+  flex-shrink: 0;
   width: 100%;
   display: flex;
   justify-content: space-between;
@@ -11941,7 +12237,7 @@ button.selected-dept-all-chip:hover {
   .method-page-desc,
   .track-list-subtitle,
   .description {
-    margin-bottom: 16px !important;
+    margin: 2px 0 20px !important;
     font-size: 13px !important;
     line-height: 1.45 !important;
     word-break: keep-all;
@@ -11999,7 +12295,8 @@ button.selected-dept-all-chip:hover {
     gap: 7px !important;
     overflow-x: auto !important;
     flex-wrap: nowrap !important;
-    padding-bottom: 2px !important;
+    padding-bottom: 8px !important;
+    scrollbar-gutter: stable !important;
   }
 
   .selected-dept-chip {
@@ -12229,26 +12526,17 @@ button.selected-dept-all-chip:hover {
   color: #b45309;
 }
 
+.challenge-status-pill.result-status-badge.status-candidate {
+  border: 1px solid #fde68a !important;
+  background: #fffbeb !important;
+  color: #b45309 !important;
+  font-size: 12px !important;
+  font-weight: 400 !important;
+}
+
 .result-status-badge.status-progress {
   border-color: #bfdbfe;
   background: #eff6ff;
-  color: #1d4ed8;
-}
-
-.result-status-badge.status-need {
-  border-color: #fed7aa;
-  background: #fff7ed;
-  color: #c2410c;
-}
-
-.result-status-badge.status-low {
-  border-color: #e2e8f0;
-  background: #f8fafc;
-  color: #64748b;
-}
-
-.track-result-page .result-status-card {
-  min-height: 0 !important;
   align-items: center !important;
   gap: 13px !important;
   padding: 15px 16px !important;
@@ -12270,7 +12558,7 @@ button.selected-dept-all-chip:hover {
 }
 
 .track-result-page .challenge-status-pill.result-status-badge {
-  margin: 0 0 5px !important;
+  margin: 0 0 2px !important;
 }
 
 .track-result-page .result-status-title {
@@ -12349,7 +12637,7 @@ button.selected-dept-all-chip:hover {
 }
 
 .track-result-page .mission-card {
-  padding: 10px 0 12px !important;
+  padding: 12px 0 12px !important;
   border-bottom: 1px solid #e2e8f0 !important;
 }
 
@@ -12368,16 +12656,10 @@ button.selected-dept-all-chip:hover {
 
 .mission-needed-inline {
   display: inline-flex;
-  width: fit-content;
-  min-height: 22px;
   align-items: center;
-  padding: 3px 8px;
-  border-radius: 999px;
-  background: #fff7ed;
-  border: 1px solid #fed7aa;
-  color: #c2410c;
-  font-size: 11px;
-  font-weight: 900;
+  color: #C44A6A;
+  font-size: 12px;
+  font-weight: 700;
   line-height: 1;
 }
 
@@ -12393,7 +12675,6 @@ button.selected-dept-all-chip:hover {
   grid-template-columns: 22px minmax(0, 1fr) auto 14px !important;
   gap: 8px !important;
   padding: 8px 0 !important;
-  border-bottom: 1px solid #f1f5f9;
 }
 
 .track-result-page .module-status-icon {
@@ -12407,7 +12688,12 @@ button.selected-dept-all-chip:hover {
 }
 
 .track-result-page .module-detail-item.unsatisfied .module-status-icon {
-  background: #f97316 !important;
+  background: #c44a64 !important;
+}
+
+.track-result-page .module-detail-item.additional-check-row .module-status-icon {
+  background: #dde5f5 !important;
+  color: #1e40af !important;
 }
 
 .track-result-page .module-desc {
@@ -12562,5 +12848,2564 @@ button.selected-dept-all-chip:hover {
   .track-result-page .module-rule-group-label {
     margin-top: 7px !important;
     font-size: 11px;
+  }
+}
+
+/* Result track cards: remove left ornaments and keep selected borders visible */
+.track-match-page .track-rank-large-card {
+  border-left-width: 1px !important;
+  padding-left: 18px !important;
+}
+
+.track-match-page .track-match-card.rank-tone-first,
+.track-match-page .track-match-card.rank-tone-second,
+.track-match-page .track-match-card.rank-tone-third,
+.track-match-page .track-match-card.rank-tone-upper,
+.track-match-page .track-match-card.rank-tone-default {
+  border-left: 1px solid var(--rank-border, #dbe7f6) !important;
+  background: #ffffff !important;
+}
+
+.track-result-page .result-top3-item {
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  padding-left: 14px !important;
+  overflow: visible !important;
+}
+
+.track-result-page .result-top3-item::before {
+  display: none !important;
+}
+
+.track-result-page .result-track-list {
+  display: grid !important;
+  gap: 8px !important;
+  overflow: visible !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+}
+
+.track-result-page .result-track-row {
+  border: 1px solid #dbe7f6 !important;
+  border-left-color: #dbe7f6 !important;
+  border-radius: 12px !important;
+  box-shadow: none !important;
+}
+
+.track-result-page .result-track-row:last-child {
+  border-bottom: 1px solid #dbe7f6 !important;
+}
+
+.track-result-page .result-track-row:hover,
+.track-result-page .result-track-row.active,
+.track-result-page .result-track-row[aria-selected="true"] {
+  border-color: #2563eb !important;
+  background: #ffffff !important;
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.1) !important;
+}
+
+@media (max-width: 600px) {
+  .track-result-page .result-top3-item {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .track-result-page .result-top3-side {
+    grid-column: 1 !important;
+  }
+}
+
+/* Final card cleanup: no decorative icons/left rails, no clipped active borders */
+.track-overview-page .track-icon,
+.track-overview-page .result-rank-marker {
+  display: none !important;
+}
+
+.track-overview-page .track-match-card,
+.track-overview-page .track-rank-large-card,
+.track-overview-page .track-list-quick-panel,
+.track-overview-page .track-rest-row,
+.track-overview-page .result-top3-item,
+.track-overview-page .result-track-row {
+  border: 1px solid #dbe7f6 !important;
+  box-shadow: none !important;
+}
+
+.track-overview-page .track-match-card::before,
+.track-overview-page .track-rank-large-card::before,
+.track-overview-page .track-list-quick-panel::before,
+.track-overview-page .track-rest-row::before,
+.track-overview-page .result-top3-item::before,
+.track-overview-page .result-track-row::before {
+  display: none !important;
+  content: none !important;
+}
+
+.track-overview-page .track-match-card.rank-tone-first,
+.track-overview-page .track-match-card.rank-tone-second,
+.track-overview-page .track-match-card.rank-tone-third,
+.track-overview-page .track-match-card.rank-tone-upper,
+.track-overview-page .track-match-card.rank-tone-default,
+.track-overview-page .track-rank-large-card.rank-tone-first,
+.track-overview-page .track-rank-large-card.rank-tone-second,
+.track-overview-page .track-rank-large-card.rank-tone-third,
+.track-overview-page .track-rank-large-card.rank-tone-upper,
+.track-overview-page .track-rank-large-card.rank-tone-default,
+.track-overview-page .track-list-quick-panel.rank-tone-first,
+.track-overview-page .track-list-quick-panel.rank-tone-second,
+.track-overview-page .track-list-quick-panel.rank-tone-third,
+.track-overview-page .track-list-quick-panel.rank-tone-upper,
+.track-overview-page .track-list-quick-panel.rank-tone-default,
+.track-overview-page .track-rest-row.rank-tone-first,
+.track-overview-page .track-rest-row.rank-tone-second,
+.track-overview-page .track-rest-row.rank-tone-third,
+.track-overview-page .track-rest-row.rank-tone-upper,
+.track-overview-page .track-rest-row.rank-tone-default,
+.track-overview-page .result-top3-item.rank-tone-first,
+.track-overview-page .result-top3-item.rank-tone-second,
+.track-overview-page .result-top3-item.rank-tone-third,
+.track-overview-page .result-track-row.rank-tone-first,
+.track-overview-page .result-track-row.rank-tone-second,
+.track-overview-page .result-track-row.rank-tone-third,
+.track-overview-page .result-track-row.rank-tone-upper,
+.track-overview-page .result-track-row.rank-tone-default {
+  border: 1px solid #dbe7f6 !important;
+  background: #ffffff !important;
+}
+
+.track-overview-page .track-list-top3-grid,
+.track-overview-page .track-list-rest-list,
+.track-overview-page .result-top3-list,
+.track-overview-page .result-track-list {
+  overflow: visible !important;
+}
+
+.track-overview-page .result-track-list {
+  display: grid !important;
+  gap: 8px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+}
+
+.track-overview-page .result-track-row {
+  border: 1px solid #dbe7f6 !important;
+  border-radius: 12px !important;
+}
+
+.track-overview-page .track-match-card.active,
+.track-overview-page .track-rank-large-card.active,
+.track-overview-page .track-rest-row.active,
+.track-overview-page .result-top3-item.active,
+.track-overview-page .result-top3-item[aria-selected="true"],
+.track-overview-page .result-track-row.active,
+.track-overview-page .result-track-row[aria-selected="true"] {
+  border: 2px solid #2563eb !important;
+  background: #ffffff !important;
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.1) !important;
+}
+
+.track-overview-page .track-rank-large-main,
+.track-overview-page .result-top3-item {
+  grid-template-columns: minmax(0, 1fr) auto !important;
+}
+
+.track-match-page .track-list-quick-panel.match-eligible,
+.track-match-page .track-list-quick-panel.match-partial,
+.track-match-page .track-list-quick-panel.match-unrelated,
+.track-match-page .track-list-quick-panel.rank-tone-first,
+.track-match-page .track-list-quick-panel.rank-tone-second,
+.track-match-page .track-list-quick-panel.rank-tone-third,
+.track-match-page .track-list-quick-panel.rank-tone-upper,
+.track-match-page .track-list-quick-panel.rank-tone-default,
+.track-match-page .track-rank-large-card.rank-tone-first,
+.track-match-page .track-rank-large-card.rank-tone-second,
+.track-match-page .track-rank-large-card.rank-tone-third,
+.track-match-page .track-rank-large-card.rank-tone-upper,
+.track-match-page .track-rank-large-card.rank-tone-default,
+.track-match-page .track-rest-row.rank-tone-first,
+.track-match-page .track-rest-row.rank-tone-second,
+.track-match-page .track-rest-row.rank-tone-third,
+.track-match-page .track-rest-row.rank-tone-upper,
+.track-match-page .track-rest-row.rank-tone-default {
+  border: 1px solid #dbe7f6 !important;
+  border-left: 1px solid #dbe7f6 !important;
+  background: #ffffff !important;
+  box-shadow: none !important;
+}
+
+.track-match-page .track-list-quick-panel {
+  border-radius: 14px !important;
+}
+
+.track-match-page .track-rank-large-card.active,
+.track-match-page .track-rest-row.active {
+  border: 2px solid #2563eb !important;
+  background: #ffffff !important;
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.1) !important;
+}
+
+/* Final requested polish: soft need state, lighter labels, fixed footer gaps */
+.result-status-badge,
+.result-status-badge.compact,
+.selected-detail-stats span,
+.mission-needed-inline,
+.mission-count-inline,
+.track-result-page .module-rule-group-label,
+.track-result-page .mission-card-title,
+.bottom-step-brand {
+  font-size: 14px !important;
+  font-weight: 400 !important;
+}
+
+.result-status-badge.status-need {
+  border-color: #bfdbfe !important;
+  background: #eff6ff !important;
+  color: #1d4ed8 !important;
+  font-size: 14px !important;
+  font-weight: bold !important;
+}
+
+.challenge-status-pill.result-status-badge.status-need {
+  font-weight: 400 !important;
+}
+
+/* Global rank 1 override for 1st place cards regardless of match status */
+.track-match-page .track-rank-large-card.rank-tone-first.active,
+.track-match-page .track-rest-row.rank-tone-first.active,
+.track-result-page .result-track-row.rank-tone-first.active,
+.track-overview-page .result-track-row.rank-tone-first.active {
+  border: 2px solid #d6a400 !important;
+  background: #fffdf2 !important;
+  box-shadow: 0 6px 16px rgba(214, 164, 0, 0.15) !important;
+}
+
+.result-top3-item.rank-tone-first,
+.result-top3-item.rank-tone-first.active {
+  border-color: #d6a400 !important;
+  background: #fff7d8 !important;
+  box-shadow: inset 6px 0 0 #f1b900 !important;
+}
+
+.track-match-card.rank-tone-first {
+  border-color: #d6a400 !important;
+  background: #fff7d8 !important;
+}
+
+
+.track-result-page .result-status-card.match-partial,
+.track-result-page .result-status-card.incomplete {
+  border-color: #bfdbfe !important;
+  background: #eff6ff !important;
+}
+
+.method-page .method-back-button {
+  margin-top: 34px !important;
+}
+
+.track-explore-page .manual-button-group {
+  margin-top: 34px !important;
+}
+
+.checklist-page .manual-button-group {
+  margin-top: 20px !important;
+}
+
+.track-overview-page .manual-button-group {
+  margin-top: 34px !important;
+}
+
+.track-result-page .manual-button-group {
+  margin-top: 34px !important;
+}
+
+.bottom-step-brand,
+.bottom-step-brand span {
+  font-weight: 900 !important;
+}
+
+/* Result page: keep the result box whole, scroll only its inner list */
+@media (min-width: 981px) {
+  .track-result-page .track-result-layout {
+    min-height: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .track-result-page .track-result-main {
+    min-height: 0 !important;
+    height: 100% !important;
+    display: grid !important;
+    grid-template-rows: auto minmax(0, 1fr) !important;
+    gap: 20px !important;
+    overflow: visible !important;
+    padding-right: 10px !important;
+  }
+
+  .track-result-page .result-group-section {
+    min-height: 0 !important;
+    height: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+  }
+
+  .track-result-page .result-group-stack {
+    min-height: 0 !important;
+    flex: 1 1 auto !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    padding-right: 4px !important;
+    scrollbar-gutter: stable !important;
+  }
+
+  .track-result-page .result-group-stack::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .track-result-page .result-group-stack::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .track-result-page .result-group-stack::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: #b9c8e4;
+  }
+}
+
+/* Mobile final spacing pass */
+@media (max-width: 600px) {
+  .method-page-title,
+  .manual-page-title,
+  .track-list-title,
+  .track-result-page .manual-page-title {
+    font-size: 26px !important;
+  }
+
+  .method-page > .bottom-step-indicator,
+  .track-explore-page > .bottom-step-indicator,
+  .checklist-page > .bottom-step-indicator,
+  .manual-page > .bottom-step-indicator,
+  .track-match-page > .bottom-step-indicator,
+  .track-result-page > .bottom-step-indicator {
+    margin: 24px 0 0 !important;
+    padding-top: 14px !important;
+    border-top: 1px solid #e5eaf3 !important;
+  }
+
+  .track-result-page .result-group-section {
+    margin: 0 !important;
+  }
+
+  .track-result-page .manual-button-group {
+    margin: 0 0 24px !important;
+  }
+
+  .track-result-page .result-progress-card .result-progress-header {
+    flex-direction: row !important;
+    align-items: center !important;
+  }
+
+  .track-result-page .result-progress-card .result-progress-summary {
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 7px !important;
+    white-space: nowrap !important;
+  }
+
+  .track-result-page .result-progress-card .challenge-status-pill {
+    margin: 0 !important;
+    white-space: nowrap !important;
+  }
+
+  .track-result-page .mission-needed-inline {
+    font-size: 12px !important;
+    font-weight: 900 !important;
+  }
+
+  .track-result-page .result-track-row {
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    align-items: center !important;
+  }
+
+  .track-result-page .result-track-row-side {
+    width: auto !important;
+    justify-self: end !important;
+    justify-content: flex-end !important;
+    align-items: center !important;
+    gap: 8px !important;
+  }
+
+  .track-result-page .result-track-row-side em,
+  .track-result-page .result-track-row-side b {
+    font-size: 12px !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+  }
+
+  .track-result-page .result-status-badge,
+  .track-result-page .result-status-badge.compact {
+    font-weight: 900 !important;
+  }
+
+  .track-result-page .result-top3-item {
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    align-items: center !important;
+  }
+
+  .track-result-page .result-top3-info {
+    min-width: 0 !important;
+  }
+
+  .track-result-page .result-top3-side {
+    grid-column: 2 !important;
+    justify-self: end !important;
+    align-self: center !important;
+    margin-top: 0 !important;
+  }
+}
+
+@media (min-width: 601px) {
+  .track-result-page .result-status-badge,
+  .track-result-page .result-status-badge.compact {
+    font-size: 12px !important;
+    font-weight: 900 !important;
+  }
+}
+
+.track-explore-page .track-explore-module-head h3,
+.track-explore-page .track-explore-course-name {
+  font-weight: 900 !important;
+}
+
+.track-match-page .quick-missing-chip {
+  font-weight: 400 !important;
+}
+
+.track-result-page .mission-needed-inline {
+  color: #C44A6A !important;
+  font-size: 12px !important;
+  font-weight: 900 !important;
+}
+
+.track-result-page .selected-detail-stats span {
+  font-size: 12px !important;
+  font-weight: 400 !important;
+}
+
+.track-result-page .result-status-desc {
+  margin-top: 3px !important;
+}
+
+.track-result-page .mission-card-title {
+  font-weight: 900 !important;
+}
+
+.track-result-page .module-rule-group-label {
+  font-weight: 900 !important;
+}
+
+.track-result-page .result-track-row-side .result-status-badge.status-candidate {
+  color: #b45309 !important;
+  border-color: #fde68a !important;
+  background: #fffbeb !important;
+}
+
+.track-result-page .result-status-badge.status-complete,
+.track-result-page .challenge-status-pill.result-status-badge.status-complete {
+  color: #047857 !important;
+  border-color: #86efac !important;
+  background: #dcfce7 !important;
+}
+
+.track-match-page .quick-panel-progress {
+  margin-top: 8px !important;
+}
+
+.track-match-page .quick-panel-progress-head {
+  margin-bottom: 5px !important;
+}
+
+@media (max-width: 600px) {
+  .track-match-page .track-list-top3-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;
+  }
+
+  .track-match-page .track-list-top3-grid .track-rank-large-card.rank-tone-first {
+    grid-column: 1 / -1 !important;
+  }
+
+  .track-match-page .track-rank-large-card {
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    align-items: center !important;
+    min-height: 100px !important;
+    padding: 14px 16px !important;
+  }
+
+  .track-match-page .track-rank-large-card.rank-tone-first {
+    min-height: 110px !important;
+  }
+
+  .track-match-page .track-rank-large-main {
+    min-width: 0 !important;
+    gap: 8px !important;
+  }
+
+  .track-match-page .track-rank-large-main .track-icon {
+    display: none !important;
+  }
+
+  .track-match-page .track-rank-large-main .all-track-name {
+    font-size: 15px !important;
+    line-height: 1.25 !important;
+  }
+
+  .track-match-page .track-rank-large-main small {
+    font-size: 11px !important;
+  }
+
+  .track-match-page .track-rank-large-card .track-card-meta-row {
+    justify-content: flex-end !important;
+    align-self: start !important;
+    gap: 6px !important;
+  }
+
+  .track-match-page .track-rank-large-card .track-match-progress {
+    grid-column: 1 / -1 !important;
+  }
+}
+
+.bottom-step-brand {
+  display: contents !important;
+}
+
+.bottom-step-brand img {
+  height: 38px !important;
+  max-width: 136px !important;
+}
+
+.bottom-step-brand span {
+  margin-left: auto !important;
+  margin-right: 2px !important;
+  color: #26334d !important;
+  font-size: 15px !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+}
+
+@media (max-width: 600px) {
+  .bottom-step-brand img {
+    height: 31px !important;
+    max-width: 116px !important;
+  }
+
+  .bottom-step-brand span {
+    margin-right: 2px !important;
+    font-size: 14px !important;
+  }
+}
+
+/* Remove inset left-line box-shadows on result-top3-item (rank-tone overrides have higher specificity) */
+.track-overview-page .result-top3-item.rank-tone-first,
+.track-overview-page .result-top3-item.rank-tone-second,
+.track-overview-page .result-top3-item.rank-tone-third,
+.track-overview-page .result-top3-item.rank-tone-upper,
+.track-overview-page .result-top3-item.rank-tone-default {
+  box-shadow: none !important;
+}
+
+/* Remove gradient background and thick colored left border from rank cards and quick-panel */
+.track-match-page .track-match-card.rank-tone-first,
+.track-match-page .track-match-card.rank-tone-second,
+.track-match-page .track-match-card.rank-tone-third,
+.track-match-page .track-match-card.rank-tone-upper,
+.track-match-page .track-match-card.rank-tone-default,
+.track-match-page .track-list-quick-panel.rank-tone-first,
+.track-match-page .track-list-quick-panel.rank-tone-second,
+.track-match-page .track-list-quick-panel.rank-tone-third,
+.track-match-page .track-list-quick-panel.rank-tone-upper,
+.track-match-page .track-list-quick-panel.rank-tone-default {
+  background: #ffffff !important;
+  border-left: 1px solid #dbe7f6 !important;
+}
+
+/* Fix active rank cards (specificity 0-4-0 needed to override active+rank-tone rule) */
+.track-match-page .track-match-card.active.rank-tone-first {
+  background: #fffdf2 !important;
+  border: 2px solid #d6a400 !important;
+}
+
+.track-match-page .track-match-card.active.rank-tone-second,
+.track-match-page .track-match-card.active.rank-tone-third,
+.track-match-page .track-match-card.active.rank-tone-upper,
+.track-match-page .track-match-card.active.rank-tone-default {
+  background: #ffffff !important;
+  border: 2px solid #2563eb !important;
+}
+
+.challenge-status-pill.result-status-badge.status-candidate { font-weight: 400 !important; }
+.track-result-page .selected-detail-stats span { font-weight: 400 !important; }
+.track-result-page .result-status-title { margin: 0 !important; }
+
+
+/* =========================================================
+   Result page final rollback patch
+   - 추가 이수 필요 bold
+   - 도전중 pill 복구
+   - 트랙 카드 배경 흰색 유지
+   - badge/list font-size 13px
+   ========================================================= */
+
+/* 1, 2, 5. 결과 화면 badge/stat/list 글자 크기와 굵기 */
+.track-result-page .result-status-badge,
+.track-result-page .result-status-badge.compact,
+.track-result-page .challenge-status-pill.result-status-badge,
+.track-result-page .result-top3-status,
+.track-result-page .selected-detail-stats span,
+.track-result-page .mission-needed-inline,
+.track-result-page .mission-count-inline {
+  font-size: 13px !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+}
+
+/* 추가 이수 필요는 확실히 bold */
+.track-result-page .result-status-badge.status-need,
+.track-result-page .result-status-badge.compact.status-need,
+.track-result-page .challenge-status-pill.result-status-badge.status-need,
+.track-result-page .result-track-row-side .result-status-badge.status-need,
+.track-result-page .mission-needed-inline {
+  font-weight: 900 !important;
+}
+
+/* 75% 카드 안 작은 pill 다시 bold */
+.track-result-page .selected-detail-stats span {
+  font-weight: 800 !important;
+}
+
+/* 4. 도전중 버튼/뱃지 롤백 */
+.track-result-page .result-status-badge.status-progress,
+.track-result-page .result-status-badge.compact.status-progress,
+.track-result-page .challenge-status-pill.result-status-badge.status-progress {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: fit-content !important;
+  min-width: 0 !important;
+  min-height: 26px !important;
+  padding: 5px 10px !important;
+  border: 1px solid #bfdbfe !important;
+  border-radius: 999px !important;
+  background: #eff6ff !important;
+  color: #1d4ed8 !important;
+  font-size: 13px !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+  gap: 0 !important;
+  box-shadow: none !important;
+}
+
+/* 기본 '추가 이수 필요'는 파란색 */
+.track-result-page .result-status-badge.status-need,
+.track-result-page .challenge-status-pill.result-status-badge.status-need {
+  border-color: #bfdbfe !important;
+  background: #eff6ff !important;
+  color: #1d4ed8 !important;
+}
+
+/* 3. 트랙 카드 배경은 흰색, 기존 테두리 색은 유지 */
+.track-result-page .result-status-card.match-partial,
+.track-result-page .result-status-card.incomplete,
+.track-result-page .result-top3-item.rank-tone-first,
+.track-result-page .result-top3-item.rank-tone-second,
+.track-result-page .result-top3-item.rank-tone-third,
+.track-result-page .result-top3-item.rank-tone-first.active,
+.track-result-page .result-top3-item.rank-tone-second.active,
+.track-result-page .result-top3-item.rank-tone-third.active,
+.track-result-page .result-track-row.active,
+.track-result-page .result-track-row.rank-tone-first.active,
+.track-result-page .result-track-row.rank-tone-second.active,
+.track-result-page .result-track-row.rank-tone-third.active,
+.track-result-page .result-track-row.rank-tone-upper.active,
+.track-result-page .result-track-row.rank-tone-default.active {
+  background: #ffffff !important;
+  box-shadow: none !important;
+}
+
+/* 노란색 카드일 때: 추가 이수 필요 + 퍼센트도 노란 계열 */
+.track-result-page .result-top3-item.rank-tone-first .result-top3-status,
+.track-result-page .result-track-row.rank-tone-first .result-status-badge.status-need {
+  border-color: #d6a400 !important;
+  background: #fffdf2 !important;
+  color: #b47900 !important;
+}
+
+.track-result-page .result-track-row.rank-tone-first .result-track-row-side b,
+.track-result-page .result-track-row.rank-tone-first .result-track-row-side em {
+  color: #b47900 !important;
+}
+
+/* 파란색 카드일 때: 추가 이수 필요 + 퍼센트는 파란 계열 */
+.track-result-page .result-track-row.active:not(.rank-tone-first) .result-status-badge.status-need {
+  border-color: #bfdbfe !important;
+  background: #eff6ff !important;
+  color: #1d4ed8 !important;
+}
+
+.track-result-page .result-track-row.active:not(.rank-tone-first) .result-track-row-side b,
+.track-result-page .result-track-row.active:not(.rank-tone-first) .result-track-row-side em {
+  color: #1d4ed8 !important;
+}
+
+/* 선택 가능한 보완 과목 리스트 13px */
+.track-result-page .mission-list,
+.track-result-page .mission-item {
+  font-size: 13px !important;
+}
+
+/* =========================================================
+   Result page final hotfix 2
+   - 13px 통일
+   - 후순위 카드 박스 복구
+   ========================================================= */
+
+/* 1. 작은 정보값 13px 통일 */
+.track-result-page .module-credit-badge,
+.track-result-page .result-track-row-side b,
+.track-result-page .result-track-row-side em,
+.track-result-page .result-track-rate,
+.track-result-page .result-status-badge,
+.track-result-page .result-status-badge.compact,
+.track-result-page .challenge-status-pill.result-status-badge,
+.track-result-page .selected-detail-stats span,
+.track-result-page .mission-needed-inline,
+.track-result-page .mission-count-inline,
+.track-result-page .result-top3-status {
+  font-size: 13px !important;
+  line-height: 1 !important;
+}
+
+/* 충족 조건 오른쪽 6/6학점 */
+.track-result-page .module-credit-badge {
+  font-size: 13px !important;
+  font-weight: 800 !important;
+}
+
+/* 0%, 50% 같은 퍼센트 */
+.track-result-page .result-track-row-side b,
+.track-result-page .result-track-row-side em,
+.track-result-page .result-track-rate {
+  font-size: 13px !important;
+  font-weight: 800 !important;
+}
+
+/* 후순위 텍스트 pill */
+.track-result-page .result-status-badge.status-candidate,
+.track-result-page .challenge-status-pill.result-status-badge.status-candidate {
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  padding: 5px 10px !important;
+  border-radius: 999px !important;
+  border: 1px solid #dbe4f4 !important;
+  background: #ffffff !important;
+  color: #64748b !important;
+}
+
+/* 2. 후순위 카드 박스 복구 */
+.track-result-page .result-track-row,
+.track-result-page .result-track-row.rank-tone-first,
+.track-result-page .result-track-row.rank-tone-second,
+.track-result-page .result-track-row.rank-tone-third,
+.track-result-page .result-track-row.rank-tone-upper,
+.track-result-page .result-track-row.rank-tone-default {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 10px !important;
+
+  width: 100% !important;
+  min-height: 56px !important;
+  margin: 0 0 10px 0 !important;
+  padding: 12px 14px !important;
+
+  border: 1px solid #dbe4f4 !important;
+  border-radius: 12px !important;
+  background: #ffffff !important;
+  box-shadow: none !important;
+}
+
+/* 후순위 카드 hover */
+.track-result-page .result-track-row:hover {
+  border-color: #bfdbfe !important;
+  background: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.06) !important;
+}
+
+/* 선택된 후순위 카드 */
+.track-result-page .result-track-row.active,
+.track-result-page .result-track-row[aria-selected="true"] {
+  border: 2px solid #2563eb !important;
+  background: #ffffff !important;
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.1) !important;
+}
+
+/* 혹시 all-overview-list 구조로 렌더링되는 후순위까지 박스 복구 */
+.track-result-page .all-overview-list .result-all-track-card {
+  min-height: 56px !important;
+  margin: 0 0 10px 0 !important;
+  padding: 12px 14px !important;
+
+  border: 1px solid #dbe4f4 !important;
+  border-radius: 12px !important;
+  background: #ffffff !important;
+  box-shadow: none !important;
+}
+
+/* all-overview-list가 기존에 border-bottom 리스트형으로 바꾸는 것 방지 */
+.track-result-page .all-overview-list .result-all-track-card:hover {
+  border-color: #bfdbfe !important;
+  background: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.06) !important;
+  transform: none !important;
+}
+
+/* 카드 안 제목/학과/모듈 텍스트 크기 안정화 */
+.track-result-page .result-track-row .result-track-name,
+.track-result-page .result-track-row .all-track-name,
+.track-result-page .all-overview-list .result-all-track-card .all-track-name {
+  font-size: 15px !important;
+  font-weight: 800 !important;
+}
+
+.track-result-page .result-track-row .result-track-meta,
+.track-result-page .result-track-row .all-track-meta,
+.track-result-page .all-overview-list .result-all-track-card .all-track-meta {
+  font-size: 12px !important;
+  font-weight: 700 !important;
+}
+
+/* 리스트 내부 마지막 카드 여백 제거 */
+.track-result-page .result-track-row:last-child,
+.track-result-page .all-overview-list .result-all-track-card:last-child {
+  margin-bottom: 0 !important;
+}
+
+/* =========================================================
+   Result page final hotfix 3
+   - small badges/text 12px rollback
+   ========================================================= */
+
+/* 추가 이수 필요 / 후순위 / 진행률 / 조건 충족 pill 전부 12px */
+.track-result-page .result-status-badge,
+.track-result-page .result-status-badge.compact,
+.track-result-page em.result-status-badge,
+.track-result-page span.result-status-badge,
+.track-result-page .challenge-status-pill.result-status-badge,
+.track-result-page .result-top3-status,
+.track-result-page .selected-detail-stats span,
+.track-result-page .mission-needed-inline,
+.track-result-page .mission-count-inline {
+  font-size: 12px !important;
+  line-height: 1 !important;
+}
+
+/* 추가 이수 필요는 12px 유지 + bold */
+.track-result-page .result-status-badge.status-need,
+.track-result-page .result-status-badge.compact.status-need,
+.track-result-page em.result-status-badge.compact.status-need,
+.track-result-page span.result-status-badge.status-need,
+.track-result-page .challenge-status-pill.result-status-badge.status-need {
+  font-size: 12px !important;
+  font-weight: 800 !important;
+  padding: 4px 8px !important;
+}
+
+/* 후순위 pill도 12px */
+.track-result-page .result-status-badge.status-candidate,
+.track-result-page .challenge-status-pill.result-status-badge.status-candidate {
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  padding: 4px 8px !important;
+}
+
+/* 50%, 0% 같은 퍼센트도 12px */
+.track-result-page .result-track-row-side b,
+.track-result-page .result-track-row-side em,
+.track-result-page .result-track-rate {
+  font-size: 12px !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+}
+
+/* 충족 조건 오른쪽 6/6학점 */
+.track-result-page .module-credit-badge {
+  font-size: 12px !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+}
+
+/* 1위, 2위, 3위, 4위 랭크 pill */
+.track-result-page .result-rank-marker,
+.track-result-page .rank-badge,
+.track-result-page .track-rank-badge {
+  font-size: 12px !important;
+  font-weight: 800 !important;
+}
+
+/* =========================================================
+   Result page final hotfix 4
+   - 후순위 텍스트 badge 박스 복구
+   ========================================================= */
+
+/* 후순위 / 추가 이수 필요 상태 텍스트 자체를 pill 박스로 강제 */
+.track-result-page .result-track-row-side > em,
+.track-result-page .result-track-row-side em.result-status-badge,
+.track-result-page .result-track-row-side .result-status-badge.status-candidate,
+.track-result-page .result-track-row-side .result-status-badge.status-need {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  width: fit-content !important;
+  min-width: 0 !important;
+  height: 24px !important;
+  padding: 4px 8px !important;
+
+  border-radius: 999px !important;
+  border: 1px solid #dbe4f4 !important;
+  background: #ffffff !important;
+
+  color: #64748b !important;
+  font-size: 12px !important;
+  font-weight: 800 !important;
+  font-style: normal !important;
+  line-height: 1 !important;
+
+  box-sizing: border-box !important;
+  white-space: nowrap !important;
+}
+
+/* 추천후보의 '추가 이수 필요'는 노란 계열 유지 */
+.track-result-page .result-track-row.rank-tone-first .result-track-row-side > em,
+.track-result-page .result-track-row.rank-tone-first .result-track-row-side em.result-status-badge.status-need {
+  border-color: #d6a400 !important;
+  background: #fffdf2 !important;
+  color: #b47900 !important;
+}
+
+/* 후순위는 회색 pill */
+.track-result-page .result-track-row:not(.rank-tone-first) .result-track-row-side > em,
+.track-result-page .result-track-row-side em.result-status-badge.status-candidate {
+  border-color: #dbe4f4 !important;
+  background: #ffffff !important;
+  color: #64748b !important;
+}
+
+/* 0%는 pill로 만들지 말고 텍스트만 유지 */
+.track-result-page .result-track-row-side > b {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+
+  color: #7a8899 !important;
+  font-size: 12px !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+}
+
+/* =========================================================
+   Result page final hotfix 5
+   - 추천 TOP 3 추가 이수 필요 badge 색상도 카드 상황별로 변경
+   ========================================================= */
+
+/* TOP3 카드 안의 '추가 이수 필요' badge 기본 형태 */
+.track-result-page .result-top3-item .result-top3-status,
+.track-result-page .result-top3-item .result-status-badge.status-need,
+.track-result-page .result-top3-item em.result-status-badge.status-need,
+.track-result-page .result-top3-item span.result-status-badge.status-need {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  width: fit-content !important;
+  min-width: 0 !important;
+  height: 24px !important;
+  padding: 4px 8px !important;
+
+  border-radius: 999px !important;
+  border: 1px solid var(--rank-border, #bfdbfe) !important;
+  background: var(--rank-bg, #eff6ff) !important;
+  color: var(--rank-text, #1d4ed8) !important;
+
+  font-size: 12px !important;
+  font-weight: 800 !important;
+  font-style: normal !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+  box-shadow: none !important;
+}
+
+/* 1위 / 노란 카드 */
+.track-result-page .result-top3-item.rank-tone-first .result-top3-status,
+.track-result-page .result-top3-item.rank-tone-first .result-status-badge.status-need,
+.track-result-page .result-top3-item.rank-tone-first em.result-status-badge.status-need,
+.track-result-page .result-top3-item.rank-tone-first span.result-status-badge.status-need {
+  border-color: #d6a400 !important;
+  background: #fffdf2 !important;
+  color: #7a4e00 !important;
+}
+
+/* 2위 / 회색 또는 파란 계열 카드 */
+.track-result-page .result-top3-item.rank-tone-second .result-top3-status,
+.track-result-page .result-top3-item.rank-tone-second .result-status-badge.status-need,
+.track-result-page .result-top3-item.rank-tone-second em.result-status-badge.status-need,
+.track-result-page .result-top3-item.rank-tone-second span.result-status-badge.status-need {
+  border-color: #b7c0cc !important;
+  background: #f3f6fa !important;
+  color: #4b5563 !important;
+}
+
+/* 3위 / 초록 계열 카드 */
+.track-result-page .result-top3-item.rank-tone-third .result-top3-status,
+.track-result-page .result-top3-item.rank-tone-third .result-status-badge.status-need,
+.track-result-page .result-top3-item.rank-tone-third em.result-status-badge.status-need,
+.track-result-page .result-top3-item.rank-tone-third span.result-status-badge.status-need {
+  border-color: #a7d9c0 !important;
+  background: #edf9f1 !important;
+  color: #177344 !important;
+}
+
+/* 그 외 기본/파란 상태 */
+.track-result-page .result-top3-item.rank-tone-upper .result-top3-status,
+.track-result-page .result-top3-item.rank-tone-default .result-top3-status,
+.track-result-page .result-top3-item.rank-tone-upper .result-status-badge.status-need,
+.track-result-page .result-top3-item.rank-tone-default .result-status-badge.status-need {
+  border-color: #bfdbfe !important;
+  background: #eff6ff !important;
+  color: #1d4ed8 !important;
+}
+
+.track-result-page .result-status-icon {
+  width: 56px !important;
+  height: 56px !important;
+  min-width: 56px !important;
+  min-height: 56px !important;
+  flex: 0 0 56px !important;
+}
+
+.track-result-page .target-status-svg {
+  width: 40px !important;
+  height: 40px !important;
+}
+
+/* =========================================================
+   Result page final hotfix 7
+   - 이수 완료 상태는 순위 색보다 초록색 우선 적용
+   ========================================================= */
+
+/* 이수 완료 카드: TOP3 + 전체 결과 row 모두 초록 테두리 */
+.track-result-page .result-top3-item:has(.status-complete),
+.track-result-page .result-top3-item:has(.status-done),
+.track-result-page .result-top3-item:has(.status-achieved),
+.track-result-page .result-track-row:has(.status-complete),
+.track-result-page .result-track-row:has(.status-done),
+.track-result-page .result-track-row:has(.status-achieved) {
+  border-color: #20b86b !important;
+  background: #ffffff !important;
+  box-shadow: none !important;
+}
+
+/* 이수 완료 badge 초록색 고정 */
+.track-result-page .result-status-badge.status-complete,
+.track-result-page .result-status-badge.status-done,
+.track-result-page .result-status-badge.status-achieved,
+.track-result-page em.result-status-badge.status-complete,
+.track-result-page em.result-status-badge.status-done,
+.track-result-page em.result-status-badge.status-achieved,
+.track-result-page span.result-status-badge.status-complete,
+.track-result-page span.result-status-badge.status-done,
+.track-result-page span.result-status-badge.status-achieved {
+  border-color: #86efac !important;
+  background: #dcfce7 !important;
+  color: #078441 !important;
+
+  font-size: 12px !important;
+  font-weight: 800 !important;
+  font-style: normal !important;
+  line-height: 1 !important;
+
+  padding: 4px 8px !important;
+  border-radius: 999px !important;
+}
+
+/* 완료 row 안의 100%도 초록색 */
+.track-result-page .result-track-row:has(.status-complete) .result-track-row-side b,
+.track-result-page .result-track-row:has(.status-done) .result-track-row-side b,
+.track-result-page .result-track-row:has(.status-achieved) .result-track-row-side b,
+.track-result-page .result-track-row:has(.status-complete) .result-track-row-side em:not(.result-status-badge),
+.track-result-page .result-track-row:has(.status-done) .result-track-row-side em:not(.result-status-badge),
+.track-result-page .result-track-row:has(.status-achieved) .result-track-row-side em:not(.result-status-badge) {
+  color: #078441 !important;
+}
+
+/* 완료 row의 순위 pill도 초록색 */
+.track-result-page .result-track-row:has(.status-complete) .result-rank-marker,
+.track-result-page .result-track-row:has(.status-done) .result-rank-marker,
+.track-result-page .result-track-row:has(.status-achieved) .result-rank-marker,
+.track-result-page .result-top3-item:has(.status-complete) .result-rank-marker,
+.track-result-page .result-top3-item:has(.status-done) .result-rank-marker,
+.track-result-page .result-top3-item:has(.status-achieved) .result-rank-marker {
+  border-color: #86efac !important;
+  background: #dcfce7 !important;
+  color: #078441 !important;
+}
+
+/* 혹시 1위 badge가 다른 클래스명일 때까지 같이 방어 */
+.track-result-page .result-track-row:has(.status-complete) .rank-badge,
+.track-result-page .result-track-row:has(.status-done) .rank-badge,
+.track-result-page .result-track-row:has(.status-achieved) .rank-badge,
+.track-result-page .result-track-row:has(.status-complete) .track-rank-badge,
+.track-result-page .result-track-row:has(.status-done) .track-rank-badge,
+.track-result-page .result-track-row:has(.status-achieved) .track-rank-badge {
+  border-color: #86efac !important;
+  background: #dcfce7 !important;
+  color: #078441 !important;
+}
+
+/* TOP3 안의 완료 badge도 순위색보다 초록 우선 */
+.track-result-page .result-top3-item:has(.status-complete) .result-top3-status,
+.track-result-page .result-top3-item:has(.status-done) .result-top3-status,
+.track-result-page .result-top3-item:has(.status-achieved) .result-top3-status {
+  border-color: #86efac !important;
+  background: #dcfce7 !important;
+  color: #078441 !important;
+}
+
+/* =========================================================
+   Result page final hotfix 8
+   - 추가 이수 필요은 항상 파란색
+   - 이수 완료만 초록색
+   - 순위색(rank-tone)이 상태 배지를 덮지 못하게 고정
+   ========================================================= */
+
+/* 추가 이수 필요: TOP3 / 전체 결과 / 상세 카드 전부 파란색 고정 */
+.track-result-page .result-status-badge.status-need,
+.track-result-page .result-status-badge.compact.status-need,
+.track-result-page .challenge-status-pill.result-status-badge.status-need,
+.track-result-page .result-top3-item .result-top3-status.status-need,
+.track-result-page .result-top3-item .result-status-badge.status-need,
+.track-result-page .result-track-row .result-status-badge.status-need,
+.track-result-page .result-track-row-side .result-status-badge.status-need,
+.track-result-page em.result-status-badge.status-need,
+.track-result-page span.result-status-badge.status-need {
+  border-color: #bfdbfe !important;
+  background: #eff6ff !important;
+  color: #1d4ed8 !important;
+
+  font-size: 12px !important;
+  font-weight: 800 !important;
+  font-style: normal !important;
+  line-height: 1 !important;
+
+  padding: 4px 8px !important;
+  border-radius: 999px !important;
+  box-shadow: none !important;
+}
+
+/* rank-tone-first가 추가 이수 필요을 노란색으로 바꾸는 것 방지 */
+.track-result-page .result-top3-item.rank-tone-first .result-top3-status.status-need,
+.track-result-page .result-top3-item.rank-tone-first .result-status-badge.status-need,
+.track-result-page .result-track-row.rank-tone-first .result-status-badge.status-need,
+.track-result-page .result-track-row.rank-tone-first .result-track-row-side .result-status-badge.status-need,
+.track-result-page .result-track-row.rank-tone-first em.result-status-badge.status-need {
+  border-color: #bfdbfe !important;
+  background: #eff6ff !important;
+  color: #1d4ed8 !important;
+}
+
+/* 이수 완료 badge만 초록색 */
+.track-result-page .result-status-badge.status-complete,
+.track-result-page .challenge-status-pill.result-status-badge.status-complete,
+.track-result-page em.result-status-badge.status-complete,
+.track-result-page span.result-status-badge.status-complete {
+  border-color: #86efac !important;
+  background: #dcfce7 !important;
+  color: #047857 !important;
+
+  font-size: 12px !important;
+  font-weight: 800 !important;
+  font-style: normal !important;
+  line-height: 1 !important;
+
+  padding: 4px 8px !important;
+  border-radius: 999px !important;
+}
+
+/* 이수 완료 row는 순위색보다 초록색 우선 */
+.track-result-page .result-track-row.rank-tone-first:has(.result-status-badge.status-complete),
+.track-result-page .result-track-row.rank-tone-first.active:has(.result-status-badge.status-complete),
+.track-result-page .result-track-row.active.rank-tone-first:has(.result-status-badge.status-complete),
+.track-result-page .result-track-row:has(.result-status-badge.status-complete) {
+  border-color: #20b86b !important;
+  background: #ffffff !important;
+  box-shadow: none !important;
+}
+
+/* 이수 완료 TOP3 카드도 초록 테두리 */
+.track-result-page .result-top3-item.rank-tone-first:has(.result-status-badge.status-complete),
+.track-result-page .result-top3-item.rank-tone-first.active:has(.result-status-badge.status-complete),
+.track-result-page .result-top3-item:has(.result-status-badge.status-complete) {
+  border-color: #20b86b !important;
+  background: #ffffff !important;
+  box-shadow: none !important;
+}
+
+/* 이수 완료 row 안의 1위 pill도 초록색 */
+.track-result-page .result-track-row:has(.result-status-badge.status-complete) .result-rank-marker,
+.track-result-page .result-track-row:has(.result-status-badge.status-complete) .rank-badge,
+.track-result-page .result-track-row:has(.result-status-badge.status-complete) .track-rank-badge {
+  border-color: #86efac !important;
+  background: #dcfce7 !important;
+  color: #047857 !important;
+}
+
+/* 이수 완료 row 안의 100%도 초록색 */
+.track-result-page .result-track-row:has(.result-status-badge.status-complete) .result-track-row-side b,
+.track-result-page .result-track-row:has(.result-status-badge.status-complete) .result-track-rate {
+  color: #047857 !important;
+}
+
+/* =========================================================
+   Result page final hotfix 10
+   - 상세 카드 배경 무조건 #F0F5FF
+   - 완료 상태는 초록 테두리/초록 배지
+   - 추가 이수 필요은 파란 배지
+   - 도전 시작 pill 복구
+   ========================================================= */
+
+/* 색상 기준 */
+.track-result-page {
+  --result-detail-bg: #f0f5ff;
+
+  --result-blue-border: #bfdbfe;
+  --result-blue-bg: #eff6ff;
+  --result-blue-text: #1d4ed8;
+
+  --result-green-border: #22c55e;
+  --result-green-pill-bg: #dcfce7;
+  --result-green-pill-border: #86efac;
+  --result-green-text: #047857;
+
+  --result-gray-border: #dbe4f4;
+  --result-gray-bg: #ffffff;
+  --result-gray-text: #64748b;
+}
+
+/* =========================================================
+   1. 오른쪽 큰 상세 카드 배경은 상태와 무관하게 무조건 #F0F5FF
+   ========================================================= */
+
+.track-result-page .result-status-card,
+.track-result-page .result-status-card.match-partial,
+.track-result-page .result-status-card.incomplete,
+.track-result-page .result-status-card.match-partial.incomplete,
+.track-result-page .result-status-card.match-eligible,
+.track-result-page .result-status-card.complete,
+.track-result-page .result-status-card.completed,
+.track-result-page .result-status-card.achieved {
+  background: #f0f5ff !important;
+  box-shadow: none !important;
+}
+
+/* 미완료 / 부분 진행 / 도전 시작 상세 카드 테두리 */
+.track-result-page .result-status-card.match-partial,
+.track-result-page .result-status-card.incomplete,
+.track-result-page .result-status-card.match-partial.incomplete {
+  border-color: #bfdbfe !important;
+}
+
+/* 완료 상세 카드 테두리만 초록 */
+.track-result-page .result-status-card.complete,
+.track-result-page .result-status-card.completed,
+.track-result-page .result-status-card.achieved,
+.track-result-page .result-status-card.match-eligible.complete,
+.track-result-page .result-status-card.match-eligible.completed,
+.track-result-page .result-status-card.match-eligible.achieved,
+.track-result-page .result-status-card:has(.status-complete),
+.track-result-page .result-status-card:has(.status-done),
+.track-result-page .result-status-card:has(.status-achieved) {
+  background: #f0f5ff !important;
+  border-color: #22c55e !important;
+}
+
+/* =========================================================
+   2. TOP3 / 전체 결과 카드: 완료면 초록 테두리
+   ========================================================= */
+
+.track-result-page .result-top3-item:has(.status-complete),
+.track-result-page .result-top3-item:has(.status-done),
+.track-result-page .result-top3-item:has(.status-achieved),
+.track-result-page .result-track-row:has(.status-complete),
+.track-result-page .result-track-row:has(.status-done),
+.track-result-page .result-track-row:has(.status-achieved) {
+  border-color: #22c55e !important;
+}
+
+/* 완료 row의 1위 pill도 초록 */
+.track-result-page .result-track-row:has(.status-complete) .result-rank-marker,
+.track-result-page .result-track-row:has(.status-done) .result-rank-marker,
+.track-result-page .result-track-row:has(.status-achieved) .result-rank-marker,
+.track-result-page .result-track-row:has(.status-complete) .rank-badge,
+.track-result-page .result-track-row:has(.status-done) .rank-badge,
+.track-result-page .result-track-row:has(.status-achieved) .rank-badge,
+.track-result-page .result-track-row:has(.status-complete) .track-rank-badge,
+.track-result-page .result-track-row:has(.status-done) .track-rank-badge,
+.track-result-page .result-track-row:has(.status-achieved) .track-rank-badge {
+  border-color: #86efac !important;
+  background: #dcfce7 !important;
+  color: #047857 !important;
+}
+
+/* 완료 row의 100%도 초록 */
+.track-result-page .result-track-row:has(.status-complete) .result-track-row-side b,
+.track-result-page .result-track-row:has(.status-done) .result-track-row-side b,
+.track-result-page .result-track-row:has(.status-achieved) .result-track-row-side b,
+.track-result-page .result-track-row:has(.status-complete) .result-track-rate,
+.track-result-page .result-track-row:has(.status-done) .result-track-rate,
+.track-result-page .result-track-row:has(.status-achieved) .result-track-rate {
+  color: #047857 !important;
+}
+
+/* =========================================================
+   3. 이수 완료 badge는 무조건 초록
+   ========================================================= */
+
+.track-result-page .result-status-badge.status-complete,
+.track-result-page .result-status-badge.status-done,
+.track-result-page .result-status-badge.status-achieved,
+.track-result-page .result-status-badge.compact.status-complete,
+.track-result-page .result-status-badge.compact.status-done,
+.track-result-page .result-status-badge.compact.status-achieved,
+.track-result-page .challenge-status-pill.status-complete,
+.track-result-page .challenge-status-pill.status-done,
+.track-result-page .challenge-status-pill.status-achieved,
+.track-result-page .result-top3-status.status-complete,
+.track-result-page .result-top3-status.status-done,
+.track-result-page .result-top3-status.status-achieved,
+.track-result-page em.result-status-badge.status-complete,
+.track-result-page em.result-status-badge.status-done,
+.track-result-page em.result-status-badge.status-achieved,
+.track-result-page span.result-status-badge.status-complete,
+.track-result-page span.result-status-badge.status-done,
+.track-result-page span.result-status-badge.status-achieved {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  height: 24px !important;
+  padding: 4px 8px !important;
+  border-radius: 999px !important;
+
+  border: 1px solid #86efac !important;
+  background: #dcfce7 !important;
+  color: #047857 !important;
+
+  font-size: 12px !important;
+  font-weight: 800 !important;
+  font-style: normal !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+  box-shadow: none !important;
+}
+
+/* =========================================================
+   4. 추가 이수 필요 badge는 무조건 파란색
+   ========================================================= */
+
+.track-result-page .result-status-badge.status-need,
+.track-result-page .result-status-badge.compact.status-need,
+.track-result-page .challenge-status-pill.status-need,
+.track-result-page .result-top3-status.status-need,
+.track-result-page em.result-status-badge.status-need,
+.track-result-page span.result-status-badge.status-need {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  height: 24px !important;
+  padding: 4px 8px !important;
+  border-radius: 999px !important;
+
+  border: 1px solid #bfdbfe !important;
+  background: #eff6ff !important;
+  color: #1d4ed8 !important;
+
+  font-size: 12px !important;
+  font-weight: 800 !important;
+  font-style: normal !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+  box-shadow: none !important;
+}
+
+/* 1위 노란색 규칙이 추가 이수 필요 badge를 덮지 못하게 막기 */
+.track-result-page .result-top3-item.rank-tone-first .result-top3-status.status-need,
+.track-result-page .result-top3-item.rank-tone-first .result-status-badge.status-need,
+.track-result-page .result-track-row.rank-tone-first .result-status-badge.status-need,
+.track-result-page .result-track-row.rank-tone-first em.result-status-badge.status-need {
+  border-color: #bfdbfe !important;
+  background: #eff6ff !important;
+  color: #1d4ed8 !important;
+}
+
+/* =========================================================
+   5. 도전 시작 / 도전중 pill 박스 복구
+   ========================================================= */
+
+/* 진행률 오른쪽 상태 텍스트 */
+.track-result-page .result-progress-header .challenge-status-pill,
+.track-result-page .result-progress-header .result-status-badge,
+.track-result-page .result-progress-header .result-progress-status,
+.track-result-page .result-progress-header .progress-status-pill,
+.track-result-page .result-progress-header .track-progress-status,
+.track-result-page .result-progress-header .status-start,
+.track-result-page .result-progress-header .status-empty,
+.track-result-page .result-progress-header .status-candidate,
+.track-result-page .result-progress-header .status-progress,
+.track-result-page .result-progress-header .status-complete {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  height: 24px !important;
+  padding: 4px 9px !important;
+  margin-left: 8px !important;
+  border-radius: 999px !important;
+
+  font-size: 12px !important;
+  font-weight: 800 !important;
+  font-style: normal !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+  box-shadow: none !important;
+}
+
+/* 도전 시작 */
+.track-result-page .result-progress-header .status-start,
+.track-result-page .result-progress-header .status-empty,
+.track-result-page .result-progress-header .status-candidate {
+  border: 1px solid #dbe4f4 !important;
+  background: #ffffff !important;
+  color: #0f172a !important;
+}
+
+/* 도전중 */
+.track-result-page .result-progress-header .status-progress {
+  border: 1px solid #bfdbfe !important;
+  background: #eff6ff !important;
+  color: #1d4ed8 !important;
+}
+
+/* 이수 완료 */
+.track-result-page .result-progress-header .status-complete,
+.track-result-page .result-progress-header .status-done,
+.track-result-page .result-progress-header .status-achieved {
+  border: 1px solid #86efac !important;
+  background: #dcfce7 !important;
+  color: #047857 !important;
+}
+
+/* 0%, 50%, 100% 숫자는 pill 금지 */
+.track-result-page .result-progress-value {
+  display: inline !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  color: #1e3a88 !important;
+  font-size: 20px !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+}
+
+/* =========================================================
+   FINAL PATCH
+   1) 이수 완료 카드의 1위 / 이수 완료 / 100% 초록색 강제
+   2) 추천 TOP3에 1,2,3 번호 원형 추가
+   ========================================================= */
+
+/* ---------------------------------
+   1. 이수 완료 상태 우선 적용
+   --------------------------------- */
+
+/* 이수 완료 row/card는 초록 테두리 */
+.track-result-page .result-track-row:has(.status-complete),
+.track-result-page .result-track-row:has(.status-achieved),
+.track-result-page .result-track-row:has(.status-done),
+.track-result-page .result-top3-item:has(.status-complete),
+.track-result-page .result-top3-item:has(.status-achieved),
+.track-result-page .result-top3-item:has(.status-done) {
+  border-color: #22c55e !important;
+}
+
+/* 이수 완료 배지 */
+.track-result-page .result-track-row:has(.status-complete) .result-status-badge.status-complete,
+.track-result-page .result-track-row:has(.status-achieved) .result-status-badge.status-achieved,
+.track-result-page .result-track-row:has(.status-done) .result-status-badge.status-done,
+.track-result-page .result-top3-item:has(.status-complete) .result-status-badge.status-complete,
+.track-result-page .result-top3-item:has(.status-achieved) .result-status-badge.status-achieved,
+.track-result-page .result-top3-item:has(.status-done) .result-status-badge.status-done,
+.track-result-page .result-track-row:has(.status-complete) .result-top3-status.status-complete,
+.track-result-page .result-top3-item:has(.status-complete) .result-top3-status.status-complete {
+  border-color: #86efac !important;
+  background: #dcfce7 !important;
+  color: #047857 !important;
+}
+
+/* 이수 완료 카드 안의 1위/2위 같은 순위 pill도 초록 */
+.track-result-page .result-track-row:has(.status-complete) .result-rank-marker,
+.track-result-page .result-track-row:has(.status-achieved) .result-rank-marker,
+.track-result-page .result-track-row:has(.status-done) .result-rank-marker,
+.track-result-page .result-track-row:has(.status-complete) .rank-badge,
+.track-result-page .result-track-row:has(.status-achieved) .rank-badge,
+.track-result-page .result-track-row:has(.status-done) .rank-badge,
+.track-result-page .result-track-row:has(.status-complete) .track-rank-badge,
+.track-result-page .result-track-row:has(.status-achieved) .track-rank-badge,
+.track-result-page .result-track-row:has(.status-done) .track-rank-badge {
+  border-color: #86efac !important;
+  background: #dcfce7 !important;
+  color: #047857 !important;
+}
+
+/* 혹시 1위가 그냥 em/span/b로 들어간 경우까지 방어 */
+.track-result-page .result-track-row:has(.status-complete) .result-track-row-side em:first-child,
+.track-result-page .result-track-row:has(.status-achieved) .result-track-row-side em:first-child,
+.track-result-page .result-track-row:has(.status-done) .result-track-row-side em:first-child {
+  border-color: #86efac !important;
+  background: #dcfce7 !important;
+  color: #047857 !important;
+}
+
+/* 이수 완료 카드 안의 100%도 초록 */
+.track-result-page .result-track-row:has(.status-complete) .result-track-row-side b,
+.track-result-page .result-track-row:has(.status-achieved) .result-track-row-side b,
+.track-result-page .result-track-row:has(.status-done) .result-track-row-side b,
+.track-result-page .result-track-row:has(.status-complete) .result-track-rate,
+.track-result-page .result-track-row:has(.status-achieved) .result-track-rate,
+.track-result-page .result-track-row:has(.status-done) .result-track-rate {
+  color: #047857 !important;
+}
+
+/* rank-tone-first(노란 규칙)이 완료 상태를 덮지 못하게 막기 */
+.track-result-page .result-track-row.rank-tone-first:has(.status-complete) .result-rank-marker,
+.track-result-page .result-track-row.rank-tone-first:has(.status-complete) .rank-badge,
+.track-result-page .result-track-row.rank-tone-first:has(.status-complete) .track-rank-badge,
+.track-result-page .result-track-row.rank-tone-first:has(.status-complete) .result-status-badge.status-complete,
+.track-result-page .result-track-row.rank-tone-first:has(.status-complete) .result-track-row-side b {
+  border-color: #86efac !important;
+  background: #dcfce7 !important;
+  color: #047857 !important;
+}
+
+
+/* ---------------------------------
+   2. 추천 TOP3 카드에 1 / 2 / 3 번호 넣기
+   --------------------------------- */
+
+/* 추천 TOP3 카드 기본 */
+.track-result-page .result-top3-item {
+  position: relative !important;
+  overflow: hidden !important;
+  padding-left: 74px !important;
+}
+
+/* 왼쪽 컬러 바 */
+.track-result-page .result-top3-item::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 7px;
+  background: var(--top3-accent, #cbd5e1);
+}
+
+/* 원형 번호 */
+.track-result-page .result-top3-item::after {
+  position: absolute;
+  left: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  border: 1.5px solid var(--top3-accent, #cbd5e1);
+  background: #ffffff;
+  color: var(--top3-accent-text, #475569);
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 36px;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+/* 1위 */
+.track-result-page .result-top3-item:nth-of-type(1) {
+  --top3-accent: #d4a017;
+  --top3-accent-text: #9a6b00;
+}
+.track-result-page .result-top3-item:nth-of-type(1)::after {
+  content: "1";
+}
+
+/* 2위 */
+.track-result-page .result-top3-item:nth-of-type(2) {
+  --top3-accent: #3b82f6;
+  --top3-accent-text: #2563eb;
+}
+.track-result-page .result-top3-item:nth-of-type(2)::after {
+  content: "2";
+}
+
+/* 3위 */
+.track-result-page .result-top3-item:nth-of-type(3) {
+  --top3-accent: #22c55e;
+  --top3-accent-text: #15803d;
+}
+.track-result-page .result-top3-item:nth-of-type(3)::after {
+  content: "3";
+}
+
+/* 모바일/좁은 영역에서 조금 덜 답답하게 */
+@media (max-width: 768px) {
+  .track-result-page .result-top3-item {
+    padding-left: 66px !important;
+  }
+
+  .track-result-page .result-top3-item::after {
+    left: 14px;
+    width: 32px;
+    height: 32px;
+    line-height: 32px;
+    font-size: 16px;
+  }
+}
+
+/* Final polish: softer toggles, smaller TOP3 rank circles, rank-matched candidate badges */
+.track-result-page .mission-toggle-button {
+  color: #b8c6d8 !important;
+}
+
+.track-result-page .result-top3-item {
+  padding-left: 64px !important;
+}
+
+.track-result-page .result-top3-item::after {
+  left: 17px !important;
+  width: 30px !important;
+  height: 30px !important;
+  line-height: 30px !important;
+  font-size: 15px !important;
+}
+
+.track-result-page .result-top3-item:nth-of-type(1) .result-status-badge.status-candidate {
+  border-color: #fde68a !important;
+  background: #fffbeb !important;
+  color: #b45309 !important;
+}
+
+.track-result-page .result-top3-item:nth-of-type(2) .result-status-badge.status-candidate {
+  border-color: #bfdbfe !important;
+  background: #eff6ff !important;
+  color: #2563eb !important;
+}
+
+.track-result-page .result-top3-item:nth-of-type(3) {
+  --top3-accent: #f97316;
+  --top3-accent-text: #c2410c;
+}
+
+.track-result-page .result-top3-item:nth-of-type(3) .result-status-badge.status-candidate {
+  border-color: #fed7aa !important;
+  background: #fff7ed !important;
+  color: #c2410c !important;
+}
+
+@media (max-width: 768px) {
+  .track-result-page .result-top3-item {
+    padding-left: 58px !important;
+  }
+
+  .track-result-page .result-top3-item::after {
+    left: 14px !important;
+    width: 28px !important;
+    height: 28px !important;
+    line-height: 28px !important;
+    font-size: 14px !important;
+  }
+}
+
+.track-result-page .module-desc {
+  font-size: 14px !important;
+}
+
+.track-result-page .mission-needed-inline,
+.track-result-page .module-credit-badge {
+  font-size: 13px !important;
+}
+
+.track-result-page .result-track-row.rank-tone-first .result-status-badge.status-candidate {
+  border-color: #fde68a !important;
+  background: #fffbeb !important;
+  color: #b45309 !important;
+}
+
+.track-result-page .result-track-row.rank-tone-second .result-status-badge.status-candidate {
+  border-color: #bfdbfe !important;
+  background: #eff6ff !important;
+  color: #2563eb !important;
+}
+
+.track-result-page .result-track-row.rank-tone-third .result-status-badge.status-candidate {
+  border-color: #fed7aa !important;
+  background: #fff7ed !important;
+  color: #c2410c !important;
+}
+
+/* Final complete-state color guard */
+.track-result-page .result-status-card.complete,
+.track-result-page .result-status-card:has(.status-complete) {
+  border-color: #22c55e !important;
+  background: #f0fdf4 !important;
+}
+
+.track-result-page .result-status-card.complete .result-status-icon {
+  background: #dcfce7 !important;
+  color: #047857 !important;
+}
+
+.track-result-page .result-status-card.complete .result-status-title,
+.track-result-page .result-status-card.complete .result-status-desc {
+  color: #065f46 !important;
+}
+
+.track-result-page .result-status-badge.status-complete,
+.track-result-page .result-status-badge.compact.status-complete,
+.track-result-page .challenge-status-pill.result-status-badge.status-complete,
+.track-result-page .result-top3-status.status-complete {
+  border-color: #86efac !important;
+  background: #dcfce7 !important;
+  color: #047857 !important;
+}
+
+.track-result-page .result-progress-card:has(.status-complete) .result-progress-fill {
+  background: #22c55e !important;
+}
+
+.track-result-page .result-progress-card:has(.status-complete) .result-progress-value {
+  color: #047857 !important;
+}
+
+.track-result-page .module-rule-group-label.satisfied,
+.track-result-page .module-detail-item.satisfied .module-desc,
+.track-result-page .module-detail-item.satisfied .module-credit-badge {
+  color: #047857 !important;
+}
+
+.track-result-page .module-detail-item.satisfied .module-status-icon {
+  background: #10b981 !important;
+  color: #ffffff !important;
+}
+
+.track-result-page .result-top3-item:has(.status-complete) {
+  --top3-accent: #22c55e !important;
+  --top3-accent-text: #047857 !important;
+}
+
+.track-result-page .result-top3-item:has(.status-complete)::after {
+  border-color: #22c55e !important;
+  color: #047857 !important;
+}
+
+.track-result-page .result-track-row:has(.status-complete) .result-track-rank,
+.track-result-page .result-track-row:has(.status-achieved) .result-track-rank,
+.track-result-page .result-track-row:has(.status-done) .result-track-rank {
+  border-color: #86efac !important;
+  background: #dcfce7 !important;
+  color: #047857 !important;
+}
+
+.track-result-page .result-track-row.status-complete .result-track-rank,
+.track-result-page .result-track-row.status-achieved .result-track-rank,
+.track-result-page .result-track-row.status-done .result-track-rank {
+  border-color: #86efac !important;
+  background: #dcfce7 !important;
+  color: #047857 !important;
+}
+
+.track-result-page .result-top3-item.status-complete {
+  --top3-accent: #22c55e !important;
+  --top3-accent-text: #047857 !important;
+}
+
+.track-result-page .result-top3-item.status-complete::after {
+  border-color: #22c55e !important;
+  color: #047857 !important;
+}
+
+/* Final rank/color consistency for result cards */
+.track-result-page .result-track-group {
+  border: 1px solid #dbe7f6 !important;
+  border-radius: 14px !important;
+  background: #ffffff !important;
+  overflow: hidden !important;
+}
+
+.track-result-page .result-track-group + .result-track-group {
+  margin-top: 14px !important;
+  padding-top: 0 !important;
+  border-top: 0 !important;
+}
+
+.track-result-page .result-track-group-head {
+  padding: 12px 14px 8px !important;
+  background: #ffffff !important;
+}
+
+.track-result-page .result-track-list {
+  border: 0 !important;
+  border-radius: 0 !important;
+}
+
+.track-result-page .result-status-card:not(.complete):not(:has(.status-complete)) .challenge-status-pill.result-status-badge.status-candidate {
+  border-color: #bfdbfe !important;
+  background: #eff6ff !important;
+  color: #2563eb !important;
+}
+
+.track-result-page .result-top3-item.rank-tone-first:not(.status-complete):not(:has(.status-complete)),
+.track-result-page .result-track-row.rank-tone-first:not(.status-complete):not(:has(.status-complete)) {
+  border-color: #d4a017 !important;
+}
+
+.track-result-page .result-top3-item.rank-tone-second:not(.status-complete):not(:has(.status-complete)),
+.track-result-page .result-track-row.rank-tone-second:not(.status-complete):not(:has(.status-complete)) {
+  border-color: #2563eb !important;
+}
+
+.track-result-page .result-top3-item.rank-tone-third:not(.status-complete):not(:has(.status-complete)),
+.track-result-page .result-track-row.rank-tone-third:not(.status-complete):not(:has(.status-complete)) {
+  border-color: #f97316 !important;
+}
+
+.track-result-page .result-top3-item.rank-tone-third:not(.status-complete):not(:has(.status-complete)) {
+  --top3-accent: #f97316 !important;
+  --top3-accent-text: #c2410c !important;
+}
+
+.track-result-page .result-track-row.rank-tone-third:not(.status-complete):not(:has(.status-complete)) .result-track-rank {
+  border-color: #fed7aa !important;
+  background: #fff7ed !important;
+  color: #c2410c !important;
+}
+
+/* Restore result group layout: one outer box, scroll inside, no nested group boxes */
+.track-result-page .result-group-section {
+  overflow: hidden !important;
+}
+
+.track-result-page .result-group-stack {
+  gap: 18px !important;
+  max-height: min(48vh, 520px) !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  padding-right: 8px !important;
+  scrollbar-gutter: stable !important;
+}
+
+.track-result-page .result-track-group {
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  overflow: visible !important;
+}
+
+.track-result-page .result-track-group + .result-track-group {
+  margin-top: 0 !important;
+  padding-top: 18px !important;
+  border-top: 1px solid #e4ebf5 !important;
+}
+
+.track-result-page .result-track-group-head {
+  padding: 0 0 8px !important;
+  background: transparent !important;
+  border: 0 !important;
+}
+
+.track-result-page .result-track-list {
+  display: grid !important;
+  gap: 10px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  overflow: visible !important;
+}
+
+.track-result-page .result-track-row {
+  border: 1px solid #dbe7f6 !important;
+  border-radius: 12px !important;
+  background: #ffffff !important;
+  outline: none !important;
+}
+
+.track-result-page .result-track-row.active,
+.track-result-page .result-track-row[aria-selected="true"] {
+  border-width: 2px !important;
+}
+
+@media (max-width: 600px) {
+  .track-result-page .result-group-stack {
+    max-height: 46vh !important;
+    padding-right: 6px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .track-result-page .result-status-card {
+    grid-template-columns: auto minmax(0, max-content) !important;
+    justify-content: center !important;
+    column-gap: 14px !important;
+    padding: 20px 16px !important;
+  }
+
+  .track-result-page .result-status-text-wrap {
+    max-width: min(330px, 100%) !important;
+  }
+
+  .track-result-page .selected-detail-stats {
+    justify-content: flex-start !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .track-match-page .track-rank-large-card {
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    column-gap: 8px !important;
+    align-items: start !important;
+  }
+
+  .track-match-page .track-rank-large-main {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    align-self: start !important;
+  }
+
+  .track-match-page .track-rank-large-card .track-card-meta-row {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    align-self: start !important;
+    justify-self: end !important;
+    justify-content: flex-end !important;
+    flex-wrap: nowrap !important;
+    gap: 5px !important;
+  }
+
+  .track-match-page .track-rank-large-card .track-match-badge,
+  .track-match-page .track-rank-large-card .track-rank-chip {
+    flex: 0 0 auto !important;
+    white-space: nowrap !important;
+  }
+
+  .track-match-page .track-rank-large-main .all-track-name {
+    display: -webkit-box !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+}
+
+@media (max-width: 480px) {
+  .track-match-page .track-list-top3-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .track-match-page .track-list-top3-grid .track-rank-large-card.rank-tone-first {
+    grid-column: auto !important;
+  }
+
+  .track-match-page .track-rank-large-card {
+    min-height: 0 !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .track-match-page .track-list-scroll {
+    padding-bottom: 14px !important;
+  }
+
+  .track-match-page .track-list-top3-grid {
+    padding-bottom: 4px !important;
+  }
+
+  .track-match-page .track-rank-large-card {
+    margin-bottom: 2px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .track-match-page .track-rest-row {
+    grid-template-columns: auto minmax(0, 1fr) auto auto !important;
+    gap: 6px !important;
+  }
+
+  .track-match-page .track-rest-row .track-match-badge {
+    grid-column: auto !important;
+    grid-row: auto !important;
+    justify-self: end !important;
+    padding: 3px 7px !important;
+    font-size: 11px !important;
+  }
+
+  .track-match-page .track-rest-row b {
+    grid-column: auto !important;
+    grid-row: auto !important;
+    font-size: 12px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .track-match-page .quick-panel-missing {
+    gap: 2px !important;
+    margin-top: 4px !important;
+  }
+
+  .track-match-page .quick-panel-missing > span {
+    padding-top: 0 !important;
+    line-height: 1.15 !important;
+  }
+
+  .track-match-page .quick-panel-missing > div {
+    gap: 0 !important;
+    line-height: 1.15 !important;
+  }
+
+  .track-match-page .quick-missing-chip {
+    font-size: 11px !important;
+    line-height: 1.15 !important;
+  }
+}
+
+.track-result-page .result-status-card.match-unrelated,
+.track-result-page .result-status-card:has(.status-low) {
+  border: 1px solid #dbe4f4 !important;
+  background: #f8fbff !important;
+}
+
+/* Final complete detail card tone and progress badge spacing. */
+.track-result-page .result-status-card.complete,
+.track-result-page .result-status-card.match-eligible.complete,
+.track-result-page .result-status-card:has(.result-status-badge.status-complete) {
+  border-color: #22c55e !important;
+  background: #f0fdf4 !important;
+  background-color: #f0fdf4 !important;
+}
+
+.track-result-page .result-progress-summary {
+  gap: 4px !important;
+}
+
+.track-result-page .result-progress-header .result-status-badge.compact,
+.track-result-page .result-progress-header .status-complete {
+  margin-left: 0 !important;
+}
+
+/* Final spacing pass: readable selected chips, tighter track rows, tighter condition headings. */
+.track-explore-card {
+  margin-bottom: 8px !important;
+}
+
+.track-explore-module-list {
+  gap: 10px !important;
+}
+
+.track-list-quick-panel {
+  margin-bottom: 2px !important;
+}
+
+.track-result-page .result-track-list {
+  gap: 6px !important;
+}
+
+.track-result-page .result-track-row {
+  margin-bottom: 4px !important;
+}
+
+.track-result-page .module-rule-group-label {
+  margin: 6px 0 0 !important;
+}
+
+.track-result-page .module-rule-group-label + .module-detail-item .module-detail-header {
+  padding-top: 4px !important;
+}
+
+.track-section-header {
+  margin-bottom: 12px !important;
+}
+
+@media (max-width: 600px) {
+  .selected-dept-chip-list {
+    gap: 6px !important;
+  }
+
+  .track-explore-card {
+    margin-bottom: 7px !important;
+  }
+
+  .track-explore-list,
+  .track-explore-detail {
+    padding: 12px !important;
+  }
+
+  .track-result-page .module-rule-group-label {
+    margin-top: 5px !important;
+  }
+
+  .track-result-page .module-rule-group-label + .module-detail-item .module-detail-header {
+    padding-top: 3px !important;
+  }
+
+  .track-section-header {
+    margin-bottom: 12px !important;
+  }
+
+  .manual-page .method-page-desc,
+  .track-explore-page .method-page-desc,
+  .track-match-page .method-page-desc,
+  .track-result-page .method-page-desc {
+    font-size: 13px !important;
+  }
+}
+
+/* Mobile final alignment: keep result cards inside the scroll area and place rank/status on the department row. */
+@media (max-width: 600px) {
+  .track-result-page .result-group-stack {
+    max-height: 48vh !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    padding: 2px 10px 18px 2px !important;
+    scrollbar-gutter: stable !important;
+  }
+
+  .track-result-page .result-track-list {
+    gap: 6px !important;
+    padding: 2px 2px 8px !important;
+  }
+
+  .track-result-page .result-track-row {
+    margin: 0 0 4px !important;
+    padding: 14px 16px !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+  }
+
+  .track-result-page .result-track-row.active,
+  .track-result-page .result-track-row[aria-selected="true"] {
+    border-width: 2px !important;
+    box-shadow: none !important;
+  }
+
+  .track-result-page .result-track-row:last-child {
+    margin-bottom: 2px !important;
+  }
+
+  .track-match-page .track-list-quick-panel {
+    overflow: visible !important;
+  }
+
+  .track-match-page .quick-panel-top {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    grid-template-areas:
+      "dept actions"
+      "title title" !important;
+    align-items: center !important;
+    column-gap: 10px !important;
+    row-gap: 4px !important;
+  }
+
+  .track-match-page .quick-panel-top > div:first-child {
+    display: contents !important;
+  }
+
+  .track-match-page .quick-panel-kicker {
+    grid-area: dept !important;
+    justify-self: start !important;
+    margin: 0 !important;
+  }
+
+  .track-match-page .quick-panel-top h3 {
+    grid-area: title !important;
+    margin: 2px 0 0 !important;
+  }
+
+  .track-match-page .quick-panel-actions {
+    grid-area: actions !important;
+    justify-self: end !important;
+    align-self: center !important;
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    gap: 6px !important;
+    margin: 0 !important;
+  }
+
+  .track-match-page .quick-panel-progress {
+    margin-top: 6px !important;
+  }
+
+  .track-match-page .quick-panel-progress-head {
+    margin-bottom: 3px !important;
+  }
+
+  .track-match-page .track-rank-large-card {
+    row-gap: 6px !important;
+  }
+
+  .track-match-page .track-rank-large-main small {
+    margin-top: 1px !important;
+  }
+
+  .track-match-page .track-rank-large-card .track-match-progress {
+    margin-top: 0 !important;
+  }
+}
+
+/* Final result-row polish: no percent pill background, tighter rows, selected orange stays orange. */
+.track-result-page .result-track-row-side > b,
+.track-result-page .result-track-row-side .result-track-rate {
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.track-result-page .result-track-list {
+  gap: 4px !important;
+}
+
+.track-result-page .result-track-row {
+  margin-bottom: 2px !important;
+}
+
+.track-result-page .result-track-row.rank-tone-third.active,
+.track-result-page .result-track-row.rank-tone-third[aria-selected="true"] {
+  border-color: #f97316 !important;
+}
+
+.track-result-page .result-track-row.rank-tone-third.active .result-status-badge.status-candidate,
+.track-result-page .result-track-row.rank-tone-third[aria-selected="true"] .result-status-badge.status-candidate {
+  border-color: #fed7aa !important;
+  background: #fff7ed !important;
+  color: #c2410c !important;
+}
+
+.track-result-page .result-track-row.rank-tone-third.active .result-track-row-side b,
+.track-result-page .result-track-row.rank-tone-third[aria-selected="true"] .result-track-row-side b,
+.track-result-page .result-track-row.rank-tone-third.active .result-track-row-side em:not(.result-status-badge),
+.track-result-page .result-track-row.rank-tone-third[aria-selected="true"] .result-track-row-side em:not(.result-status-badge) {
+  color: #c2410c !important;
+}
+
+@media (max-width: 600px) {
+  .track-result-page .result-track-list {
+    gap: 4px !important;
+  }
+
+  .track-result-page .result-track-row {
+    margin: 0 0 2px !important;
+  }
+}
+
+/* Final mobile text and selected department chip states. */
+@media (max-width: 600px) {
+  body .card-container .method-page-desc,
+  body .manual-page .method-page-desc,
+  body .checklist-page .method-page-desc,
+  body .track-explore-page .method-page-desc,
+  body .track-match-page .method-page-desc,
+  body .track-result-page .method-page-desc {
+    font-size: 15px !important;
+    line-height: 1.55 !important;
+  }
+
+  body .track-match-page .track-list-subtitle {
+    font-size: 15px !important;
+    line-height: 1.55 !important;
+  }
+
+  button.selected-dept-chip.selected-dept-filter-chip.active:not(.selected-dept-all-chip) {
+    background: var(--major-text, #2f5fca) !important;
+    border-color: var(--major-text, #2f5fca) !important;
+    color: #ffffff !important;
+    outline: none !important;
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.26),
+      0 4px 10px rgba(30, 58, 138, 0.18) !important;
+  }
+
+  button.selected-dept-chip.selected-dept-filter-chip.active:not(.selected-dept-all-chip):focus,
+  button.selected-dept-chip.selected-dept-filter-chip.active:not(.selected-dept-all-chip):focus-visible {
+    outline: none !important;
+  }
+}
+
+/* Make low-priority badges distinct from recommendation badges. */
+@media (max-width: 600px) {
+  .track-result-page .result-status-badge.status-low,
+  .track-result-page .result-status-badge.compact.status-low,
+  .track-result-page .challenge-status-pill.result-status-badge.status-low,
+  .track-result-page em.result-status-badge.status-low,
+  .track-result-page span.result-status-badge.status-low,
+  .track-result-page .result-track-row-side em.result-status-badge.status-low {
+    border-color: #cbd5e1 !important;
+    background: #f1f5f9 !important;
+    color: #64748b !important;
+  }
+
+  .track-result-page .result-status-card:has(.status-low) .challenge-status-pill.result-status-badge.status-low {
+    border-color: #cbd5e1 !important;
+    background: #f1f5f9 !important;
+    color: #64748b !important;
+  }
+}
+
+/* Final low-priority badge separation and condition spacing. */
+.track-result-page .result-status-badge.status-low,
+.track-result-page .result-status-badge.compact.status-low,
+.track-result-page .challenge-status-pill.result-status-badge.status-low,
+.track-result-page em.result-status-badge.status-low,
+.track-result-page span.result-status-badge.status-low,
+.track-result-page .result-track-row-side em.result-status-badge.status-low {
+  border-color: #cbd5e1 !important;
+  background: #f1f5f9 !important;
+  color: #64748b !important;
+}
+
+.track-result-page .result-progress-header .result-status-badge.compact.status-low {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 24px !important;
+  padding: 4px 9px !important;
+  border: 1px solid #dbe4f4 !important;
+  border-radius: 999px !important;
+  background: #ffffff !important;
+  color: #0f172a !important;
+  font-size: 12px !important;
+  font-weight: 800 !important;
+}
+
+.track-result-page .result-progress-header .result-progress-summary {
+  gap: 5px !important;
+}
+
+.track-result-page .module-detail-list {
+  gap: 12px !important;
+}
+
+.track-result-page .module-detail-item + .module-detail-item {
+  margin-top: 0 !important;
+}
+
+.track-result-page .result-track-row.rank-tone-third .result-status-badge.status-low,
+.track-result-page .result-track-row.rank-tone-third.active .result-status-badge.status-low,
+.track-result-page .result-track-row.rank-tone-third[aria-selected="true"] .result-status-badge.status-low {
+  border-color: #cbd5e1 !important;
+  background: #f1f5f9 !important;
+  color: #64748b !important;
+}
+
+.track-result-page .result-track-row.rank-tone-third.active .result-track-row-side b,
+.track-result-page .result-track-row.rank-tone-third[aria-selected="true"] .result-track-row-side b {
+  color: #c2410c !important;
+}
+
+/* Keep note tooltip clicks from resizing course chips. */
+.track-explore-course-chips .track-explore-course-chip,
+.module-course-chips .course-chip,
+.quick-panel-missing .quick-missing-chip {
+  align-items: center !important;
+}
+
+.track-explore-course-chips .track-explore-course-chip {
+  min-height: 28px !important;
+  line-height: 1.2 !important;
+}
+
+.chip-note-wrap {
+  flex: 0 0 14px !important;
+  width: 14px !important;
+  height: 14px !important;
+  min-width: 14px !important;
+  margin-left: 3px !important;
+  padding: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 10px !important;
+  line-height: 1 !important;
+  vertical-align: middle !important;
+  overflow: visible !important;
+}
+
+.chip-note-wrap:focus,
+.chip-note-wrap:focus-visible,
+.chip-note-wrap.tooltip-open {
+  outline: none !important;
+  font-size: 10px !important;
+  line-height: 1 !important;
+}
+
+.chip-note-wrap .chip-note-tooltip {
+  max-width: 230px !important;
+  line-height: 1.45 !important;
+}
+
+@media (hover: hover) {
+  .track-result-page .chip-note-wrap:hover .chip-note-tooltip,
+  .track-result-page .chip-note-wrap:focus-visible .chip-note-tooltip {
+    opacity: 1 !important;
+  }
+}
+
+/* Result page row spacing: keep TOP 3 as-is, tighten only the all-track result rows. */
+.track-result-page .result-top3-list {
+  gap: 10px !important;
+  row-gap: 10px !important;
+}
+
+.track-result-page .result-group-section .result-track-list {
+  gap: 10px !important;
+  row-gap: 10px !important;
+}
+
+.track-result-page .result-group-section .result-track-row {
+  margin: 0 !important;
+}
+
+.track-result-page .result-group-section .result-track-row + .result-track-row {
+  margin-top: 0 !important;
+}
+
+@media (max-width: 600px) {
+  .track-result-page .result-top3-list {
+    gap: 10px !important;
+    row-gap: 10px !important;
+  }
+
+  .track-result-page .result-group-section .result-track-list {
+    gap: 10px !important;
+    row-gap: 10px !important;
+  }
+
+  .track-result-page .result-group-section .result-track-row {
+    margin: 0 !important;
+  }
+
+  .track-result-page .module-rule-group-label.missing {
+    margin-top: 12px !important;
+  }
+
+  .track-result-page .module-detail-header {
+    padding: 4px 0 0 !important;
+  }
+}
+
+.track-result-page .module-rule-group-label.missing {
+  margin-top: 14px !important;
+}
+
+.track-explore-card-top {
+  gap: 10px !important;
+}
+
+@media (max-width: 600px) {
+  .track-match-page .track-list-top3-grid .track-rank-large-card.rank-tone-first {
+    min-height: 0 !important;
+    padding: 14px 16px 12px !important;
+    align-items: start !important;
+    row-gap: 8px !important;
+  }
+
+  .track-match-page .track-list-top3-grid .track-rank-large-card.rank-tone-first .track-match-progress {
+    margin-top: 0 !important;
+  }
+}
+
+.track-result-page .result-track-group-head h3,
+.track-result-page .result-group-title,
+.track-result-page .result-track-group-title {
+  color: #334155 !important;
+}
+
+/* Correct spacing target: track result rows, not condition rows. */
+.track-result-page .module-detail-list {
+  gap: 4px !important;
+}
+
+.track-result-page .result-track-list {
+  gap: 12px !important;
+}
+
+.track-result-page .result-track-row {
+  margin-bottom: 0 !important;
+}
+
+@media (max-width: 600px) {
+  .track-result-page .module-detail-list {
+    gap: 4px !important;
+  }
+
+  .track-result-page .result-track-list {
+    gap: 12px !important;
+  }
+
+  .track-result-page .result-track-row {
+    margin-bottom: 0 !important;
+  }
+}
+
+/* Final mobile override for condition row header padding. */
+@media (max-width: 600px) {
+  .track-result-page .track-result-detail-scroll .module-detail-list .module-detail-item .module-detail-header,
+  .track-result-page .track-result-detail .module-detail-list .module-detail-item .module-detail-header,
+  .track-result-page .module-rule-group-label + .module-detail-item .module-detail-header {
+    padding: 4px 0 0 !important;
+  }
+}
+
+.track-result-page .track-result-detail-scroll .module-detail-list .module-detail-item .module-detail-header,
+.track-result-page .track-result-detail .module-detail-list .module-detail-item .module-detail-header,
+.track-result-page .module-rule-group-label + .module-detail-item .module-detail-header {
+  padding: 4px 0 0 !important;
+}
+
+.track-result-page .track-section-title {
+  color: #12388D !important;
+}
+
+.track-result-page .result-group-stack {
+  max-height: min(56vh, 600px) !important;
+}
+
+@media (min-width: 601px) {
+  .track-result-page .result-track-group-head {
+    padding: 0 0 12px !important;
+  }
+
+  .track-result-page .result-track-group-head h3 {
+    margin-bottom: 6px !important;
   }
 }

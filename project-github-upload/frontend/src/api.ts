@@ -86,6 +86,16 @@ export interface AnalyzeCourseInput {
   grade: string;
 }
 
+export interface CourseDetail {
+  course_name: string;
+  credits: number;
+  note: string;
+  has_note: boolean;
+  note_type: string | null;
+  note_label: string;
+  warning_level: string | null;
+}
+
 export interface RuleResultInfo {
   rule_type: string;
   description: string;
@@ -100,6 +110,9 @@ export interface RuleResultInfo {
   evaluation_status?: string;
   note?: string;
   manual_review_items?: string[];
+  taken_course_details?: CourseDetail[];
+  remaining_course_details?: CourseDetail[];
+  missing_course_details?: CourseDetail[];
 }
 
 export interface TrackResultInfo {

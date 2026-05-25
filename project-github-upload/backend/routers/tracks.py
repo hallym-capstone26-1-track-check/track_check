@@ -56,6 +56,7 @@ def _enrich_modules_with_course_notes(modules: list[dict]) -> list[dict]:
     return result
 
 
+
 def _build_department_tracks_response(college: dict, dept: dict) -> dict:
     """특정 학과의 트랙 상세 응답을 만듭니다."""
     module_key_to_name = {

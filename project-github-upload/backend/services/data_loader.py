@@ -83,7 +83,7 @@ def load_track_rules() -> dict[str, Any]:
             for college in colleges:
                 # 4. Departments 로드
                 cur.execute(
-                    "SELECT id, dept_name, page_ref "
+                    "SELECT id, dept_name, page_ref, global_note "
                     "FROM departments WHERE college_id = %s ORDER BY id",
                     (college["id"],)
                 )
@@ -219,6 +219,8 @@ def load_track_rules() -> dict[str, Any]:
                     }
                     if dept["page_ref"]:
                         dept_dict["page_ref"] = dept["page_ref"]
+                    if dept.get("global_note"):
+                        dept_dict["global_note"] = dept["global_note"]
                     if modules_data:
                         dept_dict["modules"] = modules_data
                     if tracks_data:

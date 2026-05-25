@@ -32,15 +32,15 @@ def test_retake_and_f_np_stats_are_separated():
     assert {course["course_name"] for course in passing} == {"데이터사이언스기초", "인공지능기초", "빅데이터개론"}
 
 
-def test_analyze_result_contains_course_note_details_for_missing_courses():
-    """분석 결과의 부족 과목 상세에 가이드북 비고 메타데이터가 포함되어야 한다."""
+def test_analyze_result_excludes_abolished_courses_from_missing_recommendations():
+    """폐지 과목은 부족 과목/보완 추천 후보에서 제외해야 한다."""
     result = analyze_tracks("인공지능융합학부", [_course("로봇개론")])
     target = next(t for t in result["track_results"] if t["track_name"] == "로봇인공지능트랙")
-    detail = next(c for c in target["missing_course_details"] if c["course_name"] == "인공지능시스템프로그래밍")
-    assert detail["has_note"] is True
-    assert detail["note"] == "2026-1학기 교과목 폐지"
-    assert detail["note_type"] == "abolished"
-    assert detail["warning_level"] == "danger"
+    assert "인공지능시스템프로그래밍" not in target["missing_courses"]
+    assert all(
+        c["course_name"] != "인공지능시스템프로그래밍"
+        for c in target["missing_course_details"]
+    )
 
 
 
