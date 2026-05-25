@@ -30,7 +30,7 @@ GRADE_PRIORITY: dict[str, int] = {
 SUPPORTED_RULE_TYPES: set[str] = {
     "required_courses_all", "module_min_courses", "module_all_courses",
     "module_min_credits", "track_min_credits", "total_min_courses",
-    "module_group_min_courses_total",
+    "module_group_min_courses_total", "module_course_indexes_all",
 }
 
 def get_department_data(dept_name: str) -> Optional[dict]:
@@ -154,6 +154,33 @@ def analyze_tracks(dept_name: str, student_courses: list[dict]) -> dict:
         if r["is_completed"]:
             completed_tracks.append(r["track_name"])
 
+    # 학과 전체 필수 조건(global_note)을 추가 확인 항목으로 삽입
+    # "이수"가 포함된 경우만 사용자 노출 조건으로 처리 (내부 개발 메모 제외)
+    global_note = dept_data.get("global_note", "").strip()
+    if global_note and "이수" in global_note:
+        global_note_rule = {
+            "rule_type": "raw_text_requirement",
+            "description": "학과 필수 교과목 별도 이수",
+            "satisfied": False,
+            "current_value": 0,
+            "required_value": 0,
+            "shortage_count": 0,
+            "shortage_credits": 0,
+            "missing_courses": [],
+            "remaining_courses": [],
+            "all_courses": [],
+            "taken_courses": [],
+            "evaluation_status": "manual_review",
+            "note": global_note,
+            "manual_review_items": ["학과 필수 교과목 별도 이수"],
+            "missing_course_details": [],
+            "taken_course_details": [],
+            "remaining_course_details": [],
+            "all_course_details": [],
+        }
+        for r in track_results:
+            r["rule_results"].append(global_note_rule)
+
     # 모듈 현황 — 트랙 조건 기준으로
     module_results = _calc_module_results_by_track(dept_data, module_stats)
 
@@ -247,6 +274,17 @@ def _details_for_courses(course_names: list[str], detail_map: dict[str, dict]) -
             detail = build_course_detail(name, 0, "")
         details.append(detail)
     return details
+
+
+def _filter_unrecommended_courses(course_names: list[str], detail_map: dict[str, dict]) -> list[str]:
+    """화면의 보완/추천 후보에서 폐지 과목은 제외합니다."""
+    result = []
+    for name in course_names:
+        detail = detail_map.get(name, {})
+        if detail.get("note_type") == "abolished":
+            continue
+        result.append(name)
+    return result
 
 
 def _estimate_min_course_count_for_credits(
@@ -440,7 +478,10 @@ def _analyze_single_track(track: dict, student_names: set[str], module_stats: di
     supported = []
     detail_map = _build_course_detail_map(module_stats)
     manual_items = list(dict.fromkeys(track.get("manual_review_items", [])))
-    unsupported = list(dict.fromkeys(track.get("unsupported_rule_types", [])))
+    unsupported = [
+        rule_type for rule_type in dict.fromkeys(track.get("unsupported_rule_types", []))
+        if rule_type not in SUPPORTED_RULE_TYPES
+    ]
 
     for rule in rules:
         r = _check_rule(rule, track, student_names, module_stats)
@@ -449,6 +490,8 @@ def _analyze_single_track(track: dict, student_names: set[str], module_stats: di
         # - taken_course_details: 이미 이수한 과목 → 초록색 칩
         # - missing_course_details: 아직 조건을 못 채운 경우 안 들은 과목 → 빨간색 칩
         # - remaining_course_details: 조건은 이미 채웠지만 모듈에 남은 선택 가능 과목 → 회색 칩
+        r["missing_courses"] = r.get("missing_courses", [])
+        r["remaining_courses"] = r.get("remaining_courses", [])
         r["missing_course_details"] = _details_for_courses(r.get("missing_courses", []), detail_map)
         r["taken_course_details"] = _details_for_courses(r.get("taken_courses", []), detail_map)
         r["remaining_course_details"] = _details_for_courses(r.get("remaining_courses", []), detail_map)
@@ -470,7 +513,7 @@ def _analyze_single_track(track: dict, student_names: set[str], module_stats: di
                 if item not in manual_items:
                     manual_items.append(item)
 
-    all_missing = list(dict.fromkeys(all_missing))
+    all_missing = _filter_unrecommended_courses(list(dict.fromkeys(all_missing)), detail_map)
     all_taken = list(dict.fromkeys(all_taken))
     additional_required_courses = _aggregate_additional_required_courses(rule_results)
     missing_candidate_count = len(all_missing)
@@ -529,7 +572,8 @@ def _check_rule(rule: dict, track: dict, student_names: set[str], module_stats: 
         if manual_rc:
             note = "수동 검토 필요: " + ", ".join(manual_rc)
         shortage_count = len(missing)
-        return {"rule_type": rt, "description": f"필수 과목 {len(required)}개 전체 이수",
+        course_label = ", ".join(required)
+        return {"rule_type": rt, "description": f"필수 과목({course_label}) 이수",
                 "satisfied": len(missing) == 0 and not manual_rc,
                 "current_value": len(taken), "required_value": len(required),
                 "shortage_count": shortage_count, "shortage_credits": shortage_count * 3,
@@ -660,8 +704,10 @@ def _check_rule(rule: dict, track: dict, student_names: set[str], module_stats: 
         val = int(rule.get("value", 0) or 0)
         taken_courses: list[str] = []
         all_courses: list[str] = []
+        module_names: list[str] = []
         for mk in module_keys:
             st = module_stats.get(mk, {})
+            module_names.append(st.get("module_name") or mk)
             taken_courses.extend(st.get("taken_courses", []))
             all_courses.extend(st.get("all_courses", []))
 
@@ -670,11 +716,11 @@ def _check_rule(rule: dict, track: dict, student_names: set[str], module_stats: 
         not_taken = [c for c in all_courses if c not in student_names]
         current = len(taken_courses)
         is_satisfied = current >= val
-        module_label = ", ".join(module_keys)
+        module_label = ", ".join(module_names)
         shortage_count = max(0, val - current)
         return {
             "rule_type": rt,
-            "description": f"{module_label} 모듈 묶음에서 총 {val}과목 이상 이수",
+            "description": f"{module_label} 중 총 {val}과목 이상 이수",
             "satisfied": is_satisfied,
             "current_value": current,
             "required_value": val,
@@ -692,20 +738,32 @@ def _check_rule(rule: dict, track: dict, student_names: set[str], module_stats: 
         val = rule.get("value", 0)
         total_taken = 0
         at, ant, all_courses = [], [], []
+        required_courses: set[str] = set()
+        if rule.get("exclude_required_courses"):
+            for track_rule in track.get("rules", []):
+                if track_rule.get("type") == "required_courses_all":
+                    required_courses.update(normalize_course_name(c) for c in track_rule.get("courses", []))
         for mk in track.get("module_keys", []):
             st = module_stats.get(mk, {})
-            total_taken += st.get("taken_count", 0)
-            at.extend(st.get("taken_courses", []))
-            all_courses.extend(st.get("all_courses", []))
-            ant.extend([c for c in st.get("all_courses", []) if c not in student_names])
+            module_taken = [c for c in st.get("taken_courses", []) if c not in required_courses]
+            module_all = [c for c in st.get("all_courses", []) if c not in required_courses]
+            total_taken += len(module_taken)
+            at.extend(module_taken)
+            all_courses.extend(module_all)
+            ant.extend([c for c in module_all if c not in student_names])
         at = list(dict.fromkeys(at))
         ant = list(dict.fromkeys(ant))
         all_courses = list(dict.fromkeys(all_courses))
         is_satisfied = total_taken >= val
         shortage_count = max(0, val - total_taken)
+        description = (
+            f"필수 과목 외 트랙 내 추가 {val}과목 이상 이수"
+            if rule.get("exclude_required_courses")
+            else f"트랙 전체에서 {val}과목 이상 이수"
+        )
         return {
             "rule_type": rt,
-            "description": f"트랙 전체에서 {val}과목 이상 이수",
+            "description": description,
             "satisfied": is_satisfied,
             "current_value": total_taken,
             "required_value": val,
@@ -715,6 +773,37 @@ def _check_rule(rule: dict, track: dict, student_names: set[str], module_stats: 
             "remaining_courses": ant if is_satisfied else [],
             "all_courses": all_courses,
             "taken_courses": at,
+            "evaluation_status": "supported",
+            "note": "",
+        }
+
+    if rt == "module_course_indexes_all":
+        mk = rule.get("module_key", "")
+        indexes = [int(i) for i in rule.get("indexes", [])]
+        st = module_stats.get(mk, {})
+        all_courses = st.get("all_courses", [])
+        required = [
+            all_courses[index - 1]
+            for index in indexes
+            if 1 <= index <= len(all_courses)
+        ]
+        taken = [c for c in required if c in student_names]
+        missing = [c for c in required if c not in student_names]
+        module_name = st.get("module_name", mk)
+        index_label = ", ".join(str(i) for i in indexes)
+        course_label = ", ".join(required)
+        return {
+            "rule_type": rt,
+            "description": f"'{module_name}' 모듈 {index_label}번 과목({course_label}) 이수",
+            "satisfied": len(missing) == 0,
+            "current_value": len(taken),
+            "required_value": len(required),
+            "shortage_count": len(missing),
+            "shortage_credits": len(missing) * 3,
+            "missing_courses": missing,
+            "remaining_courses": [],
+            "all_courses": required,
+            "taken_courses": taken,
             "evaluation_status": "supported",
             "note": "",
         }

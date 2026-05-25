@@ -6,8 +6,8 @@
     "project_plan_pdf": "260331 발표 계획서 수정본.pdf",
     "intro_pdf": "모듈형 전공트랙 소개.pdf"
   },
-  "schema_version": "1.2",
-  "description": "guidebook 원문 표기를 유지한 track_rules.json. 학과/전공명, 모듈명, 교과목명, 트랙명은 가이드북 기준으로 작성. (수정본)",
+  "schema_version": "1.3",
+  "description": "guidebook 원문 표기를 유지하되 필수 과목, 모듈 순번 과목, 묶음 조건 표시를 DB 판정 기준과 맞춘 track_rules.json. (2026-05-24 수정본)",
   "notes": [
     "tracks.json의 상위 구조(colleges > departments > page_ref)를 유지하고, 각 department에 modules와 tracks 상세 규칙을 추가함.",
     "course_aliases를 analyzer가 실제 사용하도록 정규화 계층을 추가함.",
@@ -193,7 +193,7 @@
                 "국어학개론",
                 "한국어교육의이해"
               ],
-              "raw_requirement_text": "a, b 모듈 각 2과목 이수",
+              "raw_requirement_text": "필수 과목(국어학개론, 한국어교육의이해) 이수 및 국어학기초에서 2과목 이상 이수 및 국어학심화에서 2과목 이상 이수",
               "rules": [
                 {
                   "type": "required_courses_all",
@@ -225,7 +225,7 @@
                 "e"
               ],
               "required_courses": [],
-              "raw_requirement_text": "c, d 모듈 각 2과목 이수 / e 모듈 1과목 이수",
+              "raw_requirement_text": "고전문학기초에서 2과목 이상 이수 및 현대문학기초에서 2과목 이상 이수 및 문학응용창작에서 1과목 이상 이수",
               "rules": [
                 {
                   "type": "module_min_courses",
@@ -255,7 +255,7 @@
                 "g"
               ],
               "required_courses": [],
-              "raw_requirement_text": "e, f 모듈 각 2과목 이수 / g 모듈 1과목 이수",
+              "raw_requirement_text": "문학응용창작에서 2과목 이상 이수 및 출판연구기초에서 2과목 이상 이수 및 문학연구심화에서 1과목 이상 이수",
               "rules": [
                 {
                   "type": "module_min_courses",
@@ -284,7 +284,7 @@
                 "b"
               ],
               "required_courses": [],
-              "raw_requirement_text": "a 모듈 3과목 이수 / b 모듈 2과목 이수",
+              "raw_requirement_text": "국어학기초에서 3과목 이상 이수 및 국어학심화에서 2과목 이상 이수",
               "rules": [
                 {
                   "type": "module_min_courses",
@@ -309,7 +309,7 @@
                 "g"
               ],
               "required_courses": [],
-              "raw_requirement_text": "c, d, g 모듈 각 2과목 이수",
+              "raw_requirement_text": "고전문학기초에서 2과목 이상 이수 및 현대문학기초에서 2과목 이상 이수 및 문학연구심화에서 2과목 이상 이수",
               "rules": [
                 {
                   "type": "module_min_courses",
@@ -497,7 +497,7 @@
                 "a"
               ],
               "required_courses": [],
-              "raw_requirement_text": "g 모듈 전체 이수 / a 모듈 3과목 이수",
+              "raw_requirement_text": "교육철학 모든 과목 이수 및 서양철학기초에서 3과목 이상 이수",
               "rules": [
                 {
                   "type": "module_all_courses",
@@ -520,7 +520,7 @@
                 "f"
               ],
               "required_courses": [],
-              "raw_requirement_text": "c, f 모듈 각 3과목 이수",
+              "raw_requirement_text": "윤리학에서 3과목 이상 이수 및 생사학에서 3과목 이상 이수",
               "rules": [
                 {
                   "type": "module_min_courses",
@@ -544,7 +544,7 @@
                 "e"
               ],
               "required_courses": [],
-              "raw_requirement_text": "d, e 모듈 각 3과목 이수",
+              "raw_requirement_text": "현대철학에서 3과목 이상 이수 및 논리학에서 3과목 이상 이수",
               "rules": [
                 {
                   "type": "module_min_courses",
@@ -568,7 +568,7 @@
                 "c"
               ],
               "required_courses": [],
-              "raw_requirement_text": "b, c 모듈 각 3과목 이수",
+              "raw_requirement_text": "동양철학기초에서 3과목 이상 이수 및 윤리학에서 3과목 이상 이수",
               "rules": [
                 {
                   "type": "module_min_courses",
@@ -644,7 +644,7 @@
                 "b"
               ],
               "required_courses": [],
-              "raw_requirement_text": "a 모듈 3과목 이수 / 18학점 이상",
+              "raw_requirement_text": "영어교육과 AI에서 3과목 이상 이수 및 트랙 전체 18학점 이상 이수",
               "rules": [
                 {
                   "type": "module_min_courses",
@@ -774,7 +774,7 @@
                 "c"
               ],
               "required_courses": [],
-              "raw_requirement_text": "a, b, c 모듈 각 3과목 이수",
+              "raw_requirement_text": "기초러시아어에서 3과목 이상 이수 및 심화러시아어에서 3과목 이상 이수 및 실무러시아어에서 3과목 이상 이수",
               "rules": [
                 {
                   "type": "module_min_courses",
@@ -804,7 +804,7 @@
                 "d"
               ],
               "required_courses": [],
-              "raw_requirement_text": "a, b, d 모듈 각 3과목 이수",
+              "raw_requirement_text": "기초러시아어에서 3과목 이상 이수 및 심화러시아어에서 3과목 이상 이수 및 러시아역사문화에서 3과목 이상 이수",
               "rules": [
                 {
                   "type": "module_min_courses",
@@ -834,7 +834,7 @@
                 "e"
               ],
               "required_courses": [],
-              "raw_requirement_text": "a, d, e 모듈 각 3과목 이수",
+              "raw_requirement_text": "기초러시아어에서 3과목 이상 이수 및 러시아역사문화에서 3과목 이상 이수 및 유라시아학에서 3과목 이상 이수",
               "rules": [
                 {
                   "type": "module_min_courses",
@@ -1010,7 +1010,7 @@
                 "조직과인간행동",
                 "심리측정"
               ],
-              "raw_requirement_text": "각 모듈별 6학점 이상 이수",
+              "raw_requirement_text": "필수 과목(조직과인간행동, 심리측정) 이수 및 조직에서 6학점 이상 이수 및 계량에서 6학점 이상 이수",
               "rules": [
                 {
                   "type": "required_courses_all",
@@ -1044,7 +1044,7 @@
                 "인지심리학",
                 "감각과지각"
               ],
-              "raw_requirement_text": "각 모듈별 6학점 이상 이수",
+              "raw_requirement_text": "필수 과목(인지심리학, 감각과지각) 이수 및 인지에서 6학점 이상 이수 및 지각에서 6학점 이상 이수",
               "rules": [
                 {
                   "type": "required_courses_all",
@@ -1078,7 +1078,7 @@
                 "임상심리학",
                 "상담이론및실습(캡스톤디자인)"
               ],
-              "raw_requirement_text": "각 모듈별 6학점 이상 이수",
+              "raw_requirement_text": "필수 과목(임상심리학, 상담이론및실습(캡스톤디자인)) 이수 및 임상에서 6학점 이상 이수 및 상담에서 6학점 이상 이수",
               "rules": [
                 {
                   "type": "required_courses_all",
@@ -1112,7 +1112,7 @@
                 "조직과인간행동",
                 "범죄심리학"
               ],
-              "raw_requirement_text": "각 모듈별 6학점 이상 이수",
+              "raw_requirement_text": "필수 과목(조직과인간행동, 범죄심리학) 이수 및 조직에서 6학점 이상 이수 및 범죄에서 6학점 이상 이수",
               "rules": [
                 {
                   "type": "required_courses_all",
@@ -1310,7 +1310,7 @@
                 "다문화사회론",
                 "사회연구를위한기초통계학"
               ],
-              "raw_requirement_text": "필수교과목 이수 및 각 모듈별 1개 이상 교과목 이수",
+              "raw_requirement_text": "필수 과목(사회학원론, 사회학이론, 다문화사회론, 사회연구를위한기초통계학) 이수 및 사회학 기초이론에서 1과목 이상 이수 및 사회조사분석에서 1과목 이상 이수 및 이주와 다문화 연구에서 1과목 이상 이수 및 사회제도와 사회변동에서 1과목 이상 이수",
               "rules": [
                 {
                   "type": "required_courses_all",
@@ -1357,7 +1357,7 @@
                 "청소년문화",
                 "청소년활동"
               ],
-              "raw_requirement_text": "필수교과목 이수 및 f 모듈 교과목 1개 이상 이수",
+              "raw_requirement_text": "필수 과목(청소년육성제도론, 청소년문화, 청소년활동) 이수 및 사회집단과 사회심리에서 1과목 이상 이수",
               "rules": [
                 {
                   "type": "required_courses_all",
@@ -1390,7 +1390,7 @@
                 "공간과일상의사회학",
                 "문화분석과현장연구: 캡스톤디자인"
               ],
-              "raw_requirement_text": "필수교과목 이수 및 비교과 프로그램(인턴십, 멘토링, 워크숍 등) 참여",
+              "raw_requirement_text": "필수 과목 이수 및 비교과 프로그램 참여",
               "rules": [
                 {
                   "type": "required_courses_all",
@@ -1599,7 +1599,7 @@
                 "사회복지조사론",
                 "복지국가론"
               ],
-              "raw_requirement_text": "필수교과목 + 2과목 이상 이수",
+              "raw_requirement_text": "필수 과목(사회보장론, 사회복지법제와실천, 사회복지조사론, 복지국가론) 이수 및 필수 과목 외 추가 2과목 이상 이수",
               "rules": [
                 {
                   "type": "required_courses_all",
@@ -1612,8 +1612,9 @@
                 },
                 {
                   "type": "total_min_courses",
-                  "value": 6,
-                  "note": "가이드북 원문 \"필수교과목 + 2과목 이상 이수\"를 최소 총 6과목 이수로 보정"
+                  "value": 2,
+                  "note": "가이드북 원문 \"필수교과목 + 2과목 이상 이수\"를 필수 과목 이수 후 추가 2과목 이상 이수로 판정",
+                  "exclude_required_courses": true
                 }
               ],
               "analysis_mode": "auto",
@@ -1633,7 +1634,7 @@
                 "지역사회복지론",
                 "사회복지조사론"
               ],
-              "raw_requirement_text": "필수교과목 + 2과목 이상 이수",
+              "raw_requirement_text": "필수 과목(사회복지실천론, 사회복지실천기술론, 지역사회복지론, 사회복지조사론) 이수 및 필수 과목 외 추가 2과목 이상 이수",
               "rules": [
                 {
                   "type": "required_courses_all",
@@ -1646,8 +1647,9 @@
                 },
                 {
                   "type": "total_min_courses",
-                  "value": 6,
-                  "note": "가이드북 원문 \"필수교과목 + 2과목 이상 이수\"를 최소 총 6과목 이수로 보정"
+                  "value": 2,
+                  "note": "가이드북 원문 \"필수교과목 + 2과목 이상 이수\"를 필수 과목 이수 후 추가 2과목 이상 이수로 판정",
+                  "exclude_required_courses": true
                 }
               ],
               "analysis_mode": "auto",
@@ -1666,7 +1668,7 @@
                 "노인복지론",
                 "노인요양보장론"
               ],
-              "raw_requirement_text": "필수교과목 + 2과목 이상 이수",
+              "raw_requirement_text": "필수 과목(사회복지실천론, 사회복지실천기술론, 노인복지론, 노인요양보장론) 이수 및 필수 과목 외 추가 2과목 이상 이수",
               "rules": [
                 {
                   "type": "required_courses_all",
@@ -1679,8 +1681,9 @@
                 },
                 {
                   "type": "total_min_courses",
-                  "value": 6,
-                  "note": "가이드북 원문 \"필수교과목 + 2과목 이상 이수\"를 최소 총 6과목 이수로 보정"
+                  "value": 2,
+                  "note": "가이드북 원문 \"필수교과목 + 2과목 이상 이수\"를 필수 과목 이수 후 추가 2과목 이상 이수로 판정",
+                  "exclude_required_courses": true
                 }
               ],
               "analysis_mode": "auto",
@@ -1700,7 +1703,7 @@
                 "아동복지론",
                 "청소년복지론"
               ],
-              "raw_requirement_text": "필수교과목 + 2과목 이상 이수",
+              "raw_requirement_text": "필수 과목(사회복지실천론, 사회복지실천기술론, 아동복지론, 청소년복지론) 이수 및 필수 과목 외 추가 2과목 이상 이수",
               "rules": [
                 {
                   "type": "required_courses_all",
@@ -1713,8 +1716,9 @@
                 },
                 {
                   "type": "total_min_courses",
-                  "value": 6,
-                  "note": "가이드북 원문 \"필수교과목 + 2과목 이상 이수\"를 최소 총 6과목 이수로 보정"
+                  "value": 2,
+                  "note": "가이드북 원문 \"필수교과목 + 2과목 이상 이수\"를 필수 과목 이수 후 추가 2과목 이상 이수로 판정",
+                  "exclude_required_courses": true
                 }
               ],
               "analysis_mode": "auto",
@@ -1733,7 +1737,7 @@
                 "정신 건강론",
                 "정신건강사회복지론"
               ],
-              "raw_requirement_text": "필수교과목 + 2과목 이상 이수",
+              "raw_requirement_text": "필수 과목(사회복지실천론, 의료사회복지론, 정신 건강론, 정신건강사회복지론) 이수 및 필수 과목 외 추가 2과목 이상 이수",
               "rules": [
                 {
                   "type": "required_courses_all",
@@ -1746,8 +1750,9 @@
                 },
                 {
                   "type": "total_min_courses",
-                  "value": 6,
-                  "note": "가이드북 원문 \"필수교과목 + 2과목 이상 이수\"를 최소 총 6과목 이수로 보정"
+                  "value": 2,
+                  "note": "가이드북 원문 \"필수교과목 + 2과목 이상 이수\"를 필수 과목 이수 후 추가 2과목 이상 이수로 판정",
+                  "exclude_required_courses": true
                 }
               ],
               "analysis_mode": "auto",
@@ -1766,7 +1771,7 @@
                 "가족복지론",
                 "해결중심단기치료"
               ],
-              "raw_requirement_text": "필수교과목 + 2과목 이상 이수",
+              "raw_requirement_text": "필수 과목(사회복지실천론, 사회복지실천기술론, 가족복지론, 해결중심단기치료) 이수 및 필수 과목 외 추가 2과목 이상 이수",
               "rules": [
                 {
                   "type": "required_courses_all",
@@ -1779,8 +1784,9 @@
                 },
                 {
                   "type": "total_min_courses",
-                  "value": 6,
-                  "note": "가이드북 원문 \"필수교과목 + 2과목 이상 이수\"를 최소 총 6과목 이수로 보정"
+                  "value": 2,
+                  "note": "가이드북 원문 \"필수교과목 + 2과목 이상 이수\"를 필수 과목 이수 후 추가 2과목 이상 이수로 판정",
+                  "exclude_required_courses": true
                 }
               ],
               "analysis_mode": "auto",
@@ -1954,7 +1960,7 @@
                 "c"
               ],
               "required_courses": [],
-              "raw_requirement_text": "a, b, c 중 한 과목 이상 수강",
+              "raw_requirement_text": "국정관리, 공공정책, 공공기관 중 총 1과목 선택 이수",
               "rules": [
                 {
                   "type": "module_group_min_courses_total",
@@ -1978,7 +1984,7 @@
                 "e"
               ],
               "required_courses": [],
-              "raw_requirement_text": "d, e 중 한 과목 이상 수강",
+              "raw_requirement_text": "정치, 입법 중 총 1과목 선택 이수",
               "rules": [
                 {
                   "type": "module_group_min_courses_total",
@@ -2002,7 +2008,7 @@
                 "h"
               ],
               "required_courses": [],
-              "raw_requirement_text": "f, g, h 중 한 과목 이상 수강",
+              "raw_requirement_text": "한반도평화, 정치사상, 국제정치 중 총 1과목 선택 이수",
               "rules": [
                 {
                   "type": "module_group_min_courses_total",
@@ -2243,7 +2249,7 @@
                 "c"
               ],
               "required_courses": [],
-              "raw_requirement_text": "총 6과목 이상 이수",
+              "raw_requirement_text": "트랙 전체 6과목 이상 이수",
               "rules": [
                 {
                   "type": "total_min_courses",
@@ -2262,7 +2268,7 @@
                 "e"
               ],
               "required_courses": [],
-              "raw_requirement_text": "총 6과목 이상 이수",
+              "raw_requirement_text": "트랙 전체 6과목 이상 이수",
               "rules": [
                 {
                   "type": "total_min_courses",
@@ -2281,7 +2287,7 @@
                 "g"
               ],
               "required_courses": [],
-              "raw_requirement_text": "총 6과목 이상 이수",
+              "raw_requirement_text": "트랙 전체 6과목 이상 이수",
               "rules": [
                 {
                   "type": "total_min_courses",
@@ -2300,7 +2306,7 @@
                 "j"
               ],
               "required_courses": [],
-              "raw_requirement_text": "총 6과목 이상 이수",
+              "raw_requirement_text": "트랙 전체 6과목 이상 이수",
               "rules": [
                 {
                   "type": "total_min_courses",
@@ -2311,7 +2317,7 @@
               "unsupported_rule_types": []
             }
           ],
-          "global_note": "트랙과 상관없이 조사방법론은 광고홍보학과 전공 및 복수전공을 위한 필수 교과목임."
+          "global_note": "학과 전공/복수전공 필수 교과목으로 조사방법론 이수가 별도로 요구됩니다."
         },
         {
           "dept_name": "경제학과",
@@ -2463,7 +2469,7 @@
                 "국제무역론",
                 "시장구조와기업전략"
               ],
-              "raw_requirement_text": "a, b, c 모듈 각 3과목 이수",
+              "raw_requirement_text": "필수 과목(국제무역론, 시장구조와기업전략) 이수 및 기초경제학에서 3과목 이상 이수 및 핵심경제학에서 3과목 이상 이수 및 기업경제학에서 3과목 이상 이수",
               "rules": [
                 {
                   "type": "required_courses_all",
@@ -2503,7 +2509,7 @@
                 "화폐금융론",
                 "환율과국제금융"
               ],
-              "raw_requirement_text": "a, b, d 모듈 각 3과목 이수",
+              "raw_requirement_text": "필수 과목(화폐금융론, 환율과국제금융) 이수 및 기초경제학에서 3과목 이상 이수 및 핵심경제학에서 3과목 이상 이수 및 금융경제학에서 3과목 이상 이수",
               "rules": [
                 {
                   "type": "required_courses_all",
@@ -2543,7 +2549,7 @@
                 "재정학",
                 "환경경제학(종합설계)"
               ],
-              "raw_requirement_text": "a, b, e 모듈 각 3과목 이수",
+              "raw_requirement_text": "필수 과목(재정학, 환경경제학(종합설계)) 이수 및 기초경제학에서 3과목 이상 이수 및 핵심경제학에서 3과목 이상 이수 및 응용경제학에서 3과목 이상 이수",
               "rules": [
                 {
                   "type": "required_courses_all",
@@ -2583,7 +2589,7 @@
                 "계량경제학",
                 "게임이론및응용"
               ],
-              "raw_requirement_text": "a, b, f 모듈 각 3과목 이수",
+              "raw_requirement_text": "필수 과목(계량경제학, 게임이론및응용) 이수 및 기초경제학에서 3과목 이상 이수 및 핵심경제학에서 3과목 이상 이수 및 이론경제학에서 3과목 이상 이수",
               "rules": [
                 {
                   "type": "required_courses_all",
@@ -2741,7 +2747,7 @@
                   "credits": 3
                 },
                 {
-                  "course_name": "화학생물학개론",
+                  "course_name": "화학생물학",
                   "credits": 3
                 },
                 {
@@ -2782,7 +2788,7 @@
                   "credits": 3
                 },
                 {
-                  "course_name": "화학생물학개론",
+                  "course_name": "화학생물학",
                   "credits": 3
                 },
                 {
@@ -2819,7 +2825,7 @@
               "module_name": "바이오소재화학",
               "courses": [
                 {
-                  "course_name": "화학생물학개론",
+                  "course_name": "화학생물학",
                   "credits": 3
                 },
                 {
@@ -2847,7 +2853,7 @@
                 "유기화학실험",
                 "유기합성실험"
               ],
-              "raw_requirement_text": "a, b, c에서 각각 3과목 이상",
+              "raw_requirement_text": "필수 과목(유기화학실험, 유기합성실험) 이수 및 화학기초에서 3과목 이상 이수 및 유기화학에서 3과목 이상 이수 및 유기합성에서 3과목 이상 이수",
               "rules": [
                 {
                   "type": "required_courses_all",
@@ -2888,7 +2894,7 @@
                 "유기합성",
                 "유무기분광학"
               ],
-              "raw_requirement_text": "a, b에서 각각 3과목 이상 / f, g에서 각각 2과목 이상",
+              "raw_requirement_text": "필수 과목(유기합성, 유무기분광학) 이수 및 화학기초에서 3과목 이상 이수 및 유기화학에서 3과목 이상 이수 및 약물전달소재에서 2과목 이상 이수 및 의약화학에서 2과목 이상 이수",
               "rules": [
                 {
                   "type": "required_courses_all",
@@ -2934,7 +2940,7 @@
                 "유기화학Ⅰ",
                 "화학생물학개론"
               ],
-              "raw_requirement_text": "a, b에서 각각 3과목 이상 / h, j에서 각각 2과목 이상",
+              "raw_requirement_text": "필수 과목(유기화학Ⅰ, 화학생물학개론) 이수 및 화학기초에서 3과목 이상 이수 및 유기화학에서 3과목 이상 이수 및 코스메틱화학에서 2과목 이상 이수 및 바이오소재화학에서 2과목 이상 이수",
               "rules": [
                 {
                   "type": "required_courses_all",
@@ -2989,7 +2995,7 @@
                 "나노소재화학",
                 "화학생물학개론"
               ],
-              "raw_requirement_text": "a, b, e, f에서 각각 3과목 이상",
+              "raw_requirement_text": "필수 과목(나노소재화학, 화학생물학개론) 이수 및 화학기초에서 3과목 이상 이수 및 유기화학에서 3과목 이상 이수 및 분석/진단에서 3과목 이상 이수 및 약물전달소재에서 3과목 이상 이수",
               "rules": [
                 {
                   "type": "required_courses_all",
@@ -3035,7 +3041,7 @@
                 "바이오소재화학",
                 "화학생물학개론"
               ],
-              "raw_requirement_text": "a, b, f, j에서 각각 3과목 이상",
+              "raw_requirement_text": "필수 과목(바이오소재화학, 화학생물학개론) 이수 및 화학기초에서 3과목 이상 이수 및 유기화학에서 3과목 이상 이수 및 약물전달소재에서 3과목 이상 이수 및 바이오소재화학에서 3과목 이상 이수",
               "rules": [
                 {
                   "type": "required_courses_all",
@@ -3081,7 +3087,7 @@
                 "무기화학",
                 "나노소재화학"
               ],
-              "raw_requirement_text": "a, i에서 각각 3과목 이상 / d, e에서 각각 2과목 이상",
+              "raw_requirement_text": "필수 과목(무기화학, 나노소재화학) 이수 및 화학기초에서 3과목 이상 이수 및 나노소재화학에서 3과목 이상 이수 및 물리/무기에서 2과목 이상 이수 및 분석/진단에서 2과목 이상 이수",
               "rules": [
                 {
                   "type": "required_courses_all",
@@ -3115,7 +3121,8 @@
               "analysis_mode": "partial",
               "manual_review_items": [
                 "무기화학"
-              ]
+              ],
+              "unsupported_rule_types": []
             }
           ]
         },
@@ -3340,7 +3347,7 @@
                 "f"
               ],
               "required_courses": [],
-              "raw_requirement_text": "모듈당 2과목 이상 이수",
+              "raw_requirement_text": "기초생명과학에서 2과목 이상 이수 및 핵심생명과학에서 2과목 이상 이수 및 생물학실험법에서 2과목 이상 이수 및 오믹스생물학에서 2과목 이상 이수 및 생물계통진화에서 2과목 이상 이수",
               "rules": [
                 {
                   "type": "module_min_courses",
@@ -3382,7 +3389,7 @@
                 "g"
               ],
               "required_courses": [],
-              "raw_requirement_text": "모듈당 2과목 이상 이수",
+              "raw_requirement_text": "기초생명과학에서 2과목 이상 이수 및 핵심생명과학에서 2과목 이상 이수 및 생물학실험법에서 2과목 이상 이수 및 오믹스생물학에서 2과목 이상 이수 및 식물학에서 2과목 이상 이수",
               "rules": [
                 {
                   "type": "module_min_courses",
@@ -3424,7 +3431,7 @@
                 "h"
               ],
               "required_courses": [],
-              "raw_requirement_text": "모듈당 2과목 이상 이수",
+              "raw_requirement_text": "기초생명과학에서 2과목 이상 이수 및 핵심생명과학에서 2과목 이상 이수 및 생물학실험법에서 2과목 이상 이수 및 오믹스생물학에서 2과목 이상 이수 및 미생물소재개발에서 2과목 이상 이수",
               "rules": [
                 {
                   "type": "module_min_courses",
@@ -3466,7 +3473,7 @@
                 "i"
               ],
               "required_courses": [],
-              "raw_requirement_text": "모듈당 2과목 이상 이수",
+              "raw_requirement_text": "기초생명과학에서 2과목 이상 이수 및 핵심생명과학에서 2과목 이상 이수 및 생물학실험법에서 2과목 이상 이수 및 오믹스생물학에서 2과목 이상 이수 및 동물발달생리에서 2과목 이상 이수",
               "rules": [
                 {
                   "type": "module_min_courses",
@@ -3508,7 +3515,7 @@
                 "g"
               ],
               "required_courses": [],
-              "raw_requirement_text": "모듈당 2과목 이상 이수",
+              "raw_requirement_text": "기초생명과학에서 2과목 이상 이수 및 핵심생명과학에서 2과목 이상 이수 및 생물학실험법에서 2과목 이상 이수 및 바이오헬스케어에서 2과목 이상 이수 및 식물학에서 2과목 이상 이수",
               "rules": [
                 {
                   "type": "module_min_courses",
@@ -3550,7 +3557,7 @@
                 "h"
               ],
               "required_courses": [],
-              "raw_requirement_text": "모듈당 2과목 이상 이수",
+              "raw_requirement_text": "기초생명과학에서 2과목 이상 이수 및 핵심생명과학에서 2과목 이상 이수 및 생물학실험법에서 2과목 이상 이수 및 바이오헬스케어에서 2과목 이상 이수 및 미생물소재개발에서 2과목 이상 이수",
               "rules": [
                 {
                   "type": "module_min_courses",
@@ -3592,7 +3599,7 @@
                 "i"
               ],
               "required_courses": [],
-              "raw_requirement_text": "모듈당 2과목 이상 이수",
+              "raw_requirement_text": "기초생명과학에서 2과목 이상 이수 및 핵심생명과학에서 2과목 이상 이수 및 생물학실험법에서 2과목 이상 이수 및 바이오헬스케어에서 2과목 이상 이수 및 동물발달생리에서 2과목 이상 이수",
               "rules": [
                 {
                   "type": "module_min_courses",
@@ -3759,7 +3766,7 @@
                 "b"
               ],
               "required_courses": [],
-              "raw_requirement_text": "a 모듈 3과목 이상 이수 / b 모듈 3과목 이상 이수",
+              "raw_requirement_text": "수질에서 3과목 이상 이수 및 상하수도에서 3과목 이상 이수",
               "rules": [
                 {
                   "type": "module_min_courses",
@@ -3783,7 +3790,7 @@
                 "d"
               ],
               "required_courses": [],
-              "raw_requirement_text": "c 모듈 3과목 이상 이수 / d 모듈 전체 이수",
+              "raw_requirement_text": "대기에서 3과목 이상 이수 및 폐자원 모든 과목 이수",
               "rules": [
                 {
                   "type": "module_min_courses",
@@ -3806,7 +3813,7 @@
                 "f"
               ],
               "required_courses": [],
-              "raw_requirement_text": "e 모듈 전체 이수 / f 모듈 전체 이수",
+              "raw_requirement_text": "토양환경 모든 과목 이수 및 환경영향평가 모든 과목 이수",
               "rules": [
                 {
                   "type": "module_all_courses",
@@ -3973,7 +3980,7 @@
                 "식품가공학",
                 "식품위생학"
               ],
-              "raw_requirement_text": "a, b 모듈 전체 이수",
+              "raw_requirement_text": "필수 과목(식품가공학, 식품위생학) 이수 및 식품위생 모든 과목 이수 및 식품가공 모든 과목 이수",
               "rules": [
                 {
                   "type": "required_courses_all",
@@ -4004,7 +4011,7 @@
               "required_courses": [
                 "지역사회영양학"
               ],
-              "raw_requirement_text": "d 모듈 중 3과목 + e 모듈 전체 이수",
+              "raw_requirement_text": "필수 과목(지역사회영양학) 이수 및 영양에서 3과목 이상 이수 및 지역사회영양 모든 과목 이수",
               "rules": [
                 {
                   "type": "required_courses_all",
@@ -4341,7 +4348,7 @@
                 "운동상해",
                 "운동부하검사및체력육성"
               ],
-              "raw_requirement_text": "필수 교과목 이수",
+              "raw_requirement_text": "필수 과목(기능해부학, 운동생리학, 스포츠심리학, 건강·체력평가, 운동처방론, 병태생리학, 운동상해, 운동부하검사및체력육성) 이수",
               "rules": [
                 {
                   "type": "required_courses_all",
@@ -4384,7 +4391,7 @@
                 "건강교육론",
                 "스포츠안전과심폐소생술"
               ],
-              "raw_requirement_text": "필수 교과목 이수",
+              "raw_requirement_text": "필수 과목(스포츠심리학, 스포츠사회학, 스포츠윤리, 운동생리학, 운동역학, 스포츠문화사, 건강교육론, 스포츠안전과심폐소생술) 이수",
               "rules": [
                 {
                   "type": "required_courses_all",
@@ -4425,7 +4432,7 @@
                 "스포츠마케팅",
                 "스포츠시설론"
               ],
-              "raw_requirement_text": "필수 교과목 이수",
+              "raw_requirement_text": "필수 과목(운동생리학, 스포츠융합과학론, 스포츠사회학, 스포츠윤리, 스포츠산업, 스포츠경영학, 스포츠마케팅, 스포츠시설론) 이수",
               "rules": [
                 {
                   "type": "required_courses_all",
@@ -4587,6 +4594,12 @@
               ],
               "rules": [
                 {
+                  "type": "required_courses_all",
+                  "courses": [
+                    "신경언어장애"
+                  ]
+                },
+                {
                   "type": "module_all_courses",
                   "module_key": "a"
                 },
@@ -4596,7 +4609,8 @@
                 }
               ],
               "analysis_mode": "auto",
-              "unsupported_rule_types": []
+              "unsupported_rule_types": [],
+              "raw_requirement_text": "필수 과목 범주(필수 교과목) 확인 및 성인언어장애 모든 과목 이수 및 말운동삼킴장애 모든 과목 이수"
             },
             {
               "track_id": "언어병리학전공__아동의사소통장애전문가트랙",
@@ -4607,6 +4621,12 @@
                 "e"
               ],
               "rules": [
+                {
+                  "type": "required_courses_all",
+                  "courses": [
+                    "언어발달장애"
+                  ]
+                },
                 {
                   "type": "module_all_courses",
                   "module_key": "c"
@@ -4621,7 +4641,8 @@
                 }
               ],
               "analysis_mode": "auto",
-              "unsupported_rule_types": []
+              "unsupported_rule_types": [],
+              "raw_requirement_text": "필수 과목 범주(필수 교과목) 확인 및 영유아의사소통장애 모든 과목 이수 및 학령기아동언어장애 모든 과목 이수 및 발달장애의사소통 모든 과목 이수"
             },
             {
               "track_id": "언어병리학전공__말장애전문가트랙",
@@ -4632,6 +4653,14 @@
               ],
               "rules": [
                 {
+                  "type": "required_courses_all",
+                  "courses": [
+                    "조음음운장애",
+                    "유창성장애",
+                    "음성장애"
+                  ]
+                },
+                {
                   "type": "module_all_courses",
                   "module_key": "f"
                 },
@@ -4641,7 +4670,8 @@
                 }
               ],
               "analysis_mode": "auto",
-              "unsupported_rule_types": []
+              "unsupported_rule_types": [],
+              "raw_requirement_text": "필수 과목 범주(필수 교과목) 확인 및 말장애 모든 과목 이수 및 음성장애 모든 과목 이수"
             }
           ]
         },
@@ -4803,7 +4833,7 @@
                 "e"
               ],
               "required_courses": [],
-              "raw_requirement_text": "a, b, d, e 모듈 전체 이수",
+              "raw_requirement_text": "청각언어입문 모든 과목 이수 및 청각평가와 재활 모든 과목 이수 및 청각생애주기 모든 과목 이수 및 청각질환이해 모든 과목 이수",
               "rules": [
                 {
                   "type": "module_all_courses",
@@ -4834,7 +4864,7 @@
                 "c"
               ],
               "required_courses": [],
-              "raw_requirement_text": "a, b, c 모듈 전체 이수",
+              "raw_requirement_text": "청각언어입문 모든 과목 이수 및 청각평가와 재활 모든 과목 이수 및 청각보조기기 모든 과목 이수",
               "rules": [
                 {
                   "type": "module_all_courses",
@@ -4862,7 +4892,7 @@
                 "f"
               ],
               "required_courses": [],
-              "raw_requirement_text": "a, b, d, f 모듈 전체 이수",
+              "raw_requirement_text": "청각언어입문 모든 과목 이수 및 청각평가와 재활 모든 과목 이수 및 청각생애주기 모든 과목 이수 및 장애기초 모든 과목 이수",
               "rules": [
                 {
                   "type": "module_all_courses",
@@ -4893,7 +4923,7 @@
                 "g"
               ],
               "required_courses": [],
-              "raw_requirement_text": "a, b, g 모듈 전체 이수",
+              "raw_requirement_text": "청각언어입문 모든 과목 이수 및 청각평가와 재활 모든 과목 이수 및 소음과 이명 모든 과목 이수",
               "rules": [
                 {
                   "type": "module_all_courses",
@@ -5147,7 +5177,7 @@
                 "b"
               ],
               "required_courses": [],
-              "raw_requirement_text": "각 모듈별 6학점 이상 이수",
+              "raw_requirement_text": "빅데이터에서 6학점 이상 이수 및 인공지능에서 6학점 이상 이수",
               "rules": [
                 {
                   "type": "module_min_credits",
@@ -5171,7 +5201,7 @@
                 "d"
               ],
               "required_courses": [],
-              "raw_requirement_text": "각 모듈별 6학점 이상 이수",
+              "raw_requirement_text": "IoT네트워크에서 6학점 이상 이수 및 IoT통신에서 6학점 이상 이수",
               "rules": [
                 {
                   "type": "module_min_credits",
@@ -5195,7 +5225,7 @@
                 "g"
               ],
               "required_courses": [],
-              "raw_requirement_text": "각 모듈별 6학점 이상 이수",
+              "raw_requirement_text": "VR/AR에서 6학점 이상 이수 및 게임개발에서 6학점 이상 이수",
               "rules": [
                 {
                   "type": "module_min_credits",
@@ -5219,7 +5249,7 @@
                 "I"
               ],
               "required_courses": [],
-              "raw_requirement_text": "각 모듈별 6학점 이상 이수",
+              "raw_requirement_text": "웹개발에서 6학점 이상 이수 및 프로그래밍심화에서 6학점 이상 이수",
               "rules": [
                 {
                   "type": "module_min_credits",
@@ -5400,7 +5430,7 @@
                 "f"
               ],
               "required_courses": [],
-              "raw_requirement_text": "모듈별 3학점 이상 이수 및 트랙 내 교과목 15학점 이상 이수",
+              "raw_requirement_text": "의료인공지능에서 3학점 이상 이수 및 의료데이터분석에서 3학점 이상 이수 및 디지털헬스케어에서 3학점 이상 이수 및 의료정보에서 3학점 이상 이수 및 트랙 전체 15학점 이상 이수",
               "rules": [
                 {
                   "type": "module_min_credits",
@@ -5439,7 +5469,7 @@
                 "g"
               ],
               "required_courses": [],
-              "raw_requirement_text": "모듈별 3학점 이상 이수 및 트랙 내 교과목 12학점 이상 이수",
+              "raw_requirement_text": "인공지능프로그램에서 3학점 이상 이수 및 디지털신호처리에서 3학점 이상 이수 및 스마트모빌리티에서 3학점 이상 이수 및 트랙 전체 12학점 이상 이수",
               "rules": [
                 {
                   "type": "module_min_credits",
@@ -5716,7 +5746,7 @@
                 "통계적알고리즘",
                 "행렬과데이터분석"
               ],
-              "raw_requirement_text": "18학점 이상",
+              "raw_requirement_text": "필수 과목(통계적알고리즘, 행렬과데이터분석) 이수 및 트랙 전체 18학점 이상 이수",
               "rules": [
                 {
                   "type": "required_courses_all",
@@ -5745,7 +5775,7 @@
                 "통계적방법론: 추정과검정",
                 "딥러닝모델과추론"
               ],
-              "raw_requirement_text": "18학점 이상",
+              "raw_requirement_text": "필수 과목(통계적방법론: 추정과검정, 딥러닝모델과추론) 이수 및 트랙 전체 18학점 이상 이수",
               "rules": [
                 {
                   "type": "required_courses_all",
@@ -5774,7 +5804,7 @@
                 "통계적방법론: 추정과검정",
                 "생명보험과데이터"
               ],
-              "raw_requirement_text": "18학점 이상",
+              "raw_requirement_text": "필수 과목(통계적방법론: 추정과검정, 생명보험과데이터) 이수 및 트랙 전체 18학점 이상 이수",
               "rules": [
                 {
                   "type": "required_courses_all",
@@ -5803,7 +5833,7 @@
                 "다변량분석",
                 "어드벤쳐디자인: 공공데이터의이해"
               ],
-              "raw_requirement_text": "18학점 이상",
+              "raw_requirement_text": "필수 과목(다변량분석, 어드벤쳐디자인: 공공데이터의이해) 이수 및 트랙 전체 18학점 이상 이수",
               "rules": [
                 {
                   "type": "required_courses_all",
@@ -5832,7 +5862,7 @@
                 "빅데이터시계열모형",
                 "회귀분석및실습"
               ],
-              "raw_requirement_text": "18학점 이상",
+              "raw_requirement_text": "필수 과목(빅데이터시계열모형, 회귀분석및실습) 이수 및 트랙 전체 18학점 이상 이수",
               "rules": [
                 {
                   "type": "required_courses_all",
@@ -5862,7 +5892,7 @@
                 "빅데이터시계열모형",
                 "데이터분석분포론"
               ],
-              "raw_requirement_text": "18학점 이상",
+              "raw_requirement_text": "필수 과목(통계적사고와이해, 빅데이터시계열모형, 데이터분석분포론) 이수 및 트랙 전체 18학점 이상 이수",
               "rules": [
                 {
                   "type": "required_courses_all",
@@ -6201,7 +6231,7 @@
                 "임상간호이론교과목",
                 "임상간호실습교과목"
               ],
-              "raw_requirement_text": "a, b, c 모듈 각 6학점 이수",
+              "raw_requirement_text": "필수 과목 범주(기초간호학, 임상간호이론교과목, 임상간호실습교과목) 확인 및 과학적 간호에서 6학점 이상 이수 및 생애주기와 간호에서 6학점 이상 이수 및 임상간호실제에서 6학점 이상 이수",
               "rules": [
                 {
                   "type": "required_items_raw",
@@ -6245,7 +6275,7 @@
                 "건강증진 관련 교과목",
                 "거시적 관점의 건강관련 이론과 실제 관련 교과목"
               ],
-              "raw_requirement_text": "d, e, f 모듈 각 6학점 이수",
+              "raw_requirement_text": "필수 과목 범주(건강증진 관련 교과목, 거시적 관점의 건강관련 이론과 실제 관련 교과목) 확인 및 인간건강의 이해에서 6학점 이상 이수 및 건강증진 설계와 관리에서 6학점 이상 이수 및 건강문제 해결에서 6학점 이상 이수",
               "rules": [
                 {
                   "type": "required_items_raw",
@@ -6289,7 +6319,7 @@
                 "인간중심간호 관련 교과목",
                 "최신기술관련 교과목"
               ],
-              "raw_requirement_text": "g, h, i 모듈 각 6학점 이수",
+              "raw_requirement_text": "필수 과목 범주(국제간호 관련 교과목, 인간중심간호 관련 교과목, 최신기술관련 교과목) 확인 및 국제간호실제에서 6학점 이상 이수 및 창의적 돌봄의 이해에서 6학점 이상 이수 및 AI 헬스케어 설계에서 6학점 이상 이수",
               "rules": [
                 {
                   "type": "required_items_raw",
@@ -6333,7 +6363,7 @@
                 "임상 데이터 통합·분석 관련 교과목",
                 "최신기술관련 교과목"
               ],
-              "raw_requirement_text": "a, i, j 모듈 각 6학점 이수",
+              "raw_requirement_text": "필수 과목 범주(임상 데이터 통합·분석 관련 교과목, 최신기술관련 교과목) 확인 및 과학적 간호에서 6학점 이상 이수 및 AI 헬스케어 설계에서 6학점 이상 이수 및 멀티모달 임상 데이터 분석에서 6학점 이상 이수",
               "rules": [
                 {
                   "type": "required_items_raw",
@@ -6512,7 +6542,7 @@
                 "d"
               ],
               "required_courses": [],
-              "raw_requirement_text": "a 모듈 전체 이수 / d 모듈 1, 2 이수",
+              "raw_requirement_text": "Essential Economics 모든 과목 이수 및 Economic Policy and Evaluation 1, 2번 과목(EMPIRICAL MICROECONOMICS, ECONOMIC FLUCTUATIONS AND GOVERNMENT POLICY) 이수",
               "rules": [
                 {
                   "type": "module_all_courses",
@@ -6528,9 +6558,7 @@
                 }
               ],
               "analysis_mode": "partial",
-              "unsupported_rule_types": [
-                "module_course_indexes_all"
-              ]
+              "unsupported_rule_types": []
             },
             {
               "track_id": "글로벌비즈니스전공__국제통상및무역트랙",
@@ -6541,7 +6569,7 @@
                 "f"
               ],
               "required_courses": [],
-              "raw_requirement_text": "d 모듈 전체 이수 / e 모듈 전체 이수 / f 모듈 3 이수",
+              "raw_requirement_text": "Economic Policy and Evaluation 모든 과목 이수 및 Global Marketing 모든 과목 이수 및 Korean Economy 3번 과목(KOREAN ECONOMY: DYNAMICS AND FUTURE) 이수",
               "rules": [
                 {
                   "type": "module_all_courses",
@@ -6560,9 +6588,7 @@
                 }
               ],
               "analysis_mode": "partial",
-              "unsupported_rule_types": [
-                "module_course_indexes_all"
-              ]
+              "unsupported_rule_types": []
             },
             {
               "track_id": "글로벌비즈니스전공__데이터분석트랙",
@@ -6572,7 +6598,7 @@
                 "c"
               ],
               "required_courses": [],
-              "raw_requirement_text": "b 모듈 1, 3 이수 / c 모듈 전체 이수",
+              "raw_requirement_text": "Business Statistics-기초 1, 3번 과목(DATA VISUALIZATION AND STATISTICAL ANALYSIS, INTERMEDIATE STATISTICS AND DATA ANALYSIS 1) 이수 및 Business Statistics-고급 모든 과목 이수",
               "rules": [
                 {
                   "type": "module_course_indexes_all",
@@ -6588,9 +6614,7 @@
                 }
               ],
               "analysis_mode": "partial",
-              "unsupported_rule_types": [
-                "module_course_indexes_all"
-              ]
+              "unsupported_rule_types": []
             },
             {
               "track_id": "글로벌비즈니스전공__국제경제분석트랙",
@@ -6600,7 +6624,7 @@
                 "g"
               ],
               "required_courses": [],
-              "raw_requirement_text": "f 모듈 전체 이수 / g 모듈 택 2 이수",
+              "raw_requirement_text": "Korean Economy 모든 과목 이수 및 World Economy에서 2과목 이상 이수",
               "rules": [
                 {
                   "type": "module_all_courses",
@@ -6759,7 +6783,7 @@
                 "d"
               ],
               "required_courses": [],
-              "raw_requirement_text": "a 모듈 1 이수 / b 모듈 1, 2 이수 / c 모듈 1,2 이수 / d 모듈 전체",
+              "raw_requirement_text": "경찰실무 1번 과목(경찰학개론) 이수 및 범죄수사 1, 2번 과목(범죄수사학1, 범죄수사학2) 이수 및 수사법 1, 2번 과목(범죄와형벌, 범죄수사절차법1) 이수 및 경찰법 모든 과목 이수",
               "rules": [
                 {
                   "type": "module_course_indexes_all",
@@ -6790,9 +6814,7 @@
                 }
               ],
               "analysis_mode": "partial",
-              "unsupported_rule_types": [
-                "module_course_indexes_all"
-              ]
+              "unsupported_rule_types": []
             },
             {
               "track_id": "융합과학수사학과__AI데이터포렌식트랙",
@@ -6803,7 +6825,7 @@
                 "f"
               ],
               "required_courses": [],
-              "raw_requirement_text": "c 모듈 전체 이수 / f 모듈 전체 이수 / b 모듈 1, 2 이수",
+              "raw_requirement_text": "범죄수사 1, 2번 과목(범죄수사학1, 범죄수사학2) 이수 및 수사법 모든 과목 이수 및 데이터포렌식 모든 과목 이수",
               "rules": [
                 {
                   "type": "module_course_indexes_all",
@@ -6823,9 +6845,7 @@
                 }
               ],
               "analysis_mode": "partial",
-              "unsupported_rule_types": [
-                "module_course_indexes_all"
-              ]
+              "unsupported_rule_types": []
             },
             {
               "track_id": "융합과학수사학과__사이버보안트랙",
@@ -6836,7 +6856,7 @@
                 "h"
               ],
               "required_courses": [],
-              "raw_requirement_text": "g, h 모듈 전체 이수",
+              "raw_requirement_text": "디지털포렌식 모든 과목 이수 및 사이버수사 모든 과목 이수",
               "rules": [
                 {
                   "type": "module_all_courses",
@@ -6987,7 +7007,7 @@
                 "f"
               ],
               "required_courses": [],
-              "raw_requirement_text": "a, b 모듈에서 각 2과목 이상 이수 / c, d, e, f 모듈에서 택 2 이수 / 6과목 이상(18학점)",
+              "raw_requirement_text": "기후변화 기초에서 2과목 이상 이수 및 정책·거버넌스에서 2과목 이상 이수 및 통상과 산업전환, 온실가스관리, 아프리카와 지속가능발전, 지속가능전환과 실천 중 총 2과목 선택 이수 및 트랙 전체 6과목 이상 이수 및 트랙 전체 18학점 이상 이수",
               "rules": [
                 {
                   "type": "module_min_courses",
@@ -7033,7 +7053,7 @@
                 "f"
               ],
               "required_courses": [],
-              "raw_requirement_text": "a, d 모듈에서 각 2과목 이상 이수 / b, c, e, f 모듈에서 택 2 이수 / 6과목 이상(18학점)",
+              "raw_requirement_text": "기후변화 기초에서 2과목 이상 이수 및 온실가스관리에서 2과목 이상 이수 및 정책·거버넌스, 통상과 산업전환, 아프리카와 지속가능발전, 지속가능전환과 실천 중 총 2과목 선택 이수 및 트랙 전체 6과목 이상 이수 및 트랙 전체 18학점 이상 이수",
               "rules": [
                 {
                   "type": "module_min_courses",
@@ -7079,7 +7099,7 @@
                 "f"
               ],
               "required_courses": [],
-              "raw_requirement_text": "a, c 모듈에서 각 2과목 이상 이수 / b, d, e, f 모듈에서 택 2 이수 / 6과목 이상(18학점)",
+              "raw_requirement_text": "기후변화 기초에서 2과목 이상 이수 및 통상과 산업전환에서 2과목 이상 이수 및 정책·거버넌스, 온실가스관리, 아프리카와 지속가능발전, 지속가능전환과 실천 중 총 2과목 선택 이수 및 트랙 전체 6과목 이상 이수 및 트랙 전체 18학점 이상 이수",
               "rules": [
                 {
                   "type": "module_min_courses",
@@ -7125,7 +7145,7 @@
                 "f"
               ],
               "required_courses": [],
-              "raw_requirement_text": "a, b, e 모듈에서 총 4과목 이상 이수 / c, d, f 모듈에서 택 2 이수 / 6과목 이상(18학점)",
+              "raw_requirement_text": "기후변화 기초, 정책·거버넌스, 아프리카와 지속가능발전 중 총 4과목 선택 이수 및 통상과 산업전환, 온실가스관리, 지속가능전환과 실천 중 총 2과목 선택 이수 및 트랙 전체 6과목 이상 이수 및 트랙 전체 18학점 이상 이수",
               "rules": [
                 {
                   "type": "module_group_min_courses_total",
@@ -7168,10 +7188,8 @@
                 "e",
                 "f"
               ],
-              "required_courses": [
-                "e 모듈 전체"
-              ],
-              "raw_requirement_text": "e 모듈 전체(3과목) 이수 / a, b, c, d, f 모듈에서 택 3 이수 / 6과목 이상(18학점)",
+              "required_courses": [],
+              "raw_requirement_text": "아프리카와 지속가능발전 모든 과목 이수 및 기후변화 기초, 정책·거버넌스, 통상과 산업전환, 온실가스관리, 지속가능전환과 실천 중 총 3과목 선택 이수 및 트랙 전체 6과목 이상 이수 및 트랙 전체 18학점 이상 이수",
               "rules": [
                 {
                   "type": "module_all_courses",
@@ -7331,7 +7349,7 @@
                 "AI와그래픽인포메이션",
                 "AI콘텐츠프로젝트"
               ],
-              "raw_requirement_text": "필수교과목 6과목 이수 + 포트폴리오 2건",
+              "raw_requirement_text": "필수 과목(AI와뉴스의미래, 탐사저널리즘-캡스톤디자인, AI와 논픽션 스토리텔링, AI활용조사방법론, AI와그래픽인포메이션, AI콘텐츠프로젝트) 이수 및 포트폴리오 2건",
               "rules": [
                 {
                   "type": "required_courses_all",
@@ -7357,9 +7375,6 @@
                     "AI활용조사방법론",
                     "AI와그래픽인포메이션",
                     "AI콘텐츠프로젝트"
-                  ],
-                  "manual_review_courses": [
-                    "탐사저널리즘-캡스톤디자인"
                   ]
                 },
                 {
@@ -7367,7 +7382,7 @@
                   "value": 2
                 }
               ],
-              "note": "guidebook 필수 교과목 표기와 모듈별 교과목 표기 사이에 일부 명칭 차이(예: 탐사저널리즘-캡스톤디자인) 존재 AI와 논픽션 스토리텔링→AI와논픽션스토리텔링 alias를 추가했으며, 탐사저널리즘-캡스톤디자인은 대응 교과목이 확인되지 않아 수동 검토 대상으로 남김.",
+              "note": "가이드북 필수 교과목 표기를 기준으로 판정",
               "required_courses_raw": [
                 "AI와뉴스의미래",
                 "탐사저널리즘-캡스톤디자인",
@@ -7380,9 +7395,7 @@
               "unsupported_rule_types": [
                 "portfolio_min_items"
               ],
-              "manual_review_items": [
-                "탐사저널리즘-캡스톤디자인"
-              ]
+              "manual_review_items": []
             },
             {
               "track_id": "언론방송융합미디어전공/디지털미디어콘텐츠전공__AI콘텐츠크리에이터트랙",
@@ -7400,7 +7413,7 @@
                 "AI영상제작실습",
                 "AI DIGITAL GRAPHIC DESIGN"
               ],
-              "raw_requirement_text": "필수교과목 6과목 이수 + 포트폴리오 2건",
+              "raw_requirement_text": "필수 과목(AI미디어세미나, AI스마트미디어디자인, 대화형AI서비스디자인, AI미디어사용자경험, AI영상제작실습, AI DIGITAL GRAPHIC DESIGN) 이수 및 포트폴리오 2건",
               "rules": [
                 {
                   "type": "required_courses_all",
@@ -7559,7 +7572,7 @@
                 "반도체공학1",
                 "반도체공학2"
               ],
-              "raw_requirement_text": "필수교과목 포함 / 모듈별 2과목 이상 이수",
+              "raw_requirement_text": "필수 과목(반도체공학1, 반도체공학2) 이수 및 반도체공정엔지니어에서 2과목 이상 이수 및 반도체소자엔지니어에서 2과목 이상 이수 및 반도체분석엔지니어에서 2과목 이상 이수",
               "rules": [
                 {
                   "type": "required_courses_all",
@@ -7598,7 +7611,7 @@
                 "양자역학",
                 "양자정보개론"
               ],
-              "raw_requirement_text": "필수교과목 포함 / 모듈별 3과목 이수",
+              "raw_requirement_text": "필수 과목(양자역학, 양자정보개론) 이수 및 반도체소자엔지니어에서 3과목 이상 이수 및 양자전문가에서 3과목 이상 이수",
               "rules": [
                 {
                   "type": "required_courses_all",
@@ -7631,7 +7644,7 @@
               "required_courses": [
                 "표면분석기기기및응용"
               ],
-              "raw_requirement_text": "필수교과목 포함 / 모듈별 3과목 이수",
+              "raw_requirement_text": "필수 과목(표면분석기기기및응용) 이수 및 반도체소자엔지니어에서 3과목 이상 이수 및 반도체분석엔지니어에서 3과목 이상 이수",
               "rules": [
                 {
                   "type": "required_courses_all",
@@ -7671,7 +7684,7 @@
                 "반도체공학1",
                 "반도체부품개론"
               ],
-              "raw_requirement_text": "필수교과목 포함 / 모듈별 3과목 이수",
+              "raw_requirement_text": "필수 과목(반도체공학1, 반도체부품개론) 이수 및 반도체소자엔지니어에서 3과목 이상 이수 및 반도체설계엔지니어에서 3과목 이상 이수",
               "rules": [
                 {
                   "type": "required_courses_all",
@@ -7772,7 +7785,7 @@
                 "디스플레이공학1",
                 "디스플레이공정"
               ],
-              "raw_requirement_text": "해당 트랙 조합 내 전 과목 이수",
+              "raw_requirement_text": "필수 과목(디스플레이공학1, 디스플레이공정) 이수 및 디스플레이공정 모든 과목 이수 및 디스플레이소자 모든 과목 이수 및 디스플레이분석 모든 과목 이수",
               "rules": [
                 {
                   "type": "required_courses_all",
@@ -7781,11 +7794,21 @@
                     "디스플레이공정"
                   ]
                 },
-                { "type": "module_all_courses", "module_key": "a" },
-                { "type": "module_all_courses", "module_key": "b" },
-                { "type": "module_all_courses", "module_key": "c" }
+                {
+                  "type": "module_all_courses",
+                  "module_key": "a"
+                },
+                {
+                  "type": "module_all_courses",
+                  "module_key": "b"
+                },
+                {
+                  "type": "module_all_courses",
+                  "module_key": "c"
+                }
               ],
-              "analysis_mode": "auto"
+              "analysis_mode": "auto",
+              "unsupported_rule_types": []
             },
             {
               "track_id": "디스플레이전공__디스플레이분석전문가트랙",
@@ -7798,7 +7821,7 @@
                 "디스플레이공학2",
                 "광분석기기"
               ],
-              "raw_requirement_text": "해당 트랙 조합 내 전 과목 이수",
+              "raw_requirement_text": "필수 과목(디스플레이공학2, 광분석기기) 이수 및 디스플레이소자 모든 과목 이수 및 디스플레이분석 모든 과목 이수",
               "rules": [
                 {
                   "type": "required_courses_all",
@@ -7807,10 +7830,17 @@
                     "광분석기기"
                   ]
                 },
-                { "type": "module_all_courses", "module_key": "b" },
-                { "type": "module_all_courses", "module_key": "c" }
+                {
+                  "type": "module_all_courses",
+                  "module_key": "b"
+                },
+                {
+                  "type": "module_all_courses",
+                  "module_key": "c"
+                }
               ],
-              "analysis_mode": "auto"
+              "analysis_mode": "auto",
+              "unsupported_rule_types": []
             }
           ]
         }
@@ -7950,7 +7980,7 @@
                 "UX디자인",
                 "서비스디자인"
               ],
-              "raw_requirement_text": "18학점 이상",
+              "raw_requirement_text": "필수 과목(AI디자인, UX디자인, 서비스디자인) 이수 및 트랙 전체 18학점 이상 이수",
               "rules": [
                 {
                   "type": "required_courses_all",
@@ -7980,7 +8010,7 @@
                 "디지털디자인2",
                 "디지털디자인3"
               ],
-              "raw_requirement_text": "18학점 이상",
+              "raw_requirement_text": "필수 과목(AI디자인, 디지털디자인2, 디지털디자인3) 이수 및 트랙 전체 18학점 이상 이수",
               "rules": [
                 {
                   "type": "required_courses_all",
@@ -8010,7 +8040,7 @@
                 "서비스디자인",
                 "사회혁신디자인"
               ],
-              "raw_requirement_text": "18학점 이상",
+              "raw_requirement_text": "필수 과목(디자인씽킹기초, 서비스디자인, 사회혁신디자인) 이수 및 트랙 전체 18학점 이상 이수",
               "rules": [
                 {
                   "type": "required_courses_all",
@@ -8042,7 +8072,7 @@
                 "UX디자인",
                 "서비스디자인"
               ],
-              "raw_requirement_text": "18학점 이상",
+              "raw_requirement_text": "필수 과목(인문DB설계, 디지털문화콘텐츠마케팅, UX디자인, 서비스디자인) 이수 및 트랙 전체 18학점 이상 이수",
               "rules": [
                 {
                   "type": "required_courses_all",
@@ -8211,7 +8241,7 @@
                 "레저스포츠관광론",
                 "스마트관광"
               ],
-              "raw_requirement_text": "18학점 이상",
+              "raw_requirement_text": "필수 과목(관광의이해, 융합관광마케팅, 여가관광심리론, 레저스포츠관광론, 스마트관광) 이수 및 트랙 전체 18학점 이상 이수",
               "rules": [
                 {
                   "type": "required_courses_all",
@@ -8248,7 +8278,7 @@
                 "항공실무론",
                 "스마트관광"
               ],
-              "raw_requirement_text": "18학점 이상",
+              "raw_requirement_text": "필수 과목(식음료경영론, 호텔실무론, 항공운송서비스론, 항공실무론, 스마트관광) 이수 및 트랙 전체 18학점 이상 이수",
               "rules": [
                 {
                   "type": "required_courses_all",
@@ -8283,7 +8313,7 @@
                 "지속가능한관광",
                 "관광과ICT론"
               ],
-              "raw_requirement_text": "18학점 이상",
+              "raw_requirement_text": "필수 과목(지역관광개발론, 로컬문화관광콘텐츠론, 지속가능한관광, 관광과ICT론) 이수 및 트랙 전체 18학점 이상 이수",
               "rules": [
                 {
                   "type": "required_courses_all",
@@ -8401,7 +8431,7 @@
               "required_courses": [
                 "재료과학개론"
               ],
-              "raw_requirement_text": "a, c 모듈 전체 이수",
+              "raw_requirement_text": "필수 과목(재료과학개론) 이수 및 신소재공학 기초 모든 과목 이수 및 나노공학 모든 과목 이수",
               "rules": [
                 {
                   "type": "required_courses_all",
@@ -8422,7 +8452,8 @@
               "analysis_mode": "partial",
               "manual_review_items": [
                 "재료과학개론"
-              ]
+              ],
+              "unsupported_rule_types": []
             },
             {
               "track_id": "융합신소재공학전공__의생명공학트랙",
@@ -8434,7 +8465,7 @@
               "required_courses": [
                 "의생명공학개론"
               ],
-              "raw_requirement_text": "b, d 모듈 전체 이수",
+              "raw_requirement_text": "필수 과목(의생명공학개론) 이수 및 의생명공학 모든 과목 이수 및 유연신소재공학 모든 과목 이수",
               "rules": [
                 {
                   "type": "required_courses_all",
@@ -8463,7 +8494,7 @@
     "AI서비스사용자경험": "AI미디어사용자경험",
     "AI와 논픽션 스토리텔링": "AI와논픽션스토리텔링",
     "유기화학I": "유기화학Ⅰ",
-    "화학생물학": "화학생물학개론",
+    "화학생물학개론": "화학생물학",
     "표면분석기기및응용": "표면분석기기기및응용",
     "융합관광마케팅": "융합관광마케팅(캡스톤디자인)",
     "여가관광심리론": "여가관광심리론(캡스톤디자인)",
@@ -8487,12 +8518,6 @@
     "AI와 뉴스의 미래": "AI와뉴스의미래"
   },
   "manual_review_required": [
-    {
-      "dept_name": "언론방송융합미디어전공 / 디지털미디어콘텐츠전공",
-      "track_name": "AI 저널리즘 미래트랙",
-      "item": "탐사저널리즘-캡스톤디자인",
-      "reason": "가이드북 필수교과목 표기에는 있으나 모듈별 교과목 표에는 동일 명칭 교과목이 확인되지 않아 자동 alias를 확정하지 않음."
-    },
     {
       "dept_name": "화학과",
       "track_name": "분자/나노소재 전공트랙",

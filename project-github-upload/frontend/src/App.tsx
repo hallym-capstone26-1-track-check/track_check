@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./App.css";
 import logo from "./assets/hallym-logo.jpeg";
 import {
@@ -108,6 +108,50 @@ const getEmoji = (name: string) => {
   return emojiList[Math.abs(hash) % emojiList.length];
 };
 
+const condenseRuleSummary = (text: string): string => {
+  const parts = text.split(/\s+및\s+/);
+  const creditPattern = /^(.+)에서\s+(\d+(?:학점|과목)\s+이상\s+이수)$/;
+  // 에서가 붙어 있을 수도 있으므로 non-greedy + 선택적 에서로 캡처
+  const allPattern = /^(.+?)(?:에서)?\s+모든\s+과목\s+이수$/;
+  const condensed: string[] = [];
+  let i = 0;
+  while (i < parts.length) {
+    const part = parts[i].trim();
+    const creditMatch = part.match(creditPattern);
+    const allMatch = part.match(allPattern);
+    if (creditMatch) {
+      const suffix = creditMatch[2].replace(/\s+/g, " ").trim();
+      const modules = [creditMatch[1].trim()];
+      let j = i + 1;
+      while (j < parts.length) {
+        const nm = parts[j].trim().match(creditPattern);
+        if (nm && nm[2].replace(/\s+/g, " ").trim() === suffix) {
+          modules.push(nm[1].trim());
+          j++;
+        } else break;
+      }
+      condensed.push(modules.length >= 2 ? `${modules.join(", ")}에서 각 ${suffix}` : part);
+      i = j;
+    } else if (allMatch) {
+      const modules = [allMatch[1].trim()];
+      let j = i + 1;
+      while (j < parts.length) {
+        const nm = parts[j].trim().match(allPattern);
+        if (nm) { modules.push(nm[1].trim()); j++; } else break;
+      }
+      // 단일 모듈: "X에서 모든 과목 이수" / 복수 모듈: "X, Y, Z 모든 과목 이수"
+      condensed.push(modules.length >= 2
+        ? `${modules.join(", ")} 모든 과목 이수`
+        : `${modules[0]}에서 모든 과목 이수`);
+      i = j;
+    } else {
+      condensed.push(part);
+      i++;
+    }
+  }
+  return condensed.join(" 및 ");
+};
+
 const buildModuleFallbackSummary = (modules: TrackSummaryModule[], moduleNameText: string) => {
   if (modules.length === 0) return moduleNameText ? `${moduleNameText} 관련 과목 이수` : "트랙 관련 과목 이수";
 
@@ -127,9 +171,7 @@ const formatDeptName = (deptName: string) =>
 
 const formatTrackName = (trackName: string) => {
   const trimmed = trackName.trim();
-  if (!trimmed.endsWith("트랙")) return trimmed;
-  const baseName = trimmed.replace(/\s*트랙$/, "").replace(/\s+/g, "");
-  return `${baseName} 트랙`;
+  return trimmed.replace(/^(.*?)\s*트랙$/, (_, prefix) => prefix.replace(/\s+/g, "") + " 트랙");
 };
 
 const escapeRegExp = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -139,17 +181,25 @@ const normalizeRuleSummaryText = (text: string, moduleNames: string[] = []) => {
     .replace(/듣기/g, "이수")
     .replace(/수강/g, "이수")
     .replace(/교과목/g, "과목")
-    .replace(/관련\s*필수\s*과목/g, "관련 필수 과목")
-    .replace(/(^|및\s+|,\s*)필수\s*과목/g, "$1관련 필수 과목")
-    .replace(/관련필수과목/g, "관련 필수 과목")
-    .replace(/관련필수/g, "관련 필수 과목")
+    .replace(/관련\s*필수\s*과목/g, "필수 과목")
+    .replace(/관련필수과목/g, "필수 과목")
+    .replace(/관련필수/g, "필수 과목")
+    .replace(/필수\s*과목\s*범주\s*\((?:[^()]*|\([^()]*\))*\)/g, "필수 과목 범주")
+    .replace(/필수\s*과목\s*범주\s*\)/g, "필수 과목 범주")
+    .replace(/필수\s*과목\s*범주\s+확인/g, "필수 과목 범주 이수")
+    .replace(/필수\s*과목\s*\((?:[^()]*|\([^()]*\))*\)/g, "필수 과목")
+    .replace(/필수\s*과목\s*\)/g, "필수 과목")
+    .replace(/필수\s*과목\s+이수\s+및\s+필수\s*과목\s+외\s+추가/g, "필수 과목 이수 및 추가")
+    .replace(/트랙\s*전체\s*\d+과목\s*이상\s*이수\s*및\s*(?=트랙\s*전체\s*\d+학점)/g, "")
+    .replace(/(?<![,가-힣])에서\s*(모든\s*과목\s*이수)/g, " $1")
+    .replace(/\S+\s+\d+(?:,\s*\d+)*번\s*과목(?:\([^)]+\))?\s*이수/g, "필수 과목 이수")
+    .replace(/(?:필수\s*과목\s*이수\s*및\s*)+필수\s*과목\s*이수/g, "필수 과목 이수")
     .replace(/택\s*(\d+)\s*이수/g, "$1과목 이상 이수")
     .replace(/(\d+)\s*개\s*이상\s*이수/g, "$1과목 이상 이수")
     .replace(/(\d+)\s*,\s*(\d+)\s*이수/g, "$1, $2 중 1과목 이상 이수")
     .replace(/(\d+)\s*학점\s*이상\s*이수/g, "$1학점 이상 이수")
     .replace(/(\d+)\s*학점\s*이상(?!\s*이수)/g, "$1학점 이상 이수")
     .replace(/\s*\+\s*/g, " 및 ")
-    .replace(/\s*\/\s*/g, " 및 ")
     .replace(/\s+그리고\s+/g, " 및 ")
     .replace(/당/g, "에서")
     .replace(/각\s+각/g, "각")
@@ -159,7 +209,7 @@ const normalizeRuleSummaryText = (text: string, moduleNames: string[] = []) => {
 
   moduleNames.forEach(moduleName => {
     normalized = normalized.replace(
-      new RegExp(`${escapeRegExp(moduleName)}(?=\\s+(?:각|\\d|택|전체|관련))`, "g"),
+      new RegExp(`${escapeRegExp(moduleName)}(?=\\s+(?:각|\\d|택|전체|관련|모든))`, "g"),
       `${moduleName}에서`
     );
   });
@@ -191,7 +241,7 @@ const formatTrackRulesSummary = (
   );
 
   if (modulePairs.length === 0) {
-    return normalizeRuleSummaryText(track.rules_summary?.trim() || buildModuleFallbackSummary(modules, ""));
+    return condenseRuleSummary(normalizeRuleSummaryText(track.rules_summary?.trim() || buildModuleFallbackSummary(modules, "")));
   }
 
   const moduleNameByKey = new Map(modulePairs.map(module => [module.key, module.name]));
@@ -222,11 +272,11 @@ const formatTrackRulesSummary = (
     .replace(/모듈/g, allModuleNameText)
     .replace(new RegExp(`^(${modulePairs.map(module => escapeRegExp(module.name)).join("|")})(?=\\s+(?:각|\\d|택|전체|관련))`), "$1에서");
 
-  return normalizeRuleSummaryText(
+  return condenseRuleSummary(normalizeRuleSummaryText(
     (formatted || buildModuleFallbackSummary(modules, allModuleNameText))
       .replace(new RegExp(`(${modulePairs.map(module => escapeRegExp(module.name)).join("|")})(\\s+및\\s+)(${modulePairs.map(module => escapeRegExp(module.name)).join("|")})(?=\\s+(?:각|각|\\d|택|전체|관련|이수))`), "$1 및 $3에서"),
     modulePairs.map(module => module.name)
-  );
+  ));
 };
 
 class ErrorBoundary extends React.Component<{children: React.ReactNode}, {hasError: boolean; error: Error | null}> {
@@ -292,10 +342,6 @@ const getAdditionalCheckLabel = (rule: RuleResultInfo, major?: string, trackName
   const ruleType = rule.rule_type.toLowerCase();
   const items = rule.manual_review_items?.filter(Boolean) || [];
 
-  if (major?.includes("간호")) {
-    return "관련 필수 과목 확인";
-  }
-
   // 사회학과 문화기획 전공트랙
   if (major?.includes("사회") && trackName?.includes("문화기획")) {
     return "비교과 프로그램 참여/수료";
@@ -318,14 +364,6 @@ const getAdditionalCheckLabel = (rule: RuleResultInfo, major?: string, trackName
 };
 
 const getAdditionalCheckHelp = (rule: RuleResultInfo, major?: string, trackName?: string) => {
-  if (major?.includes("간호")) {
-    const items = rule.manual_review_items?.filter(Boolean) || [];
-    if (items.length > 0) {
-      return `${items.join(", ")} 이수`;
-    }
-    return "해당 트랙의 관련 필수 과목(기초간호학, 임상간호이론, 임상간호실습 등)을 이수해야 합니다.";
-  }
-
   // 사회학과 문화기획 전공트랙
   if (major?.includes("사회") && trackName?.includes("문화기획")) {
     return "대상: 인턴십, 멘토링, 워크숍 등\n인정 범위: 학과·중앙동아리·지자체·중앙정부 주관 프로그램";
@@ -347,9 +385,18 @@ const getAdditionalCheckHelp = (rule: RuleResultInfo, major?: string, trackName?
   return "가이드북 또는 학과 사무실을 통해 직접 확인해주세요.";
 };
 
-const formatRuleDescription = (description: string) => (
-  description.replace(/\s*\(\d+과목\)\s*$/, "")
-);
+const formatRuleDescription = (description: string) =>
+  description
+    .replace(/\s*\(\d+과목\)\s*$/, "")
+    .replace(/필수\s*과목\s*범주\s*\((?:[^()]*|\([^()]*\))*\)/g, "필수 과목 범주")
+    .replace(/필수\s*과목\s*범주\s*\)/g, "필수 과목 범주")
+    .replace(/필수\s*과목\s*범주\s+확인/g, "필수 과목 범주 이수")
+    .replace(/필수\s*과목\s*\((?:[^()]*|\([^()]*\))*\)/g, "필수 과목")
+    .replace(/필수\s*과목\s*\)/g, "필수 과목")
+    .replace(/'[^']*'\s*모듈\s+\d+(?:,\s*\d+)*번\s*과목(?:\([^)]+\))?\s*이수/g, "필수 과목 이수")
+    .replace(/'([^']*)'\s*모듈\s+전\s*과목\s*이수/g, "$1 모든 과목 이수")
+    .replace(/'([^']*)'\s*모듈에서/g, "'$1'에서")
+    .replace(/필수\s*과목\s+외\s+트랙\s+내\s+추가/g, "추가");
 
 interface SearchableSelectProps {
   value: string;
@@ -449,7 +496,7 @@ function SearchableSelect({ value, onChange, options, placeholder, className, st
 
   return (
     <div className="select-wrap" style={{ position: 'relative', width: '100%', ...style }}>
-      <div 
+      <div
         ref={triggerRef}
         className={`${className} ${!value ? 'placeholder-select' : ''}`}
         onClick={() => {
@@ -468,7 +515,7 @@ function SearchableSelect({ value, onChange, options, placeholder, className, st
         </span>
         <DropdownIcon />
       </div>
-      
+
       {isOpen && (
         <div className="searchable-select-dropdown" data-select-id={selectId.current} style={{
           position: 'fixed', top: `${menuPosition.top}px`, left: `${menuPosition.left}px`, width: `${menuPosition.width}px`, zIndex: 1000,
@@ -515,7 +562,7 @@ function SearchableSelect({ value, onChange, options, placeholder, className, st
                         {opt.deptName}
                       </div>
                       {opt.courses.map((c: string) => (
-                        <div 
+                        <div
                           key={c}
                           className="select-option"
                           onClick={(e) => { e.stopPropagation(); onChange(c); setIsOpen(false); setSearch(""); }}
@@ -531,7 +578,7 @@ function SearchableSelect({ value, onChange, options, placeholder, className, st
                       ))}
                     </>
                   ) : (
-                    <div 
+                    <div
                       className="select-option"
                       onClick={(e) => { e.stopPropagation(); onChange(opt.value); setIsOpen(false); setSearch(""); }}
                       style={{
@@ -706,13 +753,11 @@ function StepIndicator({ currentPage }: { currentPage: string; onNavigate?: (ste
 function App() {
   const [selectedMajors, setSelectedMajors] = useState<string[]>([]);
   const [majorDraft, setMajorDraft] = useState("");
-  const [currentSemester, setCurrentSemester] = useState<"1학기" | "2학기">("1학기");
-
   const [page, setPage] = useState<"info" | "method" | "trackExplore" | "checklist" | "manual" | "trackList" | "trackResult">("info");
   const [previousTrackPage, setPreviousTrackPage] = useState<"checklist" | "manual">("checklist");
 
   const [courses, setCourses] = useState<Course[]>([{ id: 1, name: "", credit: "3", grade: "이수" }]);
-  
+
   // API Data States
   const [colleges, setColleges] = useState<CollegeGroup[]>([]);
   const [deptAnalyses, setDeptAnalyses] = useState<DeptAnalysisBundle[]>([]);
@@ -733,13 +778,15 @@ function App() {
   const [selectedExploreTrackId, setSelectedExploreTrackId] = useState<string | null>(null);
   const [allDeptCourses, setAllDeptCourses] = useState<{deptName: string, courses: string[]}[]>([]);
   const allCourseCreditsRef = useRef<Map<string, number>>(new Map());
-  
+
   const [showCourseInfoTip, setShowCourseInfoTip] = useState(false);
   const [showTrackInfoTip, setShowTrackInfoTip] = useState(false);
   const [loading, setLoading] = useState(false);
   const [activeMobileTooltip, setActiveMobileTooltip] = useState<string | null>(null);
   const [isMissingCoursesExpanded, setIsMissingCoursesExpanded] = useState(false);
   const [majorLimitMessage, setMajorLimitMessage] = useState("");
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
+  const [floatingTooltip, setFloatingTooltip] = useState<{ x: number; y: number; text: string } | null>(null);
 
   const showFeedback = (message: string) => {
     window.alert(message);
@@ -773,7 +820,6 @@ function App() {
     setMajorLimitMessage("");
     setSelectedMajors(prev => [...prev, deptName]);
     setMajorDraft("");
-                setCurrentSemester("1학기");
     resetAnalysis();
   };
 
@@ -791,6 +837,13 @@ function App() {
   useEffect(() => {
     setIsMissingCoursesExpanded(false);
   }, [selectedTrackId]);
+
+  useEffect(() => {
+    if (!activeMobileTooltip) return;
+    const handler = () => setActiveMobileTooltip(null);
+    document.addEventListener("click", handler);
+    return () => document.removeEventListener("click", handler);
+  }, [activeMobileTooltip]);
 
   const isTouchLikePointer = () =>
     typeof window !== "undefined" && window.matchMedia("(hover: none), (pointer: coarse)").matches;
@@ -954,6 +1007,12 @@ function App() {
         className={`chip-note-wrap ${activeMobileTooltip === tooltipId ? "tooltip-open" : ""}`}
         role="button"
         tabIndex={0}
+        onMouseEnter={(e) => {
+          if (isTouchLikePointer()) return;
+          const rect = e.currentTarget.getBoundingClientRect();
+          setFloatingTooltip({ x: rect.left + rect.width / 2, y: rect.top - 8, text: note });
+        }}
+        onMouseLeave={() => setFloatingTooltip(null)}
         onClick={(event) => toggleMobileTooltip(tooltipId, event)}
         onKeyDown={(event) => {
           if (event.key === "Enter" || event.key === " ") toggleMobileTooltip(tooltipId, event);
@@ -1184,17 +1243,17 @@ const renderSelectedDepartments = (
     return "partial";
   };
   const getTrackStatusLabel = (result?: CombinedTrackResultInfo) => {
-    if (result?.is_completed) return "이수 완료";
+    if (result?.is_completed) return "이수완료";
     const status = getTrackStatus(result);
     if (status === "eligible") return "충족 완료";
-    if (status === "partial") return "추천 후보";
+    if (status === "partial") return "추천후보";
     return "후순위";
   };
   const getTrackBadgeLabel = (result?: CombinedTrackResultInfo) => {
-    if (result?.is_completed || (result?.completion_rate ?? 0) >= 1) return "이수 완료";
+    if (result?.is_completed || (result?.completion_rate ?? 0) >= 1) return "이수완료";
     if (!result || result.completion_rate <= 0) return "후순위";
     if (result.completion_rate >= 0.5 || result.additional_required_courses <= 2) return "추가 이수 필요";
-    return "추천 후보";
+    return "추천후보";
   };
   const getTrackBadgeTone = (result?: CombinedTrackResultInfo) => {
     if (result?.is_completed || (result?.completion_rate ?? 0) >= 1) return "complete";
@@ -1203,9 +1262,9 @@ const renderSelectedDepartments = (
     return "candidate";
   };
   const getProgressBadgeLabel = (result?: CombinedTrackResultInfo) => {
-    if (result?.is_completed || (result?.completion_rate ?? 0) >= 1) return "이수 완료";
+    if (result?.is_completed || (result?.completion_rate ?? 0) >= 1) return "이수완료";
     if (!result || result.completion_rate <= 0) return "도전 시작";
-    return "도전 중";
+    return "도전중";
   };
   const getTrackRankTone = (index: number) => {
     if (index === 0) return "first";
@@ -1226,9 +1285,9 @@ const renderSelectedDepartments = (
   const reviewGroupEntries = rankedTrackEntries.filter(entry => getTrackStatus(entry.result) === "partial");
   const unrelatedGroupEntries = rankedTrackEntries.filter(entry => getTrackStatus(entry.result) === "unrelated");
   const resultTrackGroups = [
-    { key: "completed", title: "이수 완료", description: "이미 조건을 만족한 전공트랙입니다.", entries: completedGroupEntries },
+    { key: "completed", title: "이수완료", description: "이미 조건을 만족한 전공트랙입니다.", entries: completedGroupEntries },
     { key: "close", title: "충족 완료", description: "입력 과목 기준으로 조건을 충족한 전공트랙입니다.", entries: closeGroupEntries },
-    { key: "review", title: "추천 후보", description: "현재 이수 과목과 맞닿아 있고 추가 이수로 이어갈 수 있는 전공트랙입니다.", entries: reviewGroupEntries },
+    { key: "review", title: "추천후보", description: "현재 이수한 과목과 연관성이 높고, 추가 이수를 통해 이어갈 수 있는 전공트랙입니다.", entries: reviewGroupEntries },
     { key: "unrelated", title: "후순위", description: "현재 입력 과목과의 접점이 적어 우선순위가 낮은 전공트랙입니다.", entries: unrelatedGroupEntries },
   ].filter(group => group.entries.length > 0);
 
@@ -1250,13 +1309,17 @@ const renderSelectedDepartments = (
   const selectedRuleSummary = selectedTotalRuleCount > 0
     ? `${selectedSatisfiedRuleCount}/${selectedTotalRuleCount}조건 충족`
     : "조건 확인 중";
+  const selectedRequirementSummary = selectedResult?.is_completed
+    ? "추가 이수 없음"
+    : `최소 ${selectedRequiredCourses}과목, 총 ${selectedCandidateCourseCount}개`;
   const selectedStatusDescription = selectedResult?.is_completed
     ? "트랙 이수 조건을 모두 만족했습니다."
     : selectedRequiredCourses > 0
       ? `후보 과목 ${selectedCandidateCourseCount}개 중 최소 ${selectedRequiredCourses}과목 추가 이수가 필요합니다.`
       : "관련 조건을 확인하고 다음 이수 계획을 세울 수 있습니다.";
-  const selectedDisplayRules = selectedResult
-    ? [
+  const selectedDisplayRules = (() => {
+    if (!selectedResult) return [];
+    const sorted = [
       ...selectedResult.rule_results.filter(r => !isAdditionalCheckRule(r))
         .slice()
         .sort((a, b) => {
@@ -1266,8 +1329,41 @@ const renderSelectedDepartments = (
           return bRate - aRate;
         }),
       ...selectedResult.rule_results.filter(r => isAdditionalCheckRule(r)),
-    ]
-    : [];
+    ];
+    // 같은 설명인 규칙을 모두 하나로 병합 (연속 여부 무관)
+    const nonAdditional = sorted.filter(r => !isAdditionalCheckRule(r));
+    const additional = sorted.filter(r => isAdditionalCheckRule(r));
+    const descOrder: string[] = [];
+    const descMap = new Map<string, typeof sorted[0]>();
+    for (const r of nonAdditional) {
+      const desc = formatRuleDescription(r.description);
+      if (descMap.has(desc)) {
+        const prev = descMap.get(desc)!;
+        descMap.set(desc, {
+          ...prev,
+          satisfied: prev.satisfied && r.satisfied,
+          current_value: prev.current_value + r.current_value,
+          required_value: prev.required_value + r.required_value,
+          shortage_count: (prev.shortage_count || 0) + (r.shortage_count || 0),
+          taken_courses: [...(prev.taken_courses || []), ...(r.taken_courses || [])],
+          remaining_courses: [...(prev.remaining_courses || []), ...(r.remaining_courses || [])],
+          missing_courses: [...(prev.missing_courses || []), ...(r.missing_courses || [])],
+          taken_course_details: [...(prev.taken_course_details || []), ...(r.taken_course_details || [])],
+          remaining_course_details: [...(prev.remaining_course_details || []), ...(r.remaining_course_details || [])],
+          missing_course_details: [...(prev.missing_course_details || []), ...(r.missing_course_details || [])],
+        });
+      } else {
+        descMap.set(desc, { ...r });
+        descOrder.push(desc);
+      }
+    }
+    // total_min_courses와 track_min_credits가 동시에 존재하면 학점 행은 제거 (6과목=18학점 동일 조건)
+    const hasTotalMinCourses = descOrder.some(desc => descMap.get(desc)?.rule_type === "total_min_courses");
+    const filteredDescOrder = hasTotalMinCourses
+      ? descOrder.filter(desc => descMap.get(desc)?.rule_type !== "track_min_credits")
+      : descOrder;
+    return [...filteredDescOrder.map(desc => descMap.get(desc)!), ...additional];
+  })();
 
   return (
     <div className="container">
@@ -1315,26 +1411,7 @@ const renderSelectedDepartments = (
               </div>
             )}
           </div>
-          <p className="description">관심 학과를 1개 이상, 최대 4개까지 선택하고<br/>현재 이수 현황에 맞는 전공 트랙을 확인합니다.</p>
-
-          <div className="semester-choice">
-            <div className="semester-choice-buttons">
-              <button
-                type="button"
-                className={currentSemester === "1학기" ? "active" : ""}
-                onClick={() => setCurrentSemester("1학기")}
-              >
-                1학기
-              </button>
-              <button
-                type="button"
-                className={currentSemester === "2학기" ? "active" : ""}
-                onClick={() => setCurrentSemester("2학기")}
-              >
-                2학기
-              </button>
-            </div>
-          </div>
+          <p className="description">관심 있는 학과를 1개 이상, 최대 4개까지 선택해주세요.<br/>선택한 학과와 현재 이수 현황을 기준으로 전공트랙을 확인합니다.</p>
 
           <div className="form-group">
                         <div className="major-add-row">
@@ -1373,7 +1450,7 @@ const renderSelectedDepartments = (
               ))
             )}
           </div>
-          
+
           {majorLimitMessage && (
             <p className="major-limit-message">{majorLimitMessage}</p>
           )}
@@ -1398,7 +1475,7 @@ const renderSelectedDepartments = (
             </a>
           </div>
 
-<button className="button" onClick={handleStart}>시작하기</button>
+          <button className="button" onClick={handleStart}>시작하기</button>
         </div>
       )}
 
@@ -1409,7 +1486,7 @@ const renderSelectedDepartments = (
             else if (stepId === 3) setPage(previousTrackPage || "manual");
             else if (stepId === 4 && hasAnalysis) setPage("trackList");
           }} />
-          <h1 className="method-page-title">전공트랙을 확인할 방법을 선택하세요</h1>
+          <h1 className="method-page-title">어떤 방식으로 전공트랙을 확인할까요?</h1>
           <br></br>
           <div className="method-option-stack">
             <button className="method-option method-option-green" onClick={() => setPage("checklist")}>
@@ -1635,9 +1712,12 @@ const renderSelectedDepartments = (
               >?</button>
             </div>
             {showCourseInfoTip && (
-              <div className="mobile-course-info-popup">
-                전공트랙 이수 여부는 트랙 기준에 포함된 과목만 반영됩니다.<br />교양 과목이나 기준 데이터에 없는 과목은 분석 결과에서 제외될 수 있습니다.
-              </div>
+              <>
+                <div className="mobile-tip-overlay" onClick={() => setShowCourseInfoTip(false)} />
+                <div className="mobile-course-info-popup">
+                  전공트랙 이수 여부는 트랙 기준에 포함된 과목만 반영됩니다.<br />교양 과목이나 기준 데이터에 없는 과목은 분석 결과에서 제외될 수 있습니다.
+                </div>
+              </>
             )}
             <div className="manual-header">
               <span className="col-header-with-tooltip">
@@ -1709,8 +1789,8 @@ const renderSelectedDepartments = (
             else if (stepId === 3) setPage(previousTrackPage || "manual");
             else if (stepId === 4 && hasAnalysis) setPage("trackList");
           }} />
-          <h1 className="manual-page-title track-list-title">입력 과목 기준 전공트랙</h1>
-          <p className="track-list-subtitle">체크한 과목과 관련 있는 전공트랙을 우선으로 정렬했습니다.</p>
+          <h1 className="manual-page-title track-list-title">선택 과목과 가까운 전공트랙</h1>
+          <p className="track-list-subtitle">선택한 과목과 관련성이 높은 전공트랙을 우선 정렬했습니다.</p>
 
           {selectedTrackInfo && (
             <div className={`track-list-quick-panel match-${selectedListStatus} rank-tone-${selectedRankTone}`}>
@@ -1771,7 +1851,6 @@ const renderSelectedDepartments = (
                       onClick={() => setSelectedTrackId(track.unique_id)}
                     >
                       <div className="track-rank-large-main">
-                        <div className="track-icon">{getEmoji(track.track_name)}</div>
                         <div>
                           <span className="all-track-name">{formatTrackName(track.track_name)}</span>
                           <small>{formatDeptName(track.dept_name)} · 진행률 {progressPercent}%</small>
@@ -1858,11 +1937,10 @@ const renderSelectedDepartments = (
                       return (
                         <button
                           key={track.unique_id}
-                          className={`result-top3-item rank-${index + 1} rank-tone-${rankTone} match-${status} ${isSelected ? "active" : ""}`}
+                          className={`result-top3-item rank-${index + 1} rank-tone-${rankTone} match-${status} status-${getTrackBadgeTone(result)} ${isSelected ? "active" : ""}`}
                           onClick={() => setSelectedTrackId(track.unique_id)}
                           aria-selected={isSelected}
                         >
-                          <span className={`result-rank-marker rank-tone-${rankTone}`}>{index + 1}</span>
                           <span className="result-top3-info">
                             <strong>{formatTrackName(track.track_name)}</strong>
                             <small>{formatDeptName(track.dept_name)} · 진행률 {progressPercent}%</small>
@@ -1893,7 +1971,7 @@ const renderSelectedDepartments = (
                       <section className={`result-track-group group-${group.key}`} key={group.key}>
                         <button
                           type="button"
-                          className={`result-track-group-head ${isCollapsibleGroup ? "collapsible" : ""}`}
+                          className={`result-track-group-head ${isCollapsibleGroup ? "collapsible" : ""} ${isCollapsibleGroup && isGroupExpanded ? "open" : ""}`}
                           onClick={() => {
                             if (!isCollapsibleGroup) return;
                             setExpandedResultGroups(prev => ({
@@ -1905,7 +1983,7 @@ const renderSelectedDepartments = (
                           <div>
                             <h3>
                               {group.title}
-                              <span>{group.entries.length}개</span>
+                              <span className={`result-track-group-count group-${group.key}`}>{group.entries.length}개</span>
                             </h3>
                             <p>{group.description}</p>
                           </div>
@@ -1926,7 +2004,7 @@ const renderSelectedDepartments = (
                               return (
                                 <button
                                   key={track.unique_id}
-                                  className={`result-track-row match-${status} rank-tone-${rankTone} ${isSelected ? "active" : ""}`}
+                                  className={`result-track-row match-${status} rank-tone-${rankTone} status-${getTrackBadgeTone(result)} ${isSelected ? "active" : ""}`}
                                   onClick={() => setSelectedTrackId(track.unique_id)}
                                   aria-selected={isSelected}
                                 >
@@ -1965,7 +2043,7 @@ const renderSelectedDepartments = (
                     <div className="selected-detail-stats" aria-label="선택 트랙 요약">
                       <span>{selectedProgressPercent}% 진행</span>
                       <span>{selectedRuleSummary}</span>
-                      <span>{selectedResult.is_completed ? "추가 이수 없음" : `최소 ${selectedRequiredCourses}과목 필요`}</span>
+                      <span>{selectedRequirementSummary}</span>
                     </div>
                     <p className="result-status-desc">{selectedStatusDescription}</p>
                   </div>
@@ -1992,47 +2070,48 @@ const renderSelectedDepartments = (
                       <div className="mission-card-title-row">
                         <div className="mission-title-wrap">
                           <div className="mission-card-title">
-                            📌 선택 가능한 보완 과목 <span className="mission-count-inline">{selectedCandidateCourseCount}개</span>
+                            📌 선택 가능한 보완 과목
                           </div>
+                        </div>
+                        <div className="mission-card-right">
                           {!selectedResult.is_completed && selectedRequiredCourses > 0 && (
-                            <span className="mission-needed-inline">필요: 최소 {selectedRequiredCourses}과목</span>
+                            <span className="mission-needed-inline">최소 {selectedRequiredCourses}과목, 총 {selectedCandidateCourseCount}개</span>
+                          )}
+                          {selectedResult.is_completed && (
+                            <span className="mission-count-inline">총 {selectedCandidateCourseCount}개</span>
+                          )}
+                          {selectedResult.missing_courses.length > 0 && (
+                            <button
+                              type="button"
+                              className="mission-toggle-button"
+                              onClick={() => setIsMissingCoursesExpanded(prev => !prev)}
+                              aria-expanded={isMissingCoursesExpanded}
+                            >
+                              {isMissingCoursesExpanded ? "▲" : "▼"}
+                            </button>
                           )}
                         </div>
-                        {selectedResult.missing_courses.length > 0 && (
-                          <button
-                            type="button"
-                            className="mission-toggle-button"
-                            onClick={() => setIsMissingCoursesExpanded(prev => !prev)}
-                            aria-expanded={isMissingCoursesExpanded}
-                          >
-                            {isMissingCoursesExpanded ? "▲" : "▼"}
-                          </button>
-                        )}
                       </div>
                       <ul className={`mission-list ${!isMissingCoursesExpanded ? "collapsed" : ""}`}>
-                        {(isMissingCoursesExpanded ? selectedResult.missing_courses : []).map(mc => {
-                          const note = moduleCourses.find(c => c.name === mc)?.note;
-                          const tooltipId = `missing-${mc}`;
-                          return (
-                            <li key={mc} className="mission-item">
-                              {mc}
-                              {note && (
-                                <span
-                                  className={`course-note-wrap ${activeMobileTooltip === tooltipId ? "tooltip-open" : ""}`}
-                                  role="button"
-                                  tabIndex={0}
-                                  onClick={(event) => toggleMobileTooltip(tooltipId, event)}
-                                  onKeyDown={(event) => {
-                                    if (event.key === "Enter" || event.key === " ") toggleMobileTooltip(tooltipId, event);
-                                  }}
-                                >
-                                  <span className="course-note-icon">⚠️</span>
-                                  <span className="course-note-tooltip">{note}</span>
-                                </span>
-                              )}
-                            </li>
+                        {(() => {
+                          const allNoteMap = new Map<string, string>(
+                            (selectedResult.rule_results || []).flatMap(r =>
+                              [...(r.taken_course_details || []), ...(r.remaining_course_details || []), ...(r.missing_course_details || [])]
+                                .filter(d => d.note)
+                                .map(d => [d.course_name, d.note] as [string, string])
+                            )
                           );
-                        })}
+                          return (isMissingCoursesExpanded ? selectedResult.missing_courses : []).map((mc, mci) => {
+                            const note = allNoteMap.get(mc);
+                            const tooltipId = `mission-${selectedResult.track_id}-${mci}-${mc}`;
+                            return (
+                              <li key={mc} className="mission-item">
+                                {mc}
+                                {renderNoteIcon(tooltipId, note)}
+                              </li>
+                            );
+                          });
+                        })()}
                       </ul>
                     </div>
                   )}
@@ -2060,6 +2139,11 @@ const renderSelectedDepartments = (
                       ...(r.satisfied ? [] : (r.missing_courses || [])),
                     ])).filter(c => !(r.taken_courses || []).includes(c));
                     const hasCourses = !isAdditional && ((r.taken_courses && r.taken_courses.length > 0) || remainingCourses.length > 0);
+                    const ruleNoteMap = new Map<string, string>(
+                      [...(r.taken_course_details || []), ...(r.remaining_course_details || []), ...(r.missing_course_details || [])]
+                        .filter(d => d.note)
+                        .map(d => [d.course_name, d.note])
+                    );
                     const helpText = isAdditional ? getAdditionalCheckHelp(r, selectedResult.dept_name, selectedResult.track_name) : null;
                     const toggleExpand = () => {
                       if (isAdditional) {
@@ -2100,7 +2184,7 @@ const renderSelectedDepartments = (
                         {isExpanded && !isAdditional && hasCourses && (
                           <div className="module-course-chips">
                             {r.taken_courses && r.taken_courses.map((c, ci) => {
-                              const note = moduleCourses.find(x => x.name === c)?.note;
+                              const note = ruleNoteMap.get(c) || moduleCourses.find(x => x.name === c)?.note;
                               const tooltipId = `taken-${r.description}-${ci}-${c}`;
                               return (
                                 <span key={`t-${ci}`} className="course-chip taken">
@@ -2122,7 +2206,7 @@ const renderSelectedDepartments = (
                               );
                             })}
                             {remainingCourses.map((c, ci) => {
-                              const note = moduleCourses.find(x => x.name === c)?.note;
+                              const note = ruleNoteMap.get(c) || moduleCourses.find(x => x.name === c)?.note;
                               const tooltipId = `remaining-${r.description}-${ci}-${c}`;
                               return (
                                 <span key={`m-${ci}`} className={`course-chip ${r.satisfied ? "remaining" : "missing"}`}>
@@ -2147,7 +2231,7 @@ const renderSelectedDepartments = (
                         )}
                         {isExpanded && isAdditional && helpText && (
                           <div className="module-additional-help">
-                            {helpText}
+                            {helpText.replace(/\n{2,}/g, '\n')}
                           </div>
                         )}
                       </div>
@@ -2162,44 +2246,72 @@ const renderSelectedDepartments = (
 
           <div className="manual-button-group">
             <button className="sub-button" onClick={() => setPage("trackList")}>이전 단계</button>
-            <button
-              className="button"
-              onClick={() => {
-                setSelectedMajors([]);
-                setMajorDraft("");
-                setCourses([{ id: 1, name: "", credit: "3", grade: "이수" }]);
-                setDeptAnalyses([]);
-                setSelectedTrackId(null);
-                setExpandedResultGroups({
-                  close: false,
-                  review: false,
-                  unrelated: false,
-                });
-                setExpandedModules(new Set());
-                setExpandedAdditional(new Set());
-                setModuleCourses([]);
-                setSelectedDeptTracks([]);
-                setCheckedCourseNames(new Set());
-                setChecklistDeptFilter(null);
-                setTrackExploreDeptFilter(null);
-                setSelectedExploreTrackId(null);
-                setAllDeptCourses([]);
-                allCourseCreditsRef.current.clear();
-                setShowCourseInfoTip(false);
-                setShowTrackInfoTip(false);
-                setActiveMobileTooltip(null);
-                setMajorLimitMessage("");
-                setPreviousTrackPage("checklist");
-                setMaxReachedStep(1);
-                setPage("info");
-              }}
-            >
+            <button className="button" onClick={() => setShowResetConfirm(true)}>
               처음으로
             </button>
           </div>
         </div>
       )}
 
+      {floatingTooltip && (
+        <div
+          className="floating-note-tooltip"
+          style={{ left: floatingTooltip.x, top: floatingTooltip.y }}
+        >
+          {floatingTooltip.text}
+        </div>
+      )}
+
+      {showResetConfirm && (
+        <div className="modal-overlay" onClick={() => setShowResetConfirm(false)}>
+          <div className="modal reset-confirm-modal" onClick={e => e.stopPropagation()}>
+            <h2 className="reset-confirm-title">처음으로 돌아갈까요?</h2>
+            <p className="reset-confirm-desc">
+              입력한 과목 정보와 분석 결과가 모두 초기화됩니다.<br />
+              계속하시겠습니까?
+            </p>
+            <div className="reset-confirm-actions">
+              <button
+                className="reset-cancel-btn"
+                onClick={() => setShowResetConfirm(false)}
+              >
+                취소
+              </button>
+              <button
+                className="reset-ok-btn"
+                onClick={() => {
+                  setShowResetConfirm(false);
+                  setSelectedMajors([]);
+                  setMajorDraft("");
+                  setCourses([{ id: 1, name: "", credit: "3", grade: "이수" }]);
+                  setDeptAnalyses([]);
+                  setSelectedTrackId(null);
+                  setExpandedResultGroups({ close: false, review: false, unrelated: false });
+                  setExpandedModules(new Set());
+                  setExpandedAdditional(new Set());
+                  setModuleCourses([]);
+                  setSelectedDeptTracks([]);
+                  setCheckedCourseNames(new Set());
+                  setChecklistDeptFilter(null);
+                  setTrackExploreDeptFilter(null);
+                  setSelectedExploreTrackId(null);
+                  setAllDeptCourses([]);
+                  allCourseCreditsRef.current.clear();
+                  setShowCourseInfoTip(false);
+                  setShowTrackInfoTip(false);
+                  setActiveMobileTooltip(null);
+                  setMajorLimitMessage("");
+                  setPreviousTrackPage("checklist");
+                  setMaxReachedStep(1);
+                  setPage("info");
+                }}
+              >
+                처음으로
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
