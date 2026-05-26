@@ -15463,3 +15463,7 @@ button.selected-dept-all-chip:hover {
 .track-match-page .track-list-subtitle {
   font-weight: 500 !important;
 }
+
+.track-result-page .result-top3-heading span {
+  margin-bottom: 2px !important;
+}
