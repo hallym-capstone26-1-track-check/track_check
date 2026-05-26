@@ -13182,7 +13182,12 @@ button.selected-dept-all-chip:hover {
   .manual-page-title,
   .track-list-title,
   .track-result-page .manual-page-title {
+    margin: 8px 0 8px !important;
     font-size: 26px !important;
+  }
+
+  .info-card .intro-title-row {
+    margin-bottom: 6px !important;
   }
 
   .method-page > .bottom-step-indicator,
@@ -15428,5 +15433,29 @@ button.selected-dept-all-chip:hover {
 
   .track-result-page .result-track-group-head h3 {
     margin-bottom: 6px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .checklist-page .manual-page-title,
+  .track-explore-page .manual-page-title,
+  .track-match-page .manual-page-title,
+  .track-match-page .track-list-title {
+    margin: 8px 0 8px !important;
+  }
+
+  .info-card .main-subtitle {
+    margin: 8px 0 2px !important;
+  }
+
+  .method-page-desc,
+  .track-list-subtitle {
+    margin: 0 0 20px !important;
+  }
+
+  .checklist-page .method-page-desc,
+  .track-explore-page .method-page-desc,
+  .track-match-page .track-list-subtitle {
+    margin: 0 0 20px !important;
   }
 }

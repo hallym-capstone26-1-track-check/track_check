@@ -1509,7 +1509,10 @@ const renderSelectedDepartments = (
           }} />
           <h1 className="manual-page-title">전공트랙 둘러보기</h1>
           <p className="method-page-desc">
-            선택한 학과의 전공트랙 조건과 관련 모듈을 확인할 수 있습니다.
+            선택한 학과의 전공트랙 조건과
+            <span className="mobile-text-break"><br /></span>
+            <span className="mobile-text-space"> </span>
+            관련 모듈을 확인할 수 있습니다.
             <span className="mobile-text-break"><br /></span>
             <span className="mobile-text-space"> </span>
           </p>
@@ -1786,7 +1789,12 @@ const renderSelectedDepartments = (
             else if (stepId === 4 && hasAnalysis) setPage("trackList");
           }} />
           <h1 className="manual-page-title track-list-title">선택 과목과 가까운 전공트랙</h1>
-          <p className="track-list-subtitle">선택한 과목과 관련성이 높은 전공트랙을 우선 정렬했습니다.</p>
+          <p className="track-list-subtitle">
+            선택한 과목과 관련성이 높은 전공트랙을
+            <span className="mobile-text-break"><br /></span>
+            <span className="mobile-text-space"> </span>
+            우선 정렬했습니다.
+          </p>
 
           {selectedTrackInfo && (
             <div className={`track-list-quick-panel match-${selectedListStatus} rank-tone-${selectedRankTone}`}>
