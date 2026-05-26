@@ -15400,6 +15400,22 @@ button.selected-dept-all-chip:hover {
   max-height: min(56vh, 600px) !important;
 }
 
+.bottom-step-indicator {
+  border-top-color: #edf2f7 !important;
+}
+
+.bottom-step-brand span {
+  color: #64748b !important;
+  font-weight: 800 !important;
+}
+
+.bottom-step-count {
+  border: 1px solid #e1e8f2 !important;
+  background: #f6f9fd !important;
+  color: #5f78b4 !important;
+  box-shadow: none !important;
+}
+
 @media (min-width: 601px) {
   .track-result-page .result-track-group-head {
     padding: 0 0 12px !important;

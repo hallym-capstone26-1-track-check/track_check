@@ -46,7 +46,7 @@ logger = logging.getLogger(__name__)
 # 🚀 FastAPI 앱 생성
 # ─────────────────────────────────────────
 app = FastAPI(
-    title="🎓 모듈형 전공트랙 이수 진단 시스템",
+    title="트랙길잡이",
     description=(
         "학생의 성적표 이미지를 업로드하면 OCR로 과목을 추출하고, "
         "전공트랙 이수 기준과 비교하여 진단 및 추천 결과를 제공합니다.\n\n"
@@ -274,7 +274,7 @@ else:
 @app.on_event("startup")
 async def startup_event():
     print("\n" + "="*60)
-    print("[System] 모듈형 전공트랙 이수 진단 시스템 서버가 시작되었습니다!")
+    print("[System] 트랙길잡이 서버가 시작되었습니다!")
     print("="*60)
     print(f"[Check] 헬스 체크:   {config.PUBLIC_BASE_URL}/api/v1/health")
     print(f"[Docs] API 문서:    {config.PUBLIC_BASE_URL}/docs")
@@ -349,7 +349,7 @@ async def root():
         return RedirectResponse(url=f"{config.FRONTEND_ROUTE}/index.html")
 
     return {
-        "message": "🎓 모듈형 전공트랙 이수 진단 시스템 API",
+        "message": "트랙길잡이 API",
         "docs": "/docs (Swagger UI에서 API를 테스트할 수 있습니다)",
         "health": "/api/v1/health (서버 상태 확인)",
         "endpoints": {
