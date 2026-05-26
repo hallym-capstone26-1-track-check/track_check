@@ -3084,7 +3084,7 @@ select.manual-input {
 
 .track-list-subtitle {
   font-size: 18px;
-  font-weight: 600;
+  font-weight: 500;
   color: #4b6cb7;
   text-align: center;
   margin: 0 0 20px 0;
@@ -15458,4 +15458,8 @@ button.selected-dept-all-chip:hover {
   .track-match-page .track-list-subtitle {
     margin: 0 0 20px !important;
   }
+}
+
+.track-match-page .track-list-subtitle {
+  font-weight: 500 !important;
 }
