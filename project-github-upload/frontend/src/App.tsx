@@ -741,7 +741,7 @@ function StepIndicator({ currentPage }: { currentPage: string; onNavigate?: (ste
     <div className="bottom-step-indicator" aria-label="진행 단계">
       <span className="bottom-step-brand">
         <img src={logo} alt="한림대학교 로고" />
-        <span>전공트랙 진단</span>
+        <span>트랙길잡이</span>
       </span>
       <span className="bottom-step-count">
         {currentStep - 1} / 3
@@ -1380,11 +1380,7 @@ const renderSelectedDepartments = (
             }}
           >
             <h2 className="subtitle main-subtitle">
-              <span className="home-title-prefix">학생 맞춤형 </span>
-              전공트랙
-              <span className="home-title-mobile-break"><br /></span>
-              <span className="home-title-desktop-space"> </span>
-              진단 시스템
+              트랙길잡이
               <button
                 type="button"
                 className={`track-info-button ${showTrackInfoTip ? "active" : ""}`}
@@ -1394,14 +1390,14 @@ const renderSelectedDepartments = (
                 onClick={() => {
                   if (isTouchLikePointer()) setShowTrackInfoTip(prev => !prev);
                 }}
-                aria-label="맞춤형 전공트랙 안내"
+                aria-label="트랙길잡이 안내"
               >
                 ?
               </button>
             </h2>
             {showTrackInfoTip && (
               <div className="track-info-popover">
-                <strong>맞춤형 전공트랙이란?</strong>
+                <strong>트랙길잡이란?</strong>
                 <p>선택한 학과와 이수 과목을 기준으로 달성 가능한 전공트랙, 진행률, 보완 과목을 확인하는 기능입니다.</p>
                 <ul>
                   <li>관심 학과를 여러 개 선택할 수 있습니다.</li>
