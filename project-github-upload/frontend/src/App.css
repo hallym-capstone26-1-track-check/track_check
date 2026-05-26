@@ -270,7 +270,7 @@ button, input, select, textarea {
 
 .main-subtitle {
   margin-top: 24px;
-  margin-bottom: 4px;
+  margin-bottom: 8px;
 }
 
 .description {
@@ -7387,6 +7387,11 @@ button.selected-dept-all-chip:hover {
 
 .intro-title-row .main-subtitle {
   margin-top: 8px;
+  font-size: 32px;
+}
+
+.info-card .card-logo {
+  width: 164px;
 }
 
 .home-title-mobile-break {
