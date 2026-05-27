@@ -1,4 +1,4 @@
-@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css");
+﻿@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css");
 
 /* ==========================================================================
    App.css maintenance map
@@ -1550,12 +1550,24 @@ select.manual-input {
 
 .searchable-select-dropdown,
 .searchable-select-dropdown-inner {
-  scrollbar-width: none;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
 }
 
 .searchable-select-dropdown::-webkit-scrollbar,
 .searchable-select-dropdown-inner::-webkit-scrollbar {
-  display: none;
+  width: 8px;
+}
+
+.searchable-select-dropdown::-webkit-scrollbar-track,
+.searchable-select-dropdown-inner::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.searchable-select-dropdown::-webkit-scrollbar-thumb,
+.searchable-select-dropdown-inner::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 999px;
 }
 
 .simple-select-option {
@@ -15494,7 +15506,7 @@ button.selected-dept-all-chip:hover {
 .track-result-page .rank-tone-upper.track-rank-chip {
   border-color: #c4b5fd !important;
   background: #f5f3ff !important;
-  color: #6d28d9 !important;
+  color: #4a6ec0 !important;
 }
 
 .track-result-page .result-top3-list > .result-top3-item:nth-child(3) .result-top3-side .result-status-badge,
@@ -15509,7 +15521,7 @@ button.selected-dept-all-chip:hover {
 .track-result-page .result-track-row.rank-tone-upper,
 .track-result-page .result-track-row.rank-4,
 .track-result-page .result-track-row.rank-5 {
-  border-color: #7c3aed !important;
+  border-color: #c9daf7 !important;
 }
 
 .track-result-page .result-track-row.rank-tone-upper.active,
@@ -15518,8 +15530,8 @@ button.selected-dept-all-chip:hover {
 .track-result-page .result-track-row.rank-4[aria-selected="true"],
 .track-result-page .result-track-row.rank-5.active,
 .track-result-page .result-track-row.rank-5[aria-selected="true"] {
-  border-color: #7c3aed !important;
-  background: #fbfaff !important;
+  border-color: #c9daf7 !important;
+  background: #eef4ff !important;
 }
 
 .track-result-page .result-track-row.rank-tone-upper .result-track-row-side b,
@@ -15528,7 +15540,7 @@ button.selected-dept-all-chip:hover {
 .track-result-page .result-track-row.rank-4 .result-track-rate,
 .track-result-page .result-track-row.rank-5 .result-track-row-side b,
 .track-result-page .result-track-row.rank-5 .result-track-rate {
-  color: #6d28d9 !important;
+  color: #4a6ec0 !important;
 }
 
 .track-result-page .result-track-row.rank-tone-third .result-track-row-side b,
@@ -15539,13 +15551,13 @@ button.selected-dept-all-chip:hover {
 .track-result-page .result-track-row.rank-tone-upper,
 .track-result-page .result-track-row.rank-tone-upper.active,
 .track-result-page .result-track-row.rank-tone-upper[aria-selected="true"] {
-  border-color: #7c3aed !important;
+  border-color: #c9daf7 !important;
   background: #ffffff !important;
 }
 
 .track-result-page .result-track-row.rank-tone-upper.active,
 .track-result-page .result-track-row.rank-tone-upper[aria-selected="true"] {
-  background: #fbfaff !important;
+  background: #eef4ff !important;
 }
 
 .track-result-page .result-track-row.rank-tone-upper .result-track-rank,
@@ -15558,13 +15570,13 @@ button.selected-dept-all-chip:hover {
 .track-result-page .result-track-row.rank-tone-upper[aria-selected="true"] em.result-status-badge.status-low {
   border-color: #c4b5fd !important;
   background: #f5f3ff !important;
-  color: #6d28d9 !important;
+  color: #4a6ec0 !important;
 }
 
 .track-result-page .result-track-row.rank-tone-upper .result-track-row-side b,
 .track-result-page .result-track-row.rank-tone-upper.active .result-track-row-side b,
 .track-result-page .result-track-row.rank-tone-upper[aria-selected="true"] .result-track-row-side b {
-  color: #6d28d9 !important;
+  color: #4a6ec0 !important;
 }
 
 .track-result-page .result-top3-item.rank-tone-second .result-status-badge,
@@ -15655,19 +15667,19 @@ button.selected-dept-all-chip:hover {
 .track-match-page .track-rest-row.rank-tone-upper.active .track-match-badge {
   border-color: #c4b5fd !important;
   background: #f5f3ff !important;
-  color: #6d28d9 !important;
+  color: #4a6ec0 !important;
 }
 
 .track-match-page .track-rest-row.rank-tone-upper b,
 .track-match-page .track-rest-row.rank-tone-upper.active b {
-  color: #6d28d9 !important;
+  color: #4a6ec0 !important;
 }
 
 .track-match-page .track-list-quick-panel.rank-tone-upper .track-rank-chip,
 .track-match-page .track-list-quick-panel.rank-tone-upper .quick-panel-actions .track-rank-chip {
   border-color: #c4b5fd !important;
   background: #f5f3ff !important;
-  color: #6d28d9 !important;
+  color: #4a6ec0 !important;
 }
 
 .track-match-page .track-rest-row,
@@ -15715,12 +15727,12 @@ button.selected-dept-all-chip:hover {
 .track-result-page .result-track-row.rank-tone-upper em.result-status-badge.status-need {
   border-color: #c4b5fd !important;
   background: #f5f3ff !important;
-  color: #7c3aed !important;
+  color: #c9daf7 !important;
 }
 
 .track-result-page .result-track-row.rank-tone-upper .result-track-row-side b,
 .track-result-page .result-track-row.rank-tone-upper .result-track-rate {
-  color: #7c3aed !important;
+  color: #c9daf7 !important;
 }
 
 .track-result-page .result-track-row.rank-tone-default .result-status-badge.status-candidate,
@@ -15803,12 +15815,12 @@ button.selected-dept-all-chip:hover {
 .track-result-page .result-track-row.rank-tone-upper[aria-selected="true"] em.result-status-badge {
   border-color: #c4b5fd !important;
   background: #f5f3ff !important;
-  color: #7c3aed !important;
+  color: #c9daf7 !important;
 }
 
 .track-result-page .result-track-row.rank-tone-upper.active .result-track-row-side b,
 .track-result-page .result-track-row.rank-tone-upper[aria-selected="true"] .result-track-row-side b {
-  color: #7c3aed !important;
+  color: #c9daf7 !important;
 }
 
 .track-result-page .result-progress-header .result-status-badge.compact.status-low {
@@ -15850,13 +15862,13 @@ button.selected-dept-all-chip:hover {
 .track-result-page button.result-track-row.rank-tone-upper[aria-selected="true"]:not(:has(.status-complete)) .result-track-row-side em.result-status-badge.status-candidate {
   border-color: #c4b5fd !important;
   background: #f5f3ff !important;
-  color: #7c3aed !important;
+  color: #c9daf7 !important;
 }
 
 .track-result-page button.result-track-row.rank-tone-upper:not(:has(.status-complete)) .result-track-row-side b,
 .track-result-page button.result-track-row.rank-tone-upper.active:not(:has(.status-complete)) .result-track-row-side b,
 .track-result-page button.result-track-row.rank-tone-upper[aria-selected="true"]:not(:has(.status-complete)) .result-track-row-side b {
-  color: #7c3aed !important;
+  color: #c9daf7 !important;
 }
 
 .track-result-page .result-track-row.match-unrelated .result-track-row-side b,
@@ -16614,7 +16626,7 @@ body .track-result-page .result-status-card .result-status-text-wrap > div.chall
 .track-result-page .result-track-row.status-complete .result-track-rank.rank-tone-upper {
   border-color: #c4b5fd !important;
   background: #f5f3ff !important;
-  color: #7c3aed !important;
+  color: #c9daf7 !important;
 }
 
 .track-result-page .result-track-row:has(.status-complete) .result-track-rank.rank-tone-default,
@@ -16688,4 +16700,211 @@ body .track-result-page .result-status-card .result-status-text-wrap > div.chall
   border-color: #fb923c !important;
   background: #fff7ed !important;
   box-shadow: 0 6px 16px rgba(251, 146, 60, 0.14) !important;
+}
+
+/* ==========================================================================
+   FINAL OVERRIDE: 상태 기준 색상 통일
+   - 이수완료: 기존 초록 유지
+   - 추천후보: 순위와 관계없이 전부 파란색
+   - 후순위: 순위와 관계없이 전부 은색
+   ========================================================================== */
+
+/* 추천후보 TOP 3 카드: 1/2/3위 순위색 제거, 전부 파란색 */
+body .track-result-page .result-top3-list > button.result-top3-item.status-candidate,
+body .track-result-page .result-top3-list > button.result-top3-item.status-candidate.rank-1,
+body .track-result-page .result-top3-list > button.result-top3-item.status-candidate.rank-2,
+body .track-result-page .result-top3-list > button.result-top3-item.status-candidate.rank-3,
+body .track-result-page .result-top3-list > button.result-top3-item.status-candidate.rank-tone-first,
+body .track-result-page .result-top3-list > button.result-top3-item.status-candidate.rank-tone-second,
+body .track-result-page .result-top3-list > button.result-top3-item.status-candidate.rank-tone-third,
+body .track-result-page .result-top3-list > button.result-top3-item.status-candidate.active,
+body .track-result-page .result-top3-list > button.result-top3-item.status-candidate[aria-selected="true"] {
+  --top3-accent: #2563eb !important;
+  --top3-accent-text: #2563eb !important;
+  border-color: #3b82f6 !important;
+  background: #ffffff !important;
+  box-shadow: none !important;
+}
+
+/* TOP 3 왼쪽 컬러바 제거 */
+body .track-result-page .result-top3-list > button.result-top3-item.status-candidate::before {
+  width: 0 !important;
+  background: transparent !important;
+}
+
+/* TOP 3 순위 원형 숫자도 전부 파란색 */
+body .track-result-page .result-top3-list > button.result-top3-item.status-candidate::after {
+  border-color: #2563eb !important;
+  background: #ffffff !important;
+  color: #2563eb !important;
+}
+
+/* TOP 3 추천후보 pill 전부 동일한 파란색 */
+body .track-result-page .result-top3-list > button.result-top3-item.status-candidate .result-status-badge,
+body .track-result-page .result-top3-list > button.result-top3-item.status-candidate .result-status-badge.status-candidate,
+body .track-result-page .result-top3-list > button.result-top3-item.status-candidate .result-status-badge.status-need,
+body .track-result-page .result-top3-list > button.result-top3-item.status-candidate.rank-tone-first .result-status-badge,
+body .track-result-page .result-top3-list > button.result-top3-item.status-candidate.rank-tone-second .result-status-badge,
+body .track-result-page .result-top3-list > button.result-top3-item.status-candidate.rank-tone-third .result-status-badge,
+body .track-result-page .result-top3-list > button.result-top3-item.status-candidate:nth-child(1) .result-status-badge,
+body .track-result-page .result-top3-list > button.result-top3-item.status-candidate:nth-child(2) .result-status-badge,
+body .track-result-page .result-top3-list > button.result-top3-item.status-candidate:nth-child(3) .result-status-badge {
+  border-color: #bfdbfe !important;
+  background: #eff6ff !important;
+  color: #1d4ed8 !important;
+}
+
+/* 추천후보 일반 리스트 행: 순위색 제거, 전부 파란색 */
+body .track-result-page button.result-track-row.status-candidate,
+body .track-result-page button.result-track-row.status-candidate.rank-tone-first,
+body .track-result-page button.result-track-row.status-candidate.rank-tone-second,
+body .track-result-page button.result-track-row.status-candidate.rank-tone-third,
+body .track-result-page button.result-track-row.status-candidate.rank-tone-upper,
+body .track-result-page button.result-track-row.status-candidate.rank-tone-default,
+body .track-result-page button.result-track-row.status-candidate.active,
+body .track-result-page button.result-track-row.status-candidate[aria-selected="true"] {
+  border-color: #3b82f6 !important;
+  background: #ffffff !important;
+  box-shadow: none !important;
+}
+
+/* 추천후보 리스트 순위 pill / 상태 pill / 퍼센트 전부 파란색 */
+body .track-result-page button.result-track-row.status-candidate .result-track-rank,
+body .track-result-page button.result-track-row.status-candidate .result-track-rank.rank-tone-first,
+body .track-result-page button.result-track-row.status-candidate .result-track-rank.rank-tone-second,
+body .track-result-page button.result-track-row.status-candidate .result-track-rank.rank-tone-third,
+body .track-result-page button.result-track-row.status-candidate .result-track-rank.rank-tone-upper,
+body .track-result-page button.result-track-row.status-candidate .result-track-rank.rank-tone-default {
+  border-color: #bfdbfe !important;
+  background: #eff6ff !important;
+  color: #1d4ed8 !important;
+}
+
+body .track-result-page button.result-track-row.status-candidate .result-status-badge,
+body .track-result-page button.result-track-row.status-candidate em.result-status-badge,
+body .track-result-page button.result-track-row.status-candidate .result-status-badge.status-candidate,
+body .track-result-page button.result-track-row.status-candidate .result-status-badge.status-need {
+  border-color: #bfdbfe !important;
+  background: #eff6ff !important;
+  color: #1d4ed8 !important;
+}
+
+body .track-result-page button.result-track-row.status-candidate .result-track-row-side b,
+body .track-result-page button.result-track-row.status-candidate .result-track-percent,
+body .track-result-page button.result-track-row.status-candidate .result-track-rate {
+  color: #1d4ed8 !important;
+}
+
+/* 상세 카드가 추천후보일 때 파란색 */
+body .track-result-page .result-status-card.incomplete:has(.status-candidate),
+body .track-result-page .result-status-card.match-partial:has(.status-candidate) {
+  border-color: #bfdbfe !important;
+  background: #eff6ff !important;
+}
+
+body .track-result-page .result-status-card:has(.status-candidate) .challenge-status-pill.result-status-badge,
+body .track-result-page .result-status-card:has(.status-candidate) .challenge-status-pill.result-status-badge.status-candidate {
+  border-color: #bfdbfe !important;
+  background: #eff6ff !important;
+  color: #1d4ed8 !important;
+}
+
+body .track-result-page .result-status-card:has(.status-candidate) .result-status-title {
+  color: #123b8d !important;
+}
+
+/* 진행률 영역 추천후보 pill / 퍼센트 / progress bar 파란색 */
+body .track-result-page .result-progress-card:has(.status-candidate) .result-status-badge,
+body .track-result-page .result-progress-card:has(.status-candidate) .result-status-badge.status-candidate {
+  border-color: #bfdbfe !important;
+  background: #eff6ff !important;
+  color: #1d4ed8 !important;
+}
+
+body .track-result-page .result-progress-card:has(.status-candidate) .result-progress-value {
+  color: #1d4ed8 !important;
+}
+
+body .track-result-page .result-progress-card:has(.status-candidate) .result-progress-fill {
+  background: #2563eb !important;
+}
+
+/* 추천후보 조건 라벨 파란색 */
+body .track-result-page .module-rule-group-label.missing {
+  color: #1d4ed8 !important;
+}
+
+/* 후순위는 전체 은색 */
+body .track-result-page button.result-track-row.status-low,
+body .track-result-page button.result-track-row.status-low.active,
+body .track-result-page button.result-track-row.status-low[aria-selected="true"] {
+  border-color: #d1d5db !important;
+  background: #ffffff !important;
+  box-shadow: none !important;
+}
+
+body .track-result-page button.result-track-row.status-low .result-track-rank,
+body .track-result-page button.result-track-row.status-low .result-status-badge,
+body .track-result-page button.result-track-row.status-low em.result-status-badge {
+  border-color: #cbd5e1 !important;
+  background: #f1f5f9 !important;
+  color: #64748b !important;
+}
+
+body .track-result-page button.result-track-row.status-low .result-track-row-side b,
+body .track-result-page button.result-track-row.status-low .result-track-percent,
+body .track-result-page button.result-track-row.status-low .result-track-rate {
+  color: #94a3b8 !important;
+}
+
+/* 혹시 남아 있는 status-need도 추천후보와 동일하게 파란색 */
+body .track-result-page .result-status-badge.status-need,
+body .track-result-page em.result-status-badge.status-need,
+body .track-result-page span.result-status-badge.status-need,
+body .track-result-page .challenge-status-pill.result-status-badge.status-need,
+body .track-result-page .track-match-badge.tone-need {
+  border-color: #bfdbfe !important;
+  background: #eff6ff !important;
+  color: #1d4ed8 !important;
+}
+
+
+/* ==========================================================================
+   전체 전공트랙 결과 영역 추천후보 색 통일
+   ========================================================================== */
+
+body .track-result-page .result-track-list button.result-track-row.status-candidate.rank-tone-first,
+body .track-result-page .result-track-list button.result-track-row.status-candidate.rank-tone-second,
+body .track-result-page .result-track-list button.result-track-row.status-candidate.rank-tone-third,
+body .track-result-page .result-track-list button.result-track-row.status-candidate.rank-tone-upper,
+body .track-result-page .result-track-list button.result-track-row.status-candidate.rank-tone-default,
+body .track-result-page .result-track-list button.result-track-row.status-candidate.rank-1,
+body .track-result-page .result-track-list button.result-track-row.status-candidate.rank-2,
+body .track-result-page .result-track-list button.result-track-row.status-candidate.rank-3 {
+  border-color: #3b82f6 !important;
+  background: #ffffff !important;
+}
+
+body .track-result-page .result-track-list button.result-track-row.status-candidate .result-track-rank,
+body .track-result-page .result-track-list button.result-track-row.status-candidate .result-track-rank.rank-tone-first,
+body .track-result-page .result-track-list button.result-track-row.status-candidate .result-track-rank.rank-tone-second,
+body .track-result-page .result-track-list button.result-track-row.status-candidate .result-track-rank.rank-tone-third,
+body .track-result-page .result-track-list button.result-track-row.status-candidate .result-track-rank.rank-tone-upper,
+body .track-result-page .result-track-list button.result-track-row.status-candidate .result-track-rank.rank-tone-default {
+  border-color: #bfdbfe !important;
+  background: #eff6ff !important;
+  color: #1d4ed8 !important;
+}
+
+body .track-result-page .result-track-list button.result-track-row.status-candidate .result-status-badge,
+body .track-result-page .result-track-list button.result-track-row.status-candidate em.result-status-badge {
+  border-color: #bfdbfe !important;
+  background: #eff6ff !important;
+  color: #1d4ed8 !important;
+}
+
+body .track-result-page .result-track-list button.result-track-row.status-candidate .result-track-row-side b,
+body .track-result-page .result-track-list button.result-track-row.status-candidate .result-track-percent,
+body .track-result-page .result-track-list button.result-track-row.status-candidate .result-track-rate {
+  color: #1d4ed8 !important;
 }

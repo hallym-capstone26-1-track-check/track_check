@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+﻿import React, { useEffect, useRef, useState } from "react";
 import "./App.css";
 import logo from "./assets/hallym-logo.jpeg";
 import {
@@ -490,15 +490,23 @@ function SearchableSelect({ value, onChange, options, placeholder, className, st
   const filteredOptions = options.map(opt => {
     if (opt.deptName) {
       const deptMatch = opt.deptName.toLowerCase().includes(search.toLowerCase());
+      const matchedCourses = deptMatch
+        ? opt.courses
+        : opt.courses?.filter(c => c.toLowerCase().includes(search.toLowerCase()));
+
       return {
         ...opt,
-        courses: deptMatch
-          ? opt.courses
-          : opt.courses?.filter(c => c.toLowerCase().includes(search.toLowerCase()))
+        courses: [...(matchedCourses || [])].sort((a, b) => a.localeCompare(b, "ko-KR"))
       };
     }
     return opt.label?.toLowerCase().includes(search.toLowerCase()) ? opt : null;
-  }).filter(opt => opt !== null && (opt.deptName ? (opt.courses?.length ?? 0) > 0 : true));
+  })
+    .filter(opt => opt !== null && (opt.deptName ? (opt.courses?.length ?? 0) > 0 : true))
+    .sort((a: any, b: any) => {
+      const aText = a.deptName || a.label || a.value || "";
+      const bText = b.deptName || b.label || b.value || "";
+      return aText.localeCompare(bText, "ko-KR");
+    });
 
   return (
     <div className="select-wrap" style={{ position: 'relative', width: '100%', ...style }}>
@@ -1258,13 +1266,11 @@ const renderSelectedDepartments = (
   const getTrackBadgeLabel = (result?: CombinedTrackResultInfo) => {
     if (result?.is_completed || (result?.completion_rate ?? 0) >= 1) return "이수완료";
     if (!result || result.completion_rate <= 0) return "후순위";
-    if (result.completion_rate >= 0.5 || result.additional_required_courses <= 2) return "추가 이수 필요";
     return "추천후보";
   };
   const getTrackBadgeTone = (result?: CombinedTrackResultInfo) => {
     if (result?.is_completed || (result?.completion_rate ?? 0) >= 1) return "complete";
     if (!result || result.completion_rate <= 0) return "low";
-    if (result.completion_rate >= 0.5 || result.additional_required_courses <= 2) return "need";
     return "candidate";
   };
   const getProgressBadgeLabel = (result?: CombinedTrackResultInfo) => {
@@ -2135,7 +2141,7 @@ const renderSelectedDepartments = (
                       i === 0 ||
                       previousIsAdditional !== isAdditional ||
                       (!isAdditional && previousRule?.satisfied !== r.satisfied);
-                    const ruleGroupLabel = isAdditional ? "추가 확인" : r.satisfied ? "충족한 조건" : "추가 이수 필요";
+                    const ruleGroupLabel = isAdditional ? "추가 확인" : r.satisfied ? "충족한 조건" : "추천후보 조건";
                     const ruleGroupTone = isAdditional ? "additional" : r.satisfied ? "satisfied" : "missing";
                     const moduleKey = `${r.rule_type}-${r.description}-${r.required_value}-${i}`;
                     const isExpanded = isAdditional ? expandedAdditional.has(i) : expandedModules.has(moduleKey);
