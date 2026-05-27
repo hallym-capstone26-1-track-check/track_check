@@ -51,6 +51,12 @@ function TargetStatusIcon() {
   );
 }
 
+function StartFlagStatusIcon() {
+  return (
+    <span className="result-status-symbol start-compass-symbol" aria-hidden="true">🧭</span>
+  );
+}
+
 type Course = {
   id: number;
   name: string;
@@ -726,7 +732,7 @@ function SimpleSelect({ value, onChange, options, placeholder, className }: Simp
   );
 }
 
-function StepIndicator({ currentPage }: { currentPage: string; onNavigate?: (stepId: number) => void; maxReachedStep?: number }) {
+function StepIndicator({ currentPage, onNavigateHome }: { currentPage: string; onNavigate?: (stepId: number) => void; maxReachedStep?: number; onNavigateHome?: () => void }) {
   const steps = [
     { id: 1, label: "기본 정보", pages: ["info"] },
     { id: 2, label: "입력 방식", pages: ["method", "trackExplore"] },
@@ -739,7 +745,14 @@ function StepIndicator({ currentPage }: { currentPage: string; onNavigate?: (ste
 
   return (
     <div className="bottom-step-indicator" aria-label="진행 단계">
-      <span className="bottom-step-brand">
+      <span
+        className="bottom-step-brand"
+        onClick={onNavigateHome}
+        style={{ cursor: "pointer" }}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") onNavigateHome?.(); }}
+      >
         <img src={logo} alt="한림대학교 로고" />
         <span>트랙길잡이</span>
       </span>
@@ -1242,13 +1255,6 @@ const renderSelectedDepartments = (
     if (result.is_completed || result.completion_rate >= 1.0) return "eligible";
     return "partial";
   };
-  const getTrackStatusLabel = (result?: CombinedTrackResultInfo) => {
-    if (result?.is_completed) return "이수완료";
-    const status = getTrackStatus(result);
-    if (status === "eligible") return "충족 완료";
-    if (status === "partial") return "추천후보";
-    return "후순위";
-  };
   const getTrackBadgeLabel = (result?: CombinedTrackResultInfo) => {
     if (result?.is_completed || (result?.completion_rate ?? 0) >= 1) return "이수완료";
     if (!result || result.completion_rate <= 0) return "후순위";
@@ -1477,7 +1483,7 @@ const renderSelectedDepartments = (
 
       {page === "method" && (
         <div className="card method-page">
-          <StepIndicator currentPage={page} maxReachedStep={maxReachedStep} onNavigate={(stepId) => {
+          <StepIndicator currentPage={page} maxReachedStep={maxReachedStep} onNavigateHome={() => setPage("info")} onNavigate={(stepId) => {
             if (stepId === 2) setPage("method");
             else if (stepId === 3) setPage(previousTrackPage || "manual");
             else if (stepId === 4 && hasAnalysis) setPage("trackList");
@@ -1502,7 +1508,7 @@ const renderSelectedDepartments = (
 
       {page === "trackExplore" && (
         <div className="card track-explore-page">
-          <StepIndicator currentPage={page} maxReachedStep={maxReachedStep} onNavigate={(stepId) => {
+          <StepIndicator currentPage={page} maxReachedStep={maxReachedStep} onNavigateHome={() => setPage("info")} onNavigate={(stepId) => {
             if (stepId === 2) setPage("method");
             else if (stepId === 3) setPage(previousTrackPage || "checklist");
             else if (stepId === 4 && hasAnalysis) setPage("trackList");
@@ -1594,7 +1600,7 @@ const renderSelectedDepartments = (
 
       {page === "checklist" && (
         <div className="card checklist-page">
-          <StepIndicator currentPage={page} maxReachedStep={maxReachedStep} onNavigate={(stepId) => {
+          <StepIndicator currentPage={page} maxReachedStep={maxReachedStep} onNavigateHome={() => setPage("info")} onNavigate={(stepId) => {
             if (stepId === 2) setPage("method");
             else if (stepId === 3) setPage(previousTrackPage || "checklist");
             else if (stepId === 4 && hasAnalysis) setPage("trackList");
@@ -1686,7 +1692,7 @@ const renderSelectedDepartments = (
 
       {page === "manual" && (
         <div className="card manual-page">
-          <StepIndicator currentPage={page} maxReachedStep={maxReachedStep} onNavigate={(stepId) => {
+          <StepIndicator currentPage={page} maxReachedStep={maxReachedStep} onNavigateHome={() => setPage("info")} onNavigate={(stepId) => {
             if (stepId === 2) setPage("method");
             else if (stepId === 3) setPage(previousTrackPage || "manual");
             else if (stepId === 4 && hasAnalysis) setPage("trackList");
@@ -1783,7 +1789,7 @@ const renderSelectedDepartments = (
 
       {page === "trackList" && (
         <div className="card track-overview-page track-match-page">
-          <StepIndicator currentPage={page} maxReachedStep={maxReachedStep} onNavigate={(stepId) => {
+          <StepIndicator currentPage={page} maxReachedStep={maxReachedStep} onNavigateHome={() => setPage("info")} onNavigate={(stepId) => {
             if (stepId === 2) setPage("method");
             else if (stepId === 3) setPage(previousTrackPage || "manual");
             else if (stepId === 4 && hasAnalysis) setPage("trackList");
@@ -1807,7 +1813,7 @@ const renderSelectedDepartments = (
                   {selectedRankIndex !== undefined && (
                     <span className={`track-rank-chip rank-tone-${selectedRankTone}`}>{getTrackRankLabel(selectedRankIndex)}</span>
                   )}
-                  <span className={`track-match-badge match-${selectedListStatus}`}>{getTrackStatusLabel(selectedResult)}</span>
+                  <span className={`track-match-badge match-${selectedListStatus} tone-${getTrackBadgeTone(selectedResult)}`}>{getTrackBadgeLabel(selectedResult)}</span>
                 </div>
               </div>
               <div className="quick-panel-progress">
@@ -1862,7 +1868,7 @@ const renderSelectedDepartments = (
                       </div>
                       <div className="track-card-meta-row">
                         <span className={`track-rank-chip rank-tone-${rankTone}`}>{getTrackRankLabel(index)}</span>
-                        <span className={`track-match-badge match-${status}`}>{getTrackStatusLabel(result)}</span>
+                        <span className={`track-match-badge match-${status} tone-${getTrackBadgeTone(result)}`}>{getTrackBadgeLabel(result)}</span>
                       </div>
                       <div className="track-match-progress">
                         <span style={{ width: `${progressPercent}%` }} />
@@ -1894,7 +1900,7 @@ const renderSelectedDepartments = (
                             <strong>{formatTrackName(track.track_name)}</strong>
                             <small>{formatDeptName(track.dept_name)}</small>
                           </span>
-                          <span className={`track-match-badge match-${status}`}>{getTrackStatusLabel(result)}</span>
+                          <span className={`track-match-badge match-${status} tone-${getTrackBadgeTone(result)}`}>{getTrackBadgeLabel(result)}</span>
                           <b>{progressPercent}%</b>
                         </button>
                       );
@@ -1913,7 +1919,7 @@ const renderSelectedDepartments = (
 
       {page === "trackResult" && (
         <div className="card track-overview-page track-result-page">
-          <StepIndicator currentPage={page} maxReachedStep={maxReachedStep} onNavigate={(stepId) => {
+          <StepIndicator currentPage={page} maxReachedStep={maxReachedStep} onNavigateHome={() => setPage("info")} onNavigate={(stepId) => {
             if (stepId === 2) setPage("method");
             else if (stepId === 3) setPage(previousTrackPage || "manual");
             else if (stepId === 4 && hasAnalysis) setPage("trackList");
@@ -2019,7 +2025,7 @@ const renderSelectedDepartments = (
                                   <span className="result-track-row-side">
                                     <span className={`result-track-rank rank-tone-${rankTone}`}>{getTrackRankLabel(rankIndex)}</span>
                                     <em className={`result-status-badge compact status-${getTrackBadgeTone(result)}`}>{getTrackBadgeLabel(result)}</em>
-                                    <b>{progressPercent}%</b>
+                                    <b className="result-track-percent">{progressPercent}%</b>
                                   </span>
                                 </button>
                               );
@@ -2036,8 +2042,8 @@ const renderSelectedDepartments = (
             {selectedTrackInfo && selectedResult && (
               <div className="track-result-detail">
                 <div className={`result-status-card match-${selectedStatus} ${selectedResult.is_completed ? "complete" : "incomplete"}`}>
-                  <div className={`result-status-icon ${selectedResult.is_completed ? "" : "incomplete-icon"}`}>
-                    {selectedResult.is_completed ? <span className="result-status-symbol">🏆</span> : <TargetStatusIcon />}
+                  <div className={`result-status-icon ${selectedResult.is_completed ? "" : "incomplete-icon"} ${selectedResult.completion_rate <= 0 ? "low-icon" : ""}`}>
+                    {selectedResult.is_completed ? <span className="result-status-symbol">🏆</span> : selectedResult.completion_rate <= 0 ? <StartFlagStatusIcon /> : <TargetStatusIcon />}
                   </div>
                   <div className="result-status-text-wrap">
                     <div className={`challenge-status-pill result-status-badge status-${getTrackBadgeTone(selectedResult)}`}>
