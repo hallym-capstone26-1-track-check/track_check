@@ -86,6 +86,7 @@ const creditOptions = ["1", "2", "3", "4", "5", "6"];
 const gradeOptions = ["이수","미이수(F)","Pass", "Non-pass"];
 const MAX_SELECTED_MAJORS = 4;
 const MAX_RECOMMENDED_CANDIDATES = 3;
+const STRONG_RECOMMENDATION_COMPLETION_RATE = 0.4;
 
 const majorColorPalette = [
   { bg: "#E8F1FF", text: "#3566C8", border: "#B8CEF6" },
@@ -1289,21 +1290,40 @@ const renderSelectedDepartments = (
   const getTrackStatus = (result?: CombinedTrackResultInfo) => {
     if (!result) return "unrelated";
     if (result.is_completed || result.completion_rate >= 1.0) return "eligible";
+    if (result.completion_rate >= STRONG_RECOMMENDATION_COMPLETION_RATE) return "partial";
     return recommendationCandidateIds.has(result.unique_id) ? "partial" : "unrelated";
   };
   const getTrackBadgeLabel = (result?: CombinedTrackResultInfo) => {
     if (result?.is_completed || (result?.completion_rate ?? 0) >= 1) return "이수완료";
-    if (!result || !recommendationCandidateIds.has(result.unique_id)) return "이수전";
+    if (
+      !result ||
+      (
+        result.completion_rate < STRONG_RECOMMENDATION_COMPLETION_RATE &&
+        !recommendationCandidateIds.has(result.unique_id)
+      )
+    ) return "이수전";
     return "추천후보";
   };
   const getTrackBadgeTone = (result?: CombinedTrackResultInfo) => {
     if (result?.is_completed || (result?.completion_rate ?? 0) >= 1) return "complete";
-    if (!result || !recommendationCandidateIds.has(result.unique_id)) return "low";
+    if (
+      !result ||
+      (
+        result.completion_rate < STRONG_RECOMMENDATION_COMPLETION_RATE &&
+        !recommendationCandidateIds.has(result.unique_id)
+      )
+    ) return "low";
     return "need";
   };
   const getProgressBadgeLabel = (result?: CombinedTrackResultInfo) => {
     if (result?.is_completed || (result?.completion_rate ?? 0) >= 1) return "이수완료";
-    if (!result || !recommendationCandidateIds.has(result.unique_id)) return "이수전";
+    if (
+      !result ||
+      (
+        result.completion_rate < STRONG_RECOMMENDATION_COMPLETION_RATE &&
+        !recommendationCandidateIds.has(result.unique_id)
+      )
+    ) return "이수전";
     return "추천후보";
   };
   const getTrackRankTone = (index: number) => {
