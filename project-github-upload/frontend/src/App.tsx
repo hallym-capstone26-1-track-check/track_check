@@ -85,6 +85,7 @@ type TrackSummaryModule = DeptTracksResponse["modules"][number];
 const creditOptions = ["1", "2", "3", "4", "5", "6"];
 const gradeOptions = ["이수","미이수(F)","Pass", "Non-pass"];
 const MAX_SELECTED_MAJORS = 4;
+const MAX_RECOMMENDED_CANDIDATES = 3;
 
 const majorColorPalette = [
   { bg: "#E8F1FF", text: "#3566C8", border: "#B8CEF6" },
@@ -145,9 +146,9 @@ const condenseRuleSummary = (text: string): string => {
         const nm = parts[j].trim().match(allPattern);
         if (nm) { modules.push(nm[1].trim()); j++; } else break;
       }
-      // 단일 모듈: "X에서 모든 과목 이수" / 복수 모듈: "X, Y, Z 모든 과목 이수"
+      // 단일 모듈: "X에서 모든 과목 이수" / 복수 모듈: "X, Y, Z에서 모든 과목 이수"
       condensed.push(modules.length >= 2
-        ? `${modules.join(", ")} 모든 과목 이수`
+        ? `${modules.join(", ")}에서 모든 과목 이수`
         : `${modules[0]}에서 모든 과목 이수`);
       i = j;
     } else {
@@ -183,7 +184,20 @@ const formatTrackName = (trackName: string) => {
 const escapeRegExp = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 const normalizeRuleSummaryText = (text: string, moduleNames: string[] = []) => {
-  let normalized = text
+  const sortedModuleNames = [...moduleNames].sort((a, b) => b.length - a.length);
+  let normalized = text;
+
+  sortedModuleNames.forEach(moduleName => {
+    const requiredModuleLabel = moduleName === "Business Statistics-기초"
+      ? `${moduleName}에서 필수 과목 이수`
+      : `${moduleName} 필수 과목 이수`;
+    normalized = normalized.replace(
+      new RegExp(`${escapeRegExp(moduleName)}\\s+\\d+(?:,\\s*\\d+)*번\\s*과목(?:\\([^)]+\\))?\\s*이수`, "g"),
+      requiredModuleLabel
+    );
+  });
+
+  normalized = normalized
     .replace(/듣기/g, "이수")
     .replace(/수강/g, "이수")
     .replace(/교과목/g, "과목")
@@ -197,7 +211,7 @@ const normalizeRuleSummaryText = (text: string, moduleNames: string[] = []) => {
     .replace(/필수\s*과목\s*\)/g, "필수 과목")
     .replace(/필수\s*과목\s+이수\s+및\s+필수\s*과목\s+외\s+추가/g, "필수 과목 이수 및 추가")
     .replace(/트랙\s*전체\s*\d+과목\s*이상\s*이수\s*및\s*(?=트랙\s*전체\s*\d+학점)/g, "")
-    .replace(/(?<![,가-힣])에서\s*(모든\s*과목\s*이수)/g, " $1")
+    .replace(/(?<![,A-Za-z0-9가-힣])에서\s*(모든\s*과목\s*이수)/g, " $1")
     .replace(/\S+\s+\d+(?:,\s*\d+)*번\s*과목(?:\([^)]+\))?\s*이수/g, "필수 과목 이수")
     .replace(/(?:필수\s*과목\s*이수\s*및\s*)+필수\s*과목\s*이수/g, "필수 과목 이수")
     .replace(/택\s*(\d+)\s*이수/g, "$1과목 이상 이수")
@@ -880,7 +894,9 @@ function App() {
   // 모든 학과의 과목을 한번에 불러와서 과목 선택 드롭다운에 사용
   useEffect(() => {
     if (colleges.length === 0) return;
-    const allDepts = colleges.flatMap(c => c.departments);
+    const allDepts = colleges
+      .flatMap(c => c.departments)
+      .sort((a, b) => a.dept_name.localeCompare(b.dept_name, "ko-KR"));
     Promise.all(allDepts.map(d => fetchDeptTracks(d.dept_name).catch(() => null)))
       .then(results => {
         const creditsMap = allCourseCreditsRef.current;
@@ -1151,7 +1167,7 @@ function App() {
 
   const departmentOptions = colleges.flatMap(c =>
     c.departments.map(d => ({ label: d.dept_name, value: d.dept_name }))
-  );
+  ).sort((a, b) => a.label.localeCompare(b.label, "ko-KR"));
 
 const renderSelectedDepartments = (
   filterable = false,
@@ -1258,25 +1274,37 @@ const renderSelectedDepartments = (
     return getMajorColorStyle(deptIndex + 1);
   };
 
+  const recommendationCandidateIds = new Set(
+    rankedTrackEntries
+      .filter(({ result }) =>
+        Boolean(result) &&
+        !result!.is_completed &&
+        result!.completion_rate > 0 &&
+        result!.completion_rate < 1
+      )
+      .slice(0, MAX_RECOMMENDED_CANDIDATES)
+      .map(({ track }) => track.unique_id)
+  );
+
   const getTrackStatus = (result?: CombinedTrackResultInfo) => {
-    if (!result || result.completion_rate <= 0) return "unrelated";
+    if (!result) return "unrelated";
     if (result.is_completed || result.completion_rate >= 1.0) return "eligible";
-    return "partial";
+    return recommendationCandidateIds.has(result.unique_id) ? "partial" : "unrelated";
   };
   const getTrackBadgeLabel = (result?: CombinedTrackResultInfo) => {
     if (result?.is_completed || (result?.completion_rate ?? 0) >= 1) return "이수완료";
-    if (!result || result.completion_rate <= 0) return "후순위";
+    if (!result || !recommendationCandidateIds.has(result.unique_id)) return "이수전";
     return "추천후보";
   };
   const getTrackBadgeTone = (result?: CombinedTrackResultInfo) => {
     if (result?.is_completed || (result?.completion_rate ?? 0) >= 1) return "complete";
-    if (!result || result.completion_rate <= 0) return "low";
-    return "candidate";
+    if (!result || !recommendationCandidateIds.has(result.unique_id)) return "low";
+    return "need";
   };
   const getProgressBadgeLabel = (result?: CombinedTrackResultInfo) => {
     if (result?.is_completed || (result?.completion_rate ?? 0) >= 1) return "이수완료";
-    if (!result || result.completion_rate <= 0) return "도전 시작";
-    return "도전중";
+    if (!result || !recommendationCandidateIds.has(result.unique_id)) return "이수전";
+    return "추천후보";
   };
   const getTrackRankTone = (index: number) => {
     if (index === 0) return "first";
@@ -1289,18 +1317,17 @@ const renderSelectedDepartments = (
   const trackRankIndexMap = new Map(rankedTrackEntries.map((entry, index) => [entry.track.unique_id, index]));
   const topRankedTrackEntries = rankedTrackEntries.slice(0, 3);
   const remainingRankedTrackEntries = rankedTrackEntries.slice(3);
+  const topRecommendedTrackEntries = rankedTrackEntries
+    .filter(entry => getTrackStatus(entry.result) !== "unrelated")
+    .slice(0, 3);
 
-  const completedGroupEntries = rankedTrackEntries.filter(entry => entry.result?.is_completed);
-  const closeGroupEntries = rankedTrackEntries.filter(entry =>
-    !entry.result?.is_completed && getTrackStatus(entry.result) === "eligible"
-  );
+  const completedGroupEntries = rankedTrackEntries.filter(entry => getTrackStatus(entry.result) === "eligible");
   const reviewGroupEntries = rankedTrackEntries.filter(entry => getTrackStatus(entry.result) === "partial");
   const unrelatedGroupEntries = rankedTrackEntries.filter(entry => getTrackStatus(entry.result) === "unrelated");
   const resultTrackGroups = [
     { key: "completed", title: "이수완료", description: "이미 조건을 만족한 전공트랙입니다.", entries: completedGroupEntries },
-    { key: "close", title: "충족 완료", description: "입력 과목 기준으로 조건을 충족한 전공트랙입니다.", entries: closeGroupEntries },
     { key: "review", title: "추천후보", description: "현재 이수한 과목과 연관성이 높고, 추가 이수를 통해 이어갈 수 있는 전공트랙입니다.", entries: reviewGroupEntries },
-    { key: "unrelated", title: "후순위", description: "현재 입력 과목과의 접점이 적어 우선순위가 낮은 전공트랙입니다.", entries: unrelatedGroupEntries },
+    { key: "unrelated", title: "이수전", description: "추천후보로 보기에는 아직 이수 연관성이 낮은 전공트랙입니다.", entries: unrelatedGroupEntries },
   ].filter(group => group.entries.length > 0);
 
   const selectedTrackInfo = allTracks.find(t => t.unique_id === selectedTrackId);
@@ -1935,17 +1962,14 @@ const renderSelectedDepartments = (
 
           <div className="track-result-layout">
             <div className="track-result-main">
-              {rankedTrackEntries.length > 0 && (
+              {topRecommendedTrackEntries.length > 0 && (
                 <div className="result-summary-card result-top3-card">
                   <div className="result-top3-heading">
                     <span>전체 학과 기준</span>
                     <h2>추천 TOP 3</h2>
                   </div>
                   <div className="result-top3-list">
-                    {rankedTrackEntries
-                      .filter(({ result }) => (result?.completion_rate || 0) > 0)
-                      .slice(0, 3)
-                      .map(({ track, result }, index) => {
+                    {topRecommendedTrackEntries.map(({ track, result }, index) => {
                       const status = getTrackStatus(result);
                       const progressPercent = Math.round((result?.completion_rate || 0) * 100);
                       const rankTone = getTrackRankTone(index);

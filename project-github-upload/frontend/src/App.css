@@ -16702,6 +16702,46 @@ body .track-result-page .result-status-card .result-status-text-wrap > div.chall
   box-shadow: 0 6px 16px rgba(251, 146, 60, 0.14) !important;
 }
 
+/* Keep dropdown scrollbars visible with the same soft style used elsewhere. */
+.simple-select-menu,
+.searchable-select-dropdown-inner {
+  scrollbar-width: thin !important;
+  scrollbar-color: #b9c8e4 transparent !important;
+  scrollbar-gutter: stable;
+  -webkit-overflow-scrolling: touch;
+}
+
+.searchable-select-dropdown {
+  overflow-y: hidden !important;
+}
+
+.simple-select-menu::-webkit-scrollbar,
+.searchable-select-dropdown-inner::-webkit-scrollbar {
+  display: block !important;
+  width: 10px;
+  height: 10px;
+}
+
+.simple-select-menu::-webkit-scrollbar-track,
+.searchable-select-dropdown-inner::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 999px;
+}
+
+.simple-select-menu::-webkit-scrollbar-thumb,
+.searchable-select-dropdown-inner::-webkit-scrollbar-thumb {
+  background: #b9c8e4;
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background-clip: content-box;
+}
+
+.simple-select-menu::-webkit-scrollbar-thumb:hover,
+.searchable-select-dropdown-inner::-webkit-scrollbar-thumb:hover {
+  background: #9fb0d1;
+  background-clip: content-box;
+}
+
 /* ==========================================================================
    FINAL OVERRIDE: 상태 기준 색상 통일
    - 이수완료: 기존 초록 유지
@@ -16907,4 +16947,118 @@ body .track-result-page .result-track-list button.result-track-row.status-candid
 body .track-result-page .result-track-list button.result-track-row.status-candidate .result-track-percent,
 body .track-result-page .result-track-list button.result-track-row.status-candidate .result-track-rate {
   color: #1d4ed8 !important;
+}
+
+/* 선택 과목과 가까운 전공트랙: 4위/5위 순위칩 글자색만 부드러운 보라색으로 조정 */
+.track-match-page .track-rank-chip.rank-tone-upper {
+  color: #7667b5 !important;
+}
+
+/* 4위/5위 순위칩은 배경/테두리는 유지하고 글자색만 부드러운 보라색으로 조정 */
+.track-match-page .track-rank-chip.rank-tone-upper,
+.track-result-page .track-rank-chip.rank-tone-upper,
+.track-result-page .result-track-rank.rank-tone-upper,
+body .track-result-page button.result-track-row .result-track-rank.rank-tone-upper,
+body .track-result-page button.result-track-row.status-complete .result-track-rank.rank-tone-upper,
+body .track-result-page button.result-track-row:has(.status-complete) .result-track-rank.rank-tone-upper,
+body .track-result-page .result-track-list button.result-track-row.status-candidate .result-track-rank.rank-tone-upper {
+  color: #7667b5 !important;
+}
+
+/* Final override: 4위/5위 순위칩 텍스트만 연한 보라색으로 고정 */
+.track-match-page .track-rest-row.rank-tone-upper .track-rank-chip,
+.track-match-page .track-rest-row.rank-tone-upper.active .track-rank-chip,
+.track-match-page .track-list-quick-panel.rank-tone-upper .track-rank-chip,
+.track-match-page .track-list-quick-panel.rank-tone-upper .quick-panel-actions .track-rank-chip,
+.track-result-page .result-track-row.rank-tone-upper .result-track-rank,
+.track-result-page .result-track-row.rank-tone-upper.active .result-track-rank,
+.track-result-page .result-track-row.rank-tone-upper[aria-selected="true"] .result-track-rank,
+body .track-result-page button.result-track-row.rank-tone-upper .result-track-rank,
+body .track-result-page button.result-track-row.rank-tone-upper.active .result-track-rank,
+body .track-result-page button.result-track-row.rank-tone-upper[aria-selected="true"] .result-track-rank {
+  color: #7667b5 !important;
+}
+
+/* 전체 결과: 4위/5위 이수전 행도 선택 과목 화면과 같은 차분한 톤으로 맞춤 */
+.track-result-page .result-track-row.rank-tone-upper.status-low,
+.track-result-page .result-track-row.rank-tone-upper.match-unrelated,
+body .track-result-page button.result-track-row.rank-tone-upper.status-low,
+body .track-result-page button.result-track-row.rank-tone-upper.match-unrelated {
+  border-color: #dbe4f4 !important;
+  background: #ffffff !important;
+  box-shadow: none !important;
+}
+
+.track-result-page .result-track-row.rank-tone-upper.status-low .result-status-badge,
+.track-result-page .result-track-row.rank-tone-upper.match-unrelated .result-status-badge,
+.track-result-page .result-track-row.rank-tone-upper.status-low em.result-status-badge,
+.track-result-page .result-track-row.rank-tone-upper.match-unrelated em.result-status-badge,
+body .track-result-page button.result-track-row.rank-tone-upper.status-low .result-status-badge,
+body .track-result-page button.result-track-row.rank-tone-upper.match-unrelated .result-status-badge {
+  border-color: #d1ddf0 !important;
+  background: #f8faff !important;
+  color: #94a3b8 !important;
+}
+
+.track-result-page .result-track-row.rank-tone-upper.status-low .result-track-row-side b,
+.track-result-page .result-track-row.rank-tone-upper.match-unrelated .result-track-row-side b,
+.track-result-page .result-track-row.rank-tone-upper.status-low .result-track-percent,
+.track-result-page .result-track-row.rank-tone-upper.match-unrelated .result-track-percent,
+body .track-result-page button.result-track-row.rank-tone-upper.status-low .result-track-row-side b,
+body .track-result-page button.result-track-row.rank-tone-upper.match-unrelated .result-track-row-side b {
+  color: #94a3b8 !important;
+}
+
+/* 선택 과목 화면: 이수전 배지는 회색 톤으로 고정 */
+.track-match-page .track-match-badge.match-unrelated,
+.track-match-page .track-match-badge.match-unrelated.tone-low,
+.track-match-page .track-rest-row.match-unrelated .track-match-badge,
+.track-match-page .track-rest-row.rank-tone-upper .track-match-badge.match-unrelated,
+.track-match-page .track-rank-large-card.match-unrelated .track-match-badge {
+  border-color: #d1ddf0 !important;
+  background: #f8faff !important;
+  color: #94a3b8 !important;
+}
+
+/* 전체 결과: 4위/5위 이수전은 클릭/선택되어도 선택 과목 화면과 같은 톤 유지 */
+body .track-result-page .result-track-list button.result-track-row.rank-tone-upper.status-low,
+body .track-result-page .result-track-list button.result-track-row.rank-tone-upper.status-low.active,
+body .track-result-page .result-track-list button.result-track-row.rank-tone-upper.status-low[aria-selected="true"],
+body .track-result-page .result-track-list button.result-track-row.rank-tone-upper.match-unrelated,
+body .track-result-page .result-track-list button.result-track-row.rank-tone-upper.match-unrelated.active,
+body .track-result-page .result-track-list button.result-track-row.rank-tone-upper.match-unrelated[aria-selected="true"] {
+  border-color: #dbe4f4 !important;
+  background: #ffffff !important;
+  box-shadow: none !important;
+}
+
+body .track-result-page .result-track-list button.result-track-row.rank-tone-upper.status-low .result-track-rank,
+body .track-result-page .result-track-list button.result-track-row.rank-tone-upper.status-low.active .result-track-rank,
+body .track-result-page .result-track-list button.result-track-row.rank-tone-upper.status-low[aria-selected="true"] .result-track-rank,
+body .track-result-page .result-track-list button.result-track-row.rank-tone-upper.match-unrelated .result-track-rank,
+body .track-result-page .result-track-list button.result-track-row.rank-tone-upper.match-unrelated.active .result-track-rank,
+body .track-result-page .result-track-list button.result-track-row.rank-tone-upper.match-unrelated[aria-selected="true"] .result-track-rank {
+  border-color: #c4b5fd !important;
+  background: #f5f3ff !important;
+  color: #7667b5 !important;
+}
+
+body .track-result-page .result-track-list button.result-track-row.rank-tone-upper.status-low .result-status-badge,
+body .track-result-page .result-track-list button.result-track-row.rank-tone-upper.status-low.active .result-status-badge,
+body .track-result-page .result-track-list button.result-track-row.rank-tone-upper.status-low[aria-selected="true"] .result-status-badge,
+body .track-result-page .result-track-list button.result-track-row.rank-tone-upper.status-low em.result-status-badge,
+body .track-result-page .result-track-list button.result-track-row.rank-tone-upper.status-low.active em.result-status-badge,
+body .track-result-page .result-track-list button.result-track-row.rank-tone-upper.status-low[aria-selected="true"] em.result-status-badge {
+  border-color: #d1ddf0 !important;
+  background: #f8faff !important;
+  color: #94a3b8 !important;
+}
+
+body .track-result-page .result-track-list button.result-track-row.rank-tone-upper.status-low .result-track-row-side b,
+body .track-result-page .result-track-list button.result-track-row.rank-tone-upper.status-low.active .result-track-row-side b,
+body .track-result-page .result-track-list button.result-track-row.rank-tone-upper.status-low[aria-selected="true"] .result-track-row-side b,
+body .track-result-page .result-track-list button.result-track-row.rank-tone-upper.match-unrelated .result-track-row-side b,
+body .track-result-page .result-track-list button.result-track-row.rank-tone-upper.match-unrelated.active .result-track-row-side b,
+body .track-result-page .result-track-list button.result-track-row.rank-tone-upper.match-unrelated[aria-selected="true"] .result-track-row-side b {
+  color: #94a3b8 !important;
 }
