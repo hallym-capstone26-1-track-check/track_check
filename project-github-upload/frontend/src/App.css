@@ -16869,9 +16869,9 @@ body .track-result-page .result-progress-card:has(.status-candidate) .result-pro
   background: #2563eb !important;
 }
 
-/* 추천후보 조건 라벨 파란색 */
+/* 추천후보 조건 라벨은 미충족 X 아이콘과 같은 빨간색으로 표시 */
 body .track-result-page .module-rule-group-label.missing {
-  color: #1d4ed8 !important;
+  color: #c44a64 !important;
 }
 
 /* 후순위는 전체 은색 */
